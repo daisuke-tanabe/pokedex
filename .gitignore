@@ -16,5 +16,4 @@ logs/
 
 # Codex
 .codex/agents/
-.codex/config.toml
 .codex/hooks.json
