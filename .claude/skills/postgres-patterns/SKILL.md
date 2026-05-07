@@ -1,6 +1,6 @@
 ---
 name: postgres-patterns
-description: クエリ最適化、スキーマ設計、インデックス、セキュリティのための PostgreSQL データベースパターン。Supabase のベストプラクティスに基づく。
+description: クエリ最適化、スキーマ設計、インデックス、セキュリティのための PostgreSQL データベースパターン。Supabase のベストプラクティスに基づく。SQL クエリ作成・テーブル/インデックス設計・Row Level Security の実装・遅いクエリのトラブルシューティング・PostgreSQL のデータ型/設定選定を行う際は必ず本スキルを参照する。
 ---
 
 # PostgreSQL パターン
