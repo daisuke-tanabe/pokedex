@@ -13,3 +13,8 @@ logs/
 
 # Claude
 .claude/settings.local.json
+
+# Codex
+.codex/agents/
+.codex/config.toml
+.codex/hooks.json
