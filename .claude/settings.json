@@ -1,0 +1,46 @@
+{
+  "language": "japanese",
+  "attribution": {
+    "commit": "Co-Authored-By: Claude <noreply@anthropic.com>",
+    "pr": "\uD83E\uDD16 Generated with Claude Code"
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Grep",
+      "Skill",
+      "WebSearch",
+      "Bash(git status)",
+      "Bash(git diff)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch)"
+    ],
+    "deny": [
+      "Bash(curl *)",
+      "Bash(sudo *)",
+      "Bash(wget *)",
+      "Bash(git remote add *)",
+      "Bash(git remote set-url *)",
+      "Bash(git remote remove *)",
+      "Read(.env)",
+      "Write(.env)",
+      "Edit(.env)",
+      "Grep(.env)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \".claude/scripts/pre-bash-env-guard.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
