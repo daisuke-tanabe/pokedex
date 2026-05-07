@@ -25,3 +25,23 @@
 - データペイロードを含める（エラー時はnullable）
 - エラーメッセージフィールドを含める（成功時はnullable）
 - ページネーションレスポンスにメタデータを含める（total, page, limit）
+
+### REST API エンドポイント規約
+
+HTTP メソッドとパス命名は標準的な REST 規約に従う：
+
+```
+GET    /api/<resources>          # コレクションを一覧
+GET    /api/<resources>/:id      # 特定リソースを取得
+POST   /api/<resources>          # 新規リソースを作成
+PUT    /api/<resources>/:id      # リソースを更新（フル置換）
+PATCH  /api/<resources>/:id      # リソースを更新（部分）
+DELETE /api/<resources>/:id      # リソースを削除
+
+# フィルタリング・ページネーション用のクエリパラメータ
+GET /api/<resources>?status=active&limit=10&offset=0
+```
+
+- リソース名は複数形・kebab-case（複合語）
+- 動詞をパスに含めない（HTTP メソッドが動詞の役割）
+- ネストはオーナーシップ表現にとどめる（`/api/users/:id/orders` 等）

@@ -7,8 +7,6 @@ paths:
 ---
 # TypeScript/JavaScript コーディングスタイル
 
-> このファイルは [common/coding-style.md](../common/coding-style.md) を拡張し、TypeScript/JavaScript固有の内容を追加する。
-
 ## 型とインターフェース
 
 型を使用して、パブリックAPI、共有モデル、コンポーネントpropsを明示的・読みやすく・再利用可能にする。
@@ -197,3 +195,160 @@ const validated: UserInput = userSchema.parse(input)
 - 本番コードに `console.log` 文を残さない
 - 代わりに適切なロギングライブラリを使用する
 - 自動検出についてはフックを参照
+
+## Async/Await
+
+可能な限り並列実行する。逐次 await は依存がある場合だけにとどめる。
+
+```typescript
+// PASS: GOOD: 並列実行
+const [users, orders, stats] = await Promise.all([
+  fetchUsers(),
+  fetchOrders(),
+  fetchStats()
+])
+
+// FAIL: BAD: 不必要な逐次実行
+const users = await fetchUsers()
+const orders = await fetchOrders()
+const stats = await fetchStats()
+```
+
+## コメントとドキュメント
+
+### コメントを書くべきとき
+
+WHY を説明する（WHAT は自己説明的な命名に任せる）。
+
+```typescript
+// PASS: GOOD: 非自明な意図を残す
+// 障害時に API を圧迫しないよう指数バックオフを使う
+const delay = Math.min(1000 * Math.pow(2, retryCount), 30000)
+
+// 大きな配列のパフォーマンスのために意図的にミューテーションを使用
+items.push(newItem)
+
+// FAIL: BAD: 自明なことを書く
+// カウンターを 1 増やす
+count++
+```
+
+### 公開 API への JSDoc
+
+エクスポートする関数・公開クラスメソッドには JSDoc を付け、引数・戻り値・例外・例を記載する。
+
+```typescript
+/**
+ * セマンティック類似度を使ってリソースを検索する。
+ *
+ * @param query - 自然言語検索クエリ
+ * @param limit - 結果の最大件数（デフォルト: 10）
+ * @returns 類似度スコア順にソートされた結果配列
+ * @throws {Error} 外部 API が失敗した場合
+ *
+ * @example
+ * ```typescript
+ * const results = await searchResources('keyword', 5)
+ * ```
+ */
+export async function searchResources(
+  query: string,
+  limit: number = 10
+): Promise<Resource[]> {
+  // 実装
+}
+```
+
+## コードスメル
+
+### 長い関数
+
+```typescript
+// FAIL: BAD: 50 行超
+function processData() {
+  // 100 行のコード
+}
+
+// PASS: GOOD: 責務単位の小関数に分割
+function processData() {
+  const validated = validate()
+  const transformed = transform(validated)
+  return save(transformed)
+}
+```
+
+### 深いネスト
+
+```typescript
+// FAIL: BAD: 5 段以上のネスト
+if (user) {
+  if (user.isAdmin) {
+    if (resource) {
+      if (resource.isActive) {
+        if (hasPermission) {
+          // 何かする
+        }
+      }
+    }
+  }
+}
+
+// PASS: GOOD: 早期リターン
+if (!user) return
+if (!user.isAdmin) return
+if (!resource) return
+if (!resource.isActive) return
+if (!hasPermission) return
+
+// 何かする
+```
+
+### マジックナンバー
+
+```typescript
+// FAIL: BAD: 説明のない数値
+if (retryCount > 3) { }
+setTimeout(callback, 500)
+
+// PASS: GOOD: 名前付き定数
+const MAX_RETRIES = 3
+const DEBOUNCE_DELAY_MS = 500
+
+if (retryCount > MAX_RETRIES) { }
+setTimeout(callback, DEBOUNCE_DELAY_MS)
+```
+
+## ファイル構成
+
+### プロジェクト構造（Next.js App Router 例）
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/                # API ルート
+│   ├── <feature>/          # 機能ごとのページ
+│   └── (auth)/             # ルートグループ
+├── components/             # React コンポーネント
+│   ├── ui/                 # 汎用 UI コンポーネント
+│   ├── forms/              # フォームコンポーネント
+│   └── layouts/            # レイアウトコンポーネント
+├── hooks/                  # カスタム React フック
+├── lib/                    # ユーティリティと設定
+│   ├── api/                # API クライアント
+│   ├── utils/              # ヘルパー関数
+│   └── constants/          # 定数
+├── types/                  # TypeScript の型
+└── styles/                 # グローバルスタイル
+```
+
+### ファイルの命名
+
+```
+components/Button.tsx          # コンポーネントは PascalCase + .tsx
+hooks/useAuth.ts               # 'use' プレフィックス + camelCase + .ts
+lib/formatDate.ts              # ユーティリティは camelCase
+types/order.types.ts           # camelCase + .types サフィックス
+```
+
+- `.tsx`: JSX を含むファイル
+- `.ts`: 型定義のみ／純粋ロジック
