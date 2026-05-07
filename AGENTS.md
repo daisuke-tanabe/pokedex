@@ -15,3 +15,22 @@
 - 作業ブランチは `main` から切り、PR でマージ
 - コミットは Conventional Commits（`feat: ...` / `fix: ...` / `chore: ...` 等）
 - PR は単一目的・<500 行が理想
+
+## コーディング規約
+
+詳細ルールは `.agents/rules/` 配下に分割配置。
+コード変更を伴うタスク開始時、以下のファイルを必ず読み込み内容に従うこと。
+
+### 全タスク共通
+
+@.agents/rules/common/coding-style.md
+@.agents/rules/common/patterns.md
+@.agents/rules/common/security.md
+
+### TypeScript 作業時
+
+@.agents/rules/typescript/coding-style.md
+@.agents/rules/typescript/testing.md
+@.agents/rules/typescript/patterns.md
+
+`@` 構文を解釈しないエージェントは、対応する `.agents/rules/<path>.md` を Read tool で開いて参照すること。

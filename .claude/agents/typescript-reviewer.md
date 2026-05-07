@@ -106,7 +106,7 @@ jest --ci                           # テスト（Jest）
 
 ## 参考
 
-詳細な TypeScript・JavaScript パターンについては `.claude/rules/typescript/` 配下のルールを参照する。レビュー対象に応じて `frontend-patterns` または `backend-patterns` skill を併用してよい。
+レビュー対象に応じて `frontend-patterns` または `backend-patterns` skill を併用してよい。
 
 ---
 
