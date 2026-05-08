@@ -1,0 +1,124 @@
+## 1. リポジトリルートの設定整備
+
+- [ ] 1.1 `pnpm-workspace.yaml` の `packages` 配列に `'packages/*'` を追加し、既存の `'apps/*'` と並べる
+- [ ] 1.2 `turbo.json` に `dev`（`cache: false`, `persistent: true`）、`build`（`dependsOn: ["^build"]`, `outputs: ["dist/**"]`）、`test`（`dependsOn: ["^build"]`）、`typecheck`（`dependsOn: ["^build"]`）の 4 タスクを追加し、既存の `lint` / `format` / `format:check` は維持する
+- [ ] 1.3 `.gitignore` に `.env` を追記する
+- [ ] 1.4 リポジトリルートに `.env.example` を作成し、`DATABASE_URL=postgres://pokedex:pokedex@localhost:5432/pokedex` をコメント付きで記載する
+- [ ] 1.5 リポジトリルートに `docker-compose.yml` を作成し、`postgres:17-alpine` を使った PostgreSQL サービスを定義する（user / password / database / port が `.env.example` と整合する）
+- [ ] 1.6 `docker compose up -d` を実行し、PostgreSQL コンテナが起動して `DATABASE_URL` で接続可能であることを手動検証する
+- [ ] 1.7 `pnpm install` を実行し、ワークスペース解決が壊れていないことを確認する（既存の apps/* がリンクされ続けること）
+
+## 2. packages/contracts パッケージの雛形作成
+
+- [ ] 2.1 `packages/contracts/` を作成し、`package.json`（`name: '@pokedex/contracts'`, `private: true`, `type: 'module'`, `main: './src/index.ts'`, `types: './src/index.ts'`）を配置する
+- [ ] 2.2 `packages/contracts/package.json` の `scripts` に `test`, `typecheck`, `lint`, `format`, `format:check` を追加する（apps と同じ oxlint / oxfmt / vitest / tsc を呼ぶ）
+- [ ] 2.3 `packages/contracts/tsconfig.json` を `tsconfig.base.json` を `extends` する形で作成する
+- [ ] 2.4 `packages/contracts/src/index.ts` を空 export（`export {}`）で作成し、ビルド可能な状態にする
+- [ ] 2.5 `packages/contracts/package.json` の `devDependencies` に `vitest`, `valibot`, `oxlint`, `oxfmt` を追加する（catalog 経由 or 直書き、ルートと整合させる）
+- [ ] 2.6 `packages/contracts/vitest.config.ts` を追加する
+- [ ] 2.7 `pnpm install` でワークスペース解決と依存インストールが完走することを確認する
+
+## 3. shared-contracts: ドメイン定数
+
+- [ ] 3.1 [Test] `packages/contracts/src/__tests__/constants.test.ts` を作成し、`PAGE_SIZE === 30`、`MAX_TYPES === 2`、`DEFAULT_POKEDEX_SLUG === 'national'` を検証するテストを書く（赤）
+- [ ] 3.2 [Test] 同テストファイルに `expectTypeOf<typeof PAGE_SIZE>().toEqualTypeOf<30>()` 相当の型テスト（vitest の `expectTypeOf` 使用、または `assertType`）を追加する（赤）
+- [ ] 3.3 [Impl] `packages/contracts/src/constants.ts` を作成し、`as const` 付きで 3 定数を export する
+- [ ] 3.4 [Impl] `packages/contracts/src/index.ts` から `constants.ts` を re-export する
+- [ ] 3.5 [Refactor] 命名・JSDoc・export 形式（個別 named export）を見直す
+
+## 4. shared-contracts: エラーコード
+
+- [ ] 4.1 [Test] `packages/contracts/src/__tests__/errors.test.ts` を作成し、`ErrorCode.POKEDEX_NOT_FOUND === 'POKEDEX_NOT_FOUND'`、`ErrorCode.INVALID_QUERY === 'INVALID_QUERY'` を検証するテストを書く（赤）
+- [ ] 4.2 [Test] 同テストに `Object.values(ErrorCode)` に最低 2 値が含まれることを assert する
+- [ ] 4.3 [Test] 型レベルテストとして `const code: ErrorCode = 'NOT_AN_ERROR_CODE'` が `// @ts-expect-error` でエラーになることを示す
+- [ ] 4.4 [Impl] `packages/contracts/src/errors.ts` を作成し、`as const` オブジェクト + 型エイリアスで `ErrorCode` を export する
+- [ ] 4.5 [Impl] `packages/contracts/src/index.ts` から `errors.ts` を re-export する
+- [ ] 4.6 [Refactor] enum と as const オブジェクトの選択を design.md と整合する形に統一する
+
+## 5. shared-contracts: レスポンスエンベロープ Valibot スキーマ
+
+- [ ] 5.1 [Test] `packages/contracts/src/__tests__/envelope.test.ts` を作成し、成功エンベロープ `{ success: true, data: 'hello' }` が `parse(envelopeSchema(string()), ...)` を通ることを検証する（赤）
+- [ ] 5.2 [Test] meta 付き成功エンベロープが通ることを検証する
+- [ ] 5.3 [Test] 失敗エンベロープ `{ success: false, error: { code: 'INVALID_QUERY', message: 'invalid' } }` が通ることを検証する
+- [ ] 5.4 [Test] `success: true` と `error` が両立する不正値で `parse` が例外を投げることを検証する
+- [ ] 5.5 [Test] `error.code` に未定義文字列が入った値で `parse` が例外を投げることを検証する
+- [ ] 5.6 [Impl] `packages/contracts/src/schemas/envelope.ts` を作成し、Valibot の `variant` で判別可能ユニオンとしてエンベロープスキーマを実装する。`error.code` は `picklist(Object.values(ErrorCode))` で制約する
+- [ ] 5.7 [Impl] `packages/contracts/src/index.ts` から `schemas/envelope.ts` を re-export する
+- [ ] 5.8 [Refactor] スキーマ関数のジェネリクス推論と型 export（`type Envelope<T>` など）の表現を整える
+
+## 6. shared-contracts: 単一エントリポイント
+
+- [ ] 6.1 [Test] `packages/contracts/src/__tests__/index.test.ts` を作成し、`import { envelopeSchema, PAGE_SIZE, MAX_TYPES, DEFAULT_POKEDEX_SLUG, ErrorCode } from '@pokedex/contracts'`（または相対）が型エラーなく解決されることを smoke テストする
+- [ ] 6.2 [Impl] `packages/contracts/src/index.ts` の re-export 漏れを補完する
+- [ ] 6.3 [Refactor] 不要な再エクスポートの削除と export 順序の整理
+
+## 7. apps/api パッケージの雛形作成
+
+- [ ] 7.1 `apps/api/package.json` に `dependencies` を追加（`hono`, `@hono/node-server`, `@hono/valibot-validator`, `drizzle-orm`, `postgres`, `valibot`, `@pokedex/contracts: workspace:*`）
+- [ ] 7.2 `apps/api/package.json` に `devDependencies` を追加（`drizzle-kit`, `vitest`, `tsx`, `@types/node`）
+- [ ] 7.3 `apps/api/package.json` の `scripts` に `dev`（`tsx watch src/server.ts`）、`build`（`tsc -p tsconfig.json`）、`test`（`vitest run`）を追加し、既存の `lint` / `format` / `typecheck` / `format:check` は維持する
+- [ ] 7.4 `apps/api/tsconfig.json` を `tsconfig.base.json` を extends し、`module: "ESNext"`, `moduleResolution: "bundler"`, `verbatimModuleSyntax: true`, `outDir: "dist"` を設定する
+- [ ] 7.5 `apps/api/vitest.config.ts` を追加する
+- [ ] 7.6 `apps/api/drizzle.config.ts` の雛形を作成し、`schema: './src/db/schema.ts'`, `out: './drizzle'`, `dialect: 'postgresql'` を記載する（実テーブル定義は後続 change で追加）
+- [ ] 7.7 `pnpm install` で全依存が解決することを確認する
+
+## 8. api-foundation: DB クライアントの singleton
+
+- [ ] 8.1 [Test] `apps/api/src/db/__tests__/client.test.ts` を作成し、`DATABASE_URL` 未設定時に `import('./client')` がエラーメッセージ `DATABASE_URL is required` で例外を投げることを検証する（モジュールキャッシュをリセットして検証する `vi.resetModules()` を活用）
+- [ ] 8.2 [Test] `DATABASE_URL` 設定時に `import('./client')` が成功し `db` シンボルが取得できることを検証する
+- [ ] 8.3 [Test] 同一プロセス内で 2 回 `import('./client')` した結果の `db` が `===` で等価であることを検証する
+- [ ] 8.4 [Impl] `apps/api/src/db/client.ts` を実装する（fail-fast で env チェック、`drizzle(postgres(connectionString))` を `db` として export）
+- [ ] 8.5 [Refactor] エラーメッセージ・型エクスポート（`type DB = typeof db`）・命名を整える
+
+## 9. api-foundation: エンベロープ生成ヘルパー
+
+- [ ] 9.1 [Test] `apps/api/src/lib/__tests__/envelope.test.ts` を作成し、`successEnvelope({ status: 'ok' })` が `{ success: true, data: { status: 'ok' } }` を返すことを検証する
+- [ ] 9.2 [Test] `successEnvelope([1, 2, 3], { total: 3, page: 1, limit: 30 })` が meta 付きで返ることを検証する
+- [ ] 9.3 [Test] `errorEnvelope('POKEDEX_NOT_FOUND', 'pokedex not found')` が `{ success: false, error: { code: 'POKEDEX_NOT_FOUND', message: 'pokedex not found' } }` を返すことを検証する
+- [ ] 9.4 [Test] 出力値が `@pokedex/contracts` の `envelopeSchema` を通過することを smoke テストする（contracts との結合確認）
+- [ ] 9.5 [Impl] `apps/api/src/lib/envelope.ts` を実装する（ジェネリクスで data の型を保持、`ErrorCode` を引数に強制）
+- [ ] 9.6 [Refactor] 関数シグネチャの整理（オーバーロード or オプショナル meta の表現）と JSDoc 追加
+
+## 10. api-foundation: ヘルスチェックエンドポイント
+
+- [ ] 10.1 [Test] `apps/api/src/routes/__tests__/health.test.ts` を作成し、`app.request('/health')` の結果が 200 でボディが `{ success: true, data: { status: 'ok' } }` であることを検証する
+- [ ] 10.2 [Test] レスポンスヘッダ `Content-Type` に `application/json` が含まれることを検証する
+- [ ] 10.3 [Impl] `apps/api/src/routes/health.ts` を作成し、`successEnvelope({ status: 'ok' })` を返すルートを定義する
+- [ ] 10.4 [Impl] `apps/api/src/index.ts` で Hono app を構築し、`/health` ルートを登録する
+- [ ] 10.5 [Refactor] ルート定義の置き場所と命名（`createHealthRoute()` のような薄い関数化）を整える
+
+## 11. api-foundation: AppType の export と HTTP リスナー
+
+- [ ] 11.1 [Test] `apps/api/src/__tests__/app-type.test.ts` を作成し、`import type { AppType } from '../index'` をした上で `hc<AppType>` 相当の型推論が成立することを `expectTypeOf` で検証する
+- [ ] 11.2 [Impl] `apps/api/src/index.ts` で `export type AppType = typeof app` を追加する（型のみ export）
+- [ ] 11.3 [Impl] `apps/api/src/server.ts` を作成し、`@hono/node-server` の `serve` で `process.env.PORT ?? 3000` を listen する
+- [ ] 11.4 [Test] サーバ起動 smoke テスト: `PORT=0` で `serve` を呼び、戻り値の `address().port` が 0 以外であることを検証する（任意ポートでバインドが成功することの確認）
+- [ ] 11.5 [Refactor] `index.ts` と `server.ts` の責務分離（前者は Hono app、後者は HTTP リスナー起動）を確認
+
+## 12. monorepo-foundation の整合確認
+
+- [ ] 12.1 [Test] `pnpm-workspace.yaml` の YAML を読み込み `packages` 配列に `'apps/*'` と `'packages/*'` の両方が含まれることを CI 用ノードスクリプト or ルートの vitest テストで検証する（任意。手動確認でも可）
+- [ ] 12.2 [Test] `turbo.json` を JSON として読み込み、`tasks.dev`、`tasks.build`、`tasks.test`、`tasks.typecheck`、`tasks.lint`、`tasks.format`、`tasks.format:check` の 7 キーが存在することを検証する
+- [ ] 12.3 [Test] `turbo.json` の `tasks.dev.cache === false` かつ `tasks.dev.persistent === true` を検証する
+- [ ] 12.4 [Test] `turbo.json` の `tasks.build.dependsOn` に `'^build'` が含まれることを検証する
+- [ ] 12.5 [Test] `apps/api/package.json` と `packages/contracts/package.json` を読み、必須スクリプトキー（apps/api: dev/build/test/typecheck/lint/format/format:check, packages/contracts: test/typecheck/lint/format/format:check）が揃っていることを検証する
+- [ ] 12.6 [Test] `.gitignore` に `.env` が含まれることを検証する
+- [ ] 12.7 [Test] `.env.example` が `DATABASE_URL=` で始まる行を含むことを検証する
+- [ ] 12.8 [Test] `docker-compose.yml` の PostgreSQL イメージタグが `latest` を含まず明示メジャーバージョン（`postgres:17-...` 等）であることを検証する
+- [ ] 12.9 [Test] `.env.example` の `DATABASE_URL` の user / password / database / port が `docker-compose.yml` の対応値と一致することを検証する
+
+## 13. lint / format / typecheck の全 package 適用確認
+
+- [ ] 13.1 [Verify] `pnpm --filter @pokedex/contracts lint` が exit code 0 で完走することを確認する
+- [ ] 13.2 [Verify] `pnpm --filter @pokedex/api lint` が exit code 0 で完走することを確認する
+- [ ] 13.3 [Verify] `pnpm lint`（ルート）で turbo が `apps/api`、`apps/web`、`apps/mobile`、`packages/contracts` の 4 パッケージで lint タスクを実行することを確認する
+- [ ] 13.4 [Verify] `pnpm format:check` が全パッケージで完走することを確認する
+- [ ] 13.5 [Verify] `pnpm typecheck` が全パッケージで完走することを確認する
+- [ ] 13.6 [Verify] `pnpm test` が `apps/api` と `packages/contracts` の vitest を実行し全て pass することを確認する
+
+## 14. 動作確認とドキュメント
+
+- [ ] 14.1 [Verify] `docker compose up -d` で PostgreSQL を起動した後、`pnpm --filter @pokedex/api dev` で API が 3000 番ポートに立ち上がることを手動検証する
+- [ ] 14.2 [Verify] `curl -i http://localhost:3000/health` が 200、`Content-Type: application/json`、ボディ `{"success":true,"data":{"status":"ok"}}` を返すことを手動検証する
+- [ ] 14.3 README.md に開発手順（依存インストール、DB 起動、env 設定、API 起動、ヘルスチェック確認、テスト実行）を簡潔に追記する
+- [ ] 14.4 `apps/web` と `apps/mobile` の package.json には今回手を加えないこと、後続 change で扱うことを README または別途メモに明記する
