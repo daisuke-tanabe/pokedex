@@ -1,0 +1,53 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "options": {
+    "typeAware": true
+  },
+  "plugins": ["typescript", "import", "unicorn", "oxc"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "warn"
+  },
+  "rules": {
+    "no-param-reassign": "error",
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "max-depth": ["error", 4],
+    "require-await": "off",
+    "unicorn/no-useless-undefined": "error",
+    "unicorn/no-array-sort": "error",
+    "import/no-duplicates": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/return-await": ["error", "always"],
+    "typescript/require-await": "error",
+    "typescript/no-misused-promises": ["error", { "checksVoidReturn": false }],
+    "typescript/no-floating-promises": ["error", { "ignoreIIFE": true }]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "**/test-setup.ts"
+      ],
+      "rules": {
+        "typescript/no-non-null-assertion": "off",
+        "typescript/no-unsafe-type-assertion": "off",
+        "typescript/unbound-method": "off",
+        "typescript/require-await": "off",
+        "unicorn/no-useless-undefined": "off",
+        "import/no-unassigned-import": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/migrations/**",
+    "**/.claude/**"
+  ]
+}
