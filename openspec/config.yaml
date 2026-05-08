@@ -3,3 +3,11 @@ schema: spec-driven
 context: |
   言語：日本語
   すべての成果物は日本語で作成してください。
+
+rules:
+  specs:
+    - 'Scenario は 1 件 = 1 テストケースに対応する粒度で書く。'
+    - 'WHEN/THEN は実行可能な振る舞いとして表現し、テスト名にそのままマッピングできる形にする。'
+  tasks:
+    - '各 Scenario を「テスト → 実装 → リファクタ」の 3 段階タスクに分割し、テストを先頭に置く。'
+    - 'TDD は `tdd-workflow` skill に従う。'
