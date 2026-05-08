@@ -46,3 +46,27 @@ jest.mock('@/lib/openai', () => ({
 - **モック値はテストごとに具体的に** — グローバルなデフォルト値に依存すると、テストが何を検証しているのか不明瞭になる
 - **副作用も記録する** — 「呼ばれたか」「何度呼ばれたか」「どんな引数で呼ばれたか」をアサートする価値のある場合は `toHaveBeenCalledWith` を使う
 - **タイマーやランダム値も忘れない** — `jest.useFakeTimers()` や seed 固定で決定的にする
+
+## SDK スタイルのインターフェース推奨
+
+境界モック対象を「汎用 fetcher」ではなく「エンドポイント専用関数の集合」にすると、モックがシンプルになる。
+
+```typescript
+// PASS: 各エンドポイントが独立してモック可能
+const api = {
+  getUser: (id) => fetch(`/users/${id}`),
+  getOrders: (userId) => fetch(`/users/${userId}/orders`),
+  createOrder: (data) => fetch('/orders', { method: 'POST', body: data }),
+}
+
+// FAIL: モック内に分岐ロジックが必要
+const api = {
+  fetch: (endpoint, options) => fetch(endpoint, options),
+}
+```
+
+利点:
+
+- 各モックが返す型が明確（エンドポイント単位の型安全性）
+- テストセットアップに条件分岐が不要
+- どのテストがどのエンドポイントに依存しているか一目で分かる

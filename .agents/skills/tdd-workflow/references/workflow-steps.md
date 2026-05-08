@@ -10,29 +10,30 @@ As a user, I want to search for items semantically,
 so that I can find relevant items even without exact keywords.
 ```
 
-## Step 2: テストケースを生成する
+## Step 2: テストケース候補を列挙し、最初の 1 つを書く
 
-各ユーザージャーニーに対し、ハッピーパス・エッジケース・フォールバック・ソート等を網羅するテストを書く。
+各ユーザージャーニーに対し、ハッピーパス・エッジケース・フォールバック・ソート等のテスト候補を**列挙**する（この時点ではコードは書かない）。
+
+```
+Semantic Search のテスト候補:
+- ハッピーパス: クエリに対して関連アイテムが返る
+- エッジケース: 空クエリでもエラーにならず空配列が返る
+- フォールバック: キャッシュ不可時に substring 検索に切り替わる
+- ソート: 結果が類似度スコア順になる
+```
+
+候補リストから **最初の 1 つだけ** を実コードとして書く。最初はハッピーパスを選び、エンドツーエンドの経路を確認するのが定石:
 
 ```typescript
 describe('Semantic Search', () => {
   it('returns relevant items for query', async () => {
-    // Test implementation
-  })
-
-  it('handles empty query gracefully', async () => {
-    // Test edge case
-  })
-
-  it('falls back to substring search when cache is unavailable', async () => {
-    // Test fallback behavior
-  })
-
-  it('sorts results by similarity score', async () => {
-    // Test sorting logic
+    const results = await searchItems('foo')
+    expect(results).toContainEqual(expect.objectContaining({ name: 'foo-bar' }))
   })
 })
 ```
+
+残りの候補は Step 5 で GREEN を確認した後、Step 2 → 3 → 4 → 5 のサイクルを反復しながら **1 つずつ** 書く。すべてを先に書いてから一気に実装する「水平スライシング」はアンチパターン。詳細は `anti-patterns.md`。
 
 ## Step 3: テストを実行する（失敗するはず）
 
