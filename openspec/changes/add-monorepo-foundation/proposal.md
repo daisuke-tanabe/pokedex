@@ -20,8 +20,12 @@
 - 開発環境の Supabase ローカルスタック
   - `supabase init` で `supabase/` ディレクトリを生成
   - `supabase start` で PostgreSQL + Storage を含むローカル Supabase スタックが起動できる
-  - `.env.example` に Supabase ローカル接続用の `DATABASE_URL` を定義
   - `.tool-versions` に `supabase` を追加し、asdf 経由でバージョンを固定
+- 環境変数の管理方針
+  - `.env.development` をコミット対象とし、Supabase ローカル既定値など **機密でない** 動作既定値だけを置く
+  - `.env.local` を gitignore し、個人の機密上書き用とする
+  - 本番値は GitHub Secrets / Vercel / Supabase Dashboard などホスティング側で注入し、リポジトリには置かない
+  - 読み込みは Node の `--env-file` 系で行う（`tsx --env-file=.env.development --env-file-if-exists=.env.local ...`）
 - `apps/api` にユニットテスト基盤（vitest）をセットアップ
 - 旧仕様の「実装中立」方針を捨て、本リポジトリでは Hono / Drizzle / PostgreSQL / Valibot を採用することを明示
 
@@ -44,7 +48,7 @@
   - `apps/api/vitest.config.ts`、`apps/api/src/**/__tests__/`
   - `packages/contracts/`（新規パッケージ）
   - `supabase/`（リポジトリルート、`supabase init` で生成。`config.toml` を含む）
-  - `.env.example`（リポジトリルート）
+  - `.env.development`（リポジトリルート、コミット対象、機密ゼロのローカル既定値）
 - **既存ファイルの変更**:
   - `pnpm-workspace.yaml` … `packages/*` を追加
   - `turbo.json` … `dev` / `build` / `test` タスクを追加

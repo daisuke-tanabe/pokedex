@@ -94,24 +94,52 @@
 - **WHEN** `packages/contracts` で `pnpm test` を実行する
 - **THEN** vitest が起動し、テストファイルを収集して実行する
 
-### Requirement: 環境変数テンプレート
+### Requirement: ローカル既定値の環境変数ファイル
 
-リポジトリルートの `.env.example` には開発に必要な環境変数を網羅的に記載しなければならない（MUST）。本 change では最低 `DATABASE_URL` を含まなければならず（MUST）、各変数には用途のコメントを付けなければならない（MUST）。`DATABASE_URL` の例は Supabase ローカル既定値でなければならない（MUST）。
+リポジトリルートの `.env.development` には、開発環境で動作させるために必要な環境変数の **既定値** を記載しなければならない（MUST）。本 change では最低 `DATABASE_URL` を含まなければならず（MUST）、各変数には用途のコメントを付けなければならない（MUST）。`DATABASE_URL` の値は Supabase ローカル既定値でなければならない（MUST）。`.env.development` は **機密情報を含んではならない**（MUST NOT）。
 
-#### Scenario: .env.example に DATABASE_URL が記載されている
+#### Scenario: .env.development に DATABASE_URL が記載されている
 
-- **WHEN** リポジトリルートの `.env.example` を読む
+- **WHEN** リポジトリルートの `.env.development` を読む
 - **THEN** `DATABASE_URL=` で始まる行が 1 行以上存在する
 
-#### Scenario: .env.example の DATABASE_URL は Supabase ローカル既定値
+#### Scenario: .env.development の DATABASE_URL は Supabase ローカル既定値
 
-- **WHEN** リポジトリルートの `.env.example` を読む
+- **WHEN** リポジトリルートの `.env.development` を読む
 - **THEN** `DATABASE_URL` の値が `postgres://postgres:postgres@127.0.0.1:54322/postgres` または同等の Supabase ローカル既定接続文字列になっている
 
-#### Scenario: .env は git 追跡対象外
+#### Scenario: .env.development はコミット対象である
+
+- **WHEN** `git ls-files .env.development` を実行する
+- **THEN** `.env.development` がパスとして出力される（追跡対象として登録されている）
+
+### Requirement: 機密上書きファイルの隔離
+
+リポジトリには個人ごとの機密値を上書きするための `.env.local` ファイルを許容するが、これは **必ず** `.gitignore` 対象としなければならない（MUST）。本番値を表現する `.env` および `.env.production` も同様にコミット禁止としなければならない（MUST）。
+
+#### Scenario: .env.local が gitignore に含まれる
+
+- **WHEN** `.gitignore` を確認する
+- **THEN** `.env.local` がパターンに含まれる
+
+#### Scenario: .env が gitignore に含まれる
 
 - **WHEN** `.gitignore` を確認する
 - **THEN** `.env` がパターンに含まれる
+
+#### Scenario: .env.production が gitignore に含まれる
+
+- **WHEN** `.gitignore` を確認する
+- **THEN** `.env.production` がパターンに含まれる
+
+### Requirement: 本番値はリポジトリ外で管理
+
+本番環境で使用する機密値（実 Supabase の接続文字列、サービスロールキー、外部 API キー等）はリポジトリ内のいかなるファイルにも保存してはならない（MUST NOT）。本番値はホスティングサービス（GitHub Secrets、Vercel 環境変数、Supabase Dashboard 等）で注入する方針を README に明記しなければならない（MUST）。
+
+#### Scenario: README に本番値の管理方針が記載されている
+
+- **WHEN** リポジトリの `README.md` を読む
+- **THEN** 「本番値は GitHub Secrets / 各ホスティングサービスで管理し、リポジトリには置かない」旨の記述が含まれる
 
 ### Requirement: lint / format の対象拡張
 

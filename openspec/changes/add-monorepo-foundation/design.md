@@ -165,7 +165,7 @@ export const db = drizzle(client)
 
 ### Decision 8: 開発環境は Supabase ローカルスタックを採用する
 
-ローカル開発は **Supabase CLI（`supabase start`）でスタック一式を起動** する。`supabase init` で生成される `supabase/` ディレクトリ（`config.toml` 等）を repository に含め、開発者は `supabase start` を実行するだけで PostgreSQL（54322 番）、Studio（54323 番）、Storage、Kong など必要サービスが立ち上がる。`.env.example` には `DATABASE_URL=postgres://postgres:postgres@127.0.0.1:54322/postgres` を記載する。
+ローカル開発は **Supabase CLI（`supabase start`）でスタック一式を起動** する。`supabase init` で生成される `supabase/` ディレクトリ（`config.toml` 等）を repository に含め、開発者は `supabase start` を実行するだけで PostgreSQL（54322 番）、Studio（54323 番）、Storage、Kong など必要サービスが立ち上がる。Supabase ローカル既定の `DATABASE_URL=postgres://postgres:postgres@127.0.0.1:54322/postgres` は **Decision 14** に従い `.env.development`（コミット対象）に記載する。
 
 **理由**:
 - プロダクトとして Supabase（本番でも採用予定）を使うため、ローカルから本番までスキーマと挙動を揃えやすい
@@ -247,6 +247,47 @@ Node、pnpm に加え、`supabase` CLI も `.tool-versions` に記載して `asd
 - `test` / `typecheck` は依存パッケージのビルド成果物が必要なので `^build` 依存
 - `lint` / `format` は既存挙動を維持
 
+### Decision 14: 環境変数は `.env.development` をコミット、`.env.local` を gitignore、本番は GitHub Secrets
+
+**ファイル戦略**:
+
+| ファイル | 用途 | git 扱い | 機密 |
+| --- | --- | --- | --- |
+| `.env.development` | ローカル動作の既定値（Supabase ローカル接続文字列など） | コミット対象 | **含めない** |
+| `.env.local` | 個人の機密上書き（ローカルでの代替接続先など） | `.gitignore` 対象 | 含めてよい（個人責任） |
+| `.env` | 使わない | `.gitignore` 対象（保険） | — |
+| `.env.production` | 使わない（本番値はリポジトリに置かない） | コミット禁止 | — |
+
+**本番値**: GitHub Secrets / Vercel 環境変数 / Supabase Dashboard などホスティング側で注入する。リポジトリには本番接続文字列・サービスロールキー・API キーなどの機密を **絶対に置かない**。
+
+**読み込み手段**: Node.js 22.7+ の `--env-file` / `--env-file-if-exists` フラグを使用する。`apps/api` の dev コマンドは以下のように構成する:
+
+```jsonc
+// apps/api/package.json
+"scripts": {
+  "dev": "tsx watch --env-file=../../.env.development --env-file-if-exists=../../.env.local src/server.ts"
+}
+```
+
+- `.env.development` が必須読込、`.env.local` は存在すれば後勝ちで上書き
+- 既存の `.tool-versions` で Node 24 を固定しているので `--env-file-if-exists` は使える
+
+**理由**:
+- ファイル名で「コミットしてよいローカル既定値」と「個人の機密上書き」を明確に分離できる
+- Next.js / Expo の env 命名慣習と衝突しない（`.env.local` を gitignore する流儀は両者と一致）
+- 本番値をリポジトリに持ち込まないので、GitHub の secret scanning や誤コミット時のローテーションコストを避けられる
+- 開発者は `git clone` → `asdf install` → `supabase start` → `pnpm install` → `pnpm dev` だけでローカル動作する（`.env.local` を作る必要なし）
+
+**代替案と却下理由**:
+- **`.env` をコミット + `.env.local` を gitignore（Next.js 慣習そのまま）**: `.env` というファイル名が「機密が入っているのでは」と読み手に誤読されやすい。`.env.development` の方が意図が明示的
+- **`.env.local` をコミット + `.env` を gitignore**: Next.js 既定挙動（`.env.local` は機密として扱う）と逆転するため、Web change 時に混乱を招く
+- **すべて GitHub Secrets**: ローカル開発でも secrets pull が必要になり、オフライン作業不可・onboarding コスト増
+
+**運用ルール**:
+- README に「`.env.development` には機密を書かない、`.env.local` に上書きする」と明記する
+- pre-commit hook で `.env.development` が変更された場合に値の機密性レビューをリマインドする（実装は後続 change で検討）
+- 本 change のスコープでは GitHub Secrets の wiring（GitHub Actions secrets の設定、CI からの読み込み）は行わない（CI/CD の change で扱う）
+
 ## Risks / Trade-offs
 
 - **Valibot のドキュメント・サンプルが Zod に比べて少ない** → Hono / Drizzle の公式アダプタを基準に統一。社内サンプルを `apps/api` 内に小さく作って参照しやすくする。
@@ -257,6 +298,8 @@ Node、pnpm に加え、`supabase` CLI も `.tool-versions` に記載して `asd
 - **`asdf-supabase` plugin の安定性** → 公式 plugin ではなく community plugin。インストール失敗時は README に「`brew install supabase/tap/supabase` への切替手順」を記載しておく（フォールバック）。
 - **Supabase ローカルが起動する Docker コンテナのリソース消費** → `supabase start` は 10 個前後のコンテナを起動する。低スペックマシンでメモリ逼迫の可能性。`supabase status` での確認、不要時は `supabase stop` を README に明記。
 - **Drizzle Kit の生成 SQL と Supabase CLI の migration ファイル名フォーマットが不整合になるリスク** → 本 change では `out` を `./supabase/migrations` に向けるのみで実 SQL は生成しない。整合確認は `add-domain-schema` のスコープに含める。
+- **`.env.development` への機密誤コミット** → README とコメントで「機密は `.env.local` か GitHub Secrets」と強調する。後続 change で pre-commit hook（gitleaks 等）の導入を検討。本 change ではドキュメントベースの規律のみ。
+- **Node の `--env-file-if-exists` が動かない環境（古い Node）** → `.tool-versions` で Node 24.x を固定しているので問題ないが、`asdf install` を忘れた開発者が低 Node でつまずく可能性がある。README で「`asdf install` を必ず実行」と明記。
 - **既存の oxlint/oxfmt と vitest の併用** → vitest 用ファイル（`*.test.ts`）も oxlint の対象になるので、既存の `.oxlintrc.json` で test glob を許容済みであることを確認する。
 
 ## Migration Plan
@@ -269,7 +312,8 @@ Node、pnpm に加え、`supabase` CLI も `.tool-versions` に記載して `asd
 4. `pnpm-workspace.yaml` に `packages/*` を追加
 5. `apps/api` に依存追加（`hono`, `@hono/node-server`, `@hono/valibot-validator`, `drizzle-orm`, `drizzle-kit`, `postgres`, `valibot`, `vitest`, `@pokedex/contracts`）
 6. `apps/api/src/` を実装し、`drizzle.config.ts` の `out` を `./supabase/migrations` に向ける
-7. `.env.example` をリポジトリルートに追加（Supabase ローカル接続用 `DATABASE_URL`）
+7. `.env.development` をリポジトリルートに追加（Supabase ローカル接続用 `DATABASE_URL`、機密ゼロ）
+   `.gitignore` に `.env.local` と保険の `.env` / `.env.production` を追加
 8. `turbo.json` を更新
 9. README に開発手順（asdf install、`supabase start`、`pnpm install`、API 起動、ヘルスチェック確認）を追記
 
