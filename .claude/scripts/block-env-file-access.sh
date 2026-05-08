@@ -1,15 +1,15 @@
 #!/bin/bash
 # =============================================================================
-# pre-bash-env-guard.sh
+# block-env-file-access.sh
 # =============================================================================
 # 【役割】
-#   Claude Code の PreToolUse フックとして動作する。
-#   Bash ツールが .env ファイルにアクセスしようとするコマンドを実行前にブロックする。
+#   Bash コマンドが .env ファイル（.env.example などのサンプルを除く）に
+#   アクセスしようとする場合に実行をブロックする。
 #   Claude が誤って .env の内容を読んだり漏洩させるリスクを防ぐセーフガード。
 #
 # 【呼ばれるタイミング】
-#   Claude が Bash ツールを呼び出すたびに実行される（コマンド実行前）。
-#   settings.json の hooks.PreToolUse に登録することで機能する。
+#   settings.json の hooks.PreToolUse (matcher: Bash) に登録され、
+#   Claude が Bash ツールを呼び出すたびにコマンド実行前に評価される。
 #
 # 【入力】
 #   stdin に Claude が渡す JSON が流れてくる。

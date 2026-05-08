@@ -37,7 +37,28 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \".claude/scripts/pre-bash-env-guard.sh\""
+            "command": "bash \".claude/scripts/block-env-file-access.sh\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \".claude/scripts/format-edited-file.sh\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \".claude/scripts/lint-typecheck-workspaces.sh\""
           }
         ]
       }
