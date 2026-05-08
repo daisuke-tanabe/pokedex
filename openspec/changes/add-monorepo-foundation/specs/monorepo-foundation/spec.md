@@ -47,24 +47,38 @@
 - **WHEN** `packages/contracts/package.json` の `scripts` を読む
 - **THEN** `test`、`typecheck`、`lint`、`format`、`format:check` の 5 スクリプトがキーとして存在する
 
-### Requirement: ローカル開発用 PostgreSQL の docker-compose
+### Requirement: ローカル Supabase 環境の整備
 
-リポジトリルートに `docker-compose.yml` を配置しなければならない（MUST）。`docker compose up -d` のみでローカル開発用 PostgreSQL コンテナが起動できなければならない（MUST）。PostgreSQL のメジャーバージョンは固定されなければならず（MUST）、`.env.example` の `DATABASE_URL` と整合しなければならない（MUST）。
+リポジトリは Supabase CLI で初期化された `supabase/` ディレクトリを含まなければならない（MUST）。開発者は `supabase start` のみでローカル PostgreSQL を含む Supabase スタックを起動できなければならない（MUST）。Supabase ローカルが提供する PostgreSQL の接続文字列は `.env.example` の `DATABASE_URL` と整合しなければならない（MUST）。
 
-#### Scenario: docker compose で PostgreSQL が起動する
+#### Scenario: supabase ディレクトリが repository に含まれる
 
-- **WHEN** `docker compose up -d` を実行する
-- **THEN** `pokedex` という名前のデータベースを持つ PostgreSQL コンテナが起動し、`5432` 番ポートが host から到達可能になる
+- **WHEN** リポジトリルートを確認する
+- **THEN** `supabase/config.toml` がコミット対象として存在する
 
-#### Scenario: .env.example の DATABASE_URL が docker-compose と整合する
+#### Scenario: supabase start でローカル PostgreSQL が起動する
 
-- **WHEN** `.env.example` の `DATABASE_URL` と `docker-compose.yml` のユーザ・パスワード・データベース名・ポートを比較する
-- **THEN** 4 要素（user / password / database / port）すべてが一致する
+- **WHEN** `supabase start` を実行する
+- **THEN** ローカル PostgreSQL が `54322` 番ポートで到達可能になり、`supabase status` の出力に DB URL が表示される
 
-#### Scenario: PostgreSQL のメジャーバージョンが固定されている
+#### Scenario: .env.example の DATABASE_URL が Supabase ローカルと整合する
 
-- **WHEN** `docker-compose.yml` の PostgreSQL イメージタグを確認する
-- **THEN** `latest` ではなく明示的なメジャーバージョンタグ（例: `postgres:17-alpine`）が指定されている
+- **WHEN** `.env.example` の `DATABASE_URL` を読む
+- **THEN** ホストは `127.0.0.1` または `localhost`、ポートは `54322`、データベース名は `postgres`、ユーザは `postgres` で構築された Supabase ローカル既定の接続文字列になっている
+
+### Requirement: asdf による開発ツールバージョン固定
+
+`.tool-versions` には Node、pnpm に加え `supabase` のバージョンを明記しなければならない（MUST）。これにより `asdf install` を実行すれば必要な CLI 一式が再現可能なバージョンで揃わなければならない（MUST）。
+
+#### Scenario: .tool-versions に supabase の行がある
+
+- **WHEN** リポジトリルートの `.tool-versions` を読む
+- **THEN** `supabase ` で始まる行が 1 行以上存在し、特定のバージョンが指定されている
+
+#### Scenario: asdf install で全ツールが揃う
+
+- **WHEN** `asdf-supabase` plugin を追加した状態で `asdf install` を実行する
+- **THEN** Node、pnpm、supabase の 3 ツールが `.tool-versions` で指定されたバージョンで shim 経由で利用可能になる
 
 ### Requirement: vitest テスト基盤
 
@@ -82,12 +96,17 @@
 
 ### Requirement: 環境変数テンプレート
 
-リポジトリルートの `.env.example` には開発に必要な環境変数を網羅的に記載しなければならない（MUST）。本 change では最低 `DATABASE_URL` を含まなければならず（MUST）、各変数には用途のコメントを付けなければならない（MUST）。
+リポジトリルートの `.env.example` には開発に必要な環境変数を網羅的に記載しなければならない（MUST）。本 change では最低 `DATABASE_URL` を含まなければならず（MUST）、各変数には用途のコメントを付けなければならない（MUST）。`DATABASE_URL` の例は Supabase ローカル既定値でなければならない（MUST）。
 
 #### Scenario: .env.example に DATABASE_URL が記載されている
 
 - **WHEN** リポジトリルートの `.env.example` を読む
 - **THEN** `DATABASE_URL=` で始まる行が 1 行以上存在する
+
+#### Scenario: .env.example の DATABASE_URL は Supabase ローカル既定値
+
+- **WHEN** リポジトリルートの `.env.example` を読む
+- **THEN** `DATABASE_URL` の値が `postgres://postgres:postgres@127.0.0.1:54322/postgres` または同等の Supabase ローカル既定接続文字列になっている
 
 #### Scenario: .env は git 追跡対象外
 

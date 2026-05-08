@@ -17,9 +17,11 @@
   - `pnpm-workspace.yaml` に `packages/*` を追加
   - `apps/api` から `@pokedex/contracts` を workspace dependency として参照
   - `turbo.json` に `dev` / `build` / `test` タスクを追加（既存の `lint` / `format` / `typecheck` に並べる）
-- 開発環境の DB セットアップ
-  - `docker-compose.yml` でローカル PostgreSQL を起動できる
-  - `.env.example` に `DATABASE_URL` を定義
+- 開発環境の Supabase ローカルスタック
+  - `supabase init` で `supabase/` ディレクトリを生成
+  - `supabase start` で PostgreSQL + Storage を含むローカル Supabase スタックが起動できる
+  - `.env.example` に Supabase ローカル接続用の `DATABASE_URL` を定義
+  - `.tool-versions` に `supabase` を追加し、asdf 経由でバージョンを固定
 - `apps/api` にユニットテスト基盤（vitest）をセットアップ
 - 旧仕様の「実装中立」方針を捨て、本リポジトリでは Hono / Drizzle / PostgreSQL / Valibot を採用することを明示
 
@@ -41,16 +43,19 @@
   - `apps/api/src/`（Hono アプリ本体、`AppType` の export、DB クライアント、ヘルスチェック）
   - `apps/api/vitest.config.ts`、`apps/api/src/**/__tests__/`
   - `packages/contracts/`（新規パッケージ）
-  - `docker-compose.yml`（リポジトリルート）
+  - `supabase/`（リポジトリルート、`supabase init` で生成。`config.toml` を含む）
   - `.env.example`（リポジトリルート）
 - **既存ファイルの変更**:
   - `pnpm-workspace.yaml` … `packages/*` を追加
   - `turbo.json` … `dev` / `build` / `test` タスクを追加
   - `apps/api/package.json` … 依存追加（`hono`, `@hono/node-server`, `@hono/valibot-validator`, `drizzle-orm`, `postgres`, `valibot`, `vitest`, `@pokedex/contracts`）
   - `apps/api/tsconfig.json` … 必要に応じて `composite` / `paths` を整備
+  - `.tool-versions` … `supabase` 行を追加（`asdf-supabase` plugin 前提）
 - **依存関係**:
   - 新規 npm 依存: `hono`, `@hono/node-server`, `@hono/valibot-validator`, `drizzle-orm`, `drizzle-kit`, `postgres`, `valibot`, `vitest`
+  - 新規 asdf plugin: `supabase`（CLI のバージョン固定用）
+  - 開発者ホスト要件: Docker Desktop または Colima（`supabase start` が内部で利用）
 - **後続 change への影響**:
   - `add-domain-schema` 以降は本 change で wiring した DB クライアントと `AppType` を前提にする
   - Web / Mobile は `@pokedex/contracts` と `@pokedex/api`（型のみ）を依存にする
-- **アウトオブスコープ**: ドメインモデルのテーブル定義、シードデータ、検索 API、Web/Mobile 実装、CORS 設定、認証
+- **アウトオブスコープ**: ドメインモデルのテーブル定義、シードデータ、検索 API、Web/Mobile 実装、CORS 設定、認証、Supabase Auth/Realtime/Edge Functions、Storage クライアント (`@supabase/supabase-js`) の wiring（後続 change で導入）

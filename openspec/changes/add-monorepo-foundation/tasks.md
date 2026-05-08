@@ -1,12 +1,14 @@
-## 1. リポジトリルートの設定整備
+## 1. リポジトリルートの設定整備（asdf / Supabase / workspace）
 
 - [ ] 1.1 `pnpm-workspace.yaml` の `packages` 配列に `'packages/*'` を追加し、既存の `'apps/*'` と並べる
 - [ ] 1.2 `turbo.json` に `dev`（`cache: false`, `persistent: true`）、`build`（`dependsOn: ["^build"]`, `outputs: ["dist/**"]`）、`test`（`dependsOn: ["^build"]`）、`typecheck`（`dependsOn: ["^build"]`）の 4 タスクを追加し、既存の `lint` / `format` / `format:check` は維持する
 - [ ] 1.3 `.gitignore` に `.env` を追記する
-- [ ] 1.4 リポジトリルートに `.env.example` を作成し、`DATABASE_URL=postgres://pokedex:pokedex@localhost:5432/pokedex` をコメント付きで記載する
-- [ ] 1.5 リポジトリルートに `docker-compose.yml` を作成し、`postgres:17-alpine` を使った PostgreSQL サービスを定義する（user / password / database / port が `.env.example` と整合する）
-- [ ] 1.6 `docker compose up -d` を実行し、PostgreSQL コンテナが起動して `DATABASE_URL` で接続可能であることを手動検証する
-- [ ] 1.7 `pnpm install` を実行し、ワークスペース解決が壊れていないことを確認する（既存の apps/* がリンクされ続けること）
+- [ ] 1.4 `.tool-versions` に `supabase <固定バージョン>` を追記し、Node / pnpm と並べる
+- [ ] 1.5 README または `docs/setup.md` に `asdf plugin add supabase https://github.com/lostmsu/asdf-supabase.git` → `asdf install` の手順を追記する
+- [ ] 1.6 リポジトリルートで `supabase init` を実行し、生成された `supabase/` ディレクトリ（`config.toml`、`.gitignore`、`migrations/`、`seed.sql` 等）をコミット対象に含める
+- [ ] 1.7 リポジトリルートに `.env.example` を作成し、`DATABASE_URL=postgres://postgres:postgres@127.0.0.1:54322/postgres` をコメント付きで記載する（Supabase ローカル既定値）
+- [ ] 1.8 `supabase start` を実行し、ローカル PostgreSQL が `54322` で立ち上がること、`supabase status` で URL が確認できることを手動検証する
+- [ ] 1.9 `pnpm install` を実行し、ワークスペース解決が壊れていないことを確認する（既存の apps/* がリンクされ続けること）
 
 ## 2. packages/contracts パッケージの雛形作成
 
@@ -59,7 +61,7 @@
 - [ ] 7.3 `apps/api/package.json` の `scripts` に `dev`（`tsx watch src/server.ts`）、`build`（`tsc -p tsconfig.json`）、`test`（`vitest run`）を追加し、既存の `lint` / `format` / `typecheck` / `format:check` は維持する
 - [ ] 7.4 `apps/api/tsconfig.json` を `tsconfig.base.json` を extends し、`module: "ESNext"`, `moduleResolution: "bundler"`, `verbatimModuleSyntax: true`, `outDir: "dist"` を設定する
 - [ ] 7.5 `apps/api/vitest.config.ts` を追加する
-- [ ] 7.6 `apps/api/drizzle.config.ts` の雛形を作成し、`schema: './src/db/schema.ts'`, `out: './drizzle'`, `dialect: 'postgresql'` を記載する（実テーブル定義は後続 change で追加）
+- [ ] 7.6 `apps/api/drizzle.config.ts` の雛形を作成し、`schema: './src/db/schema.ts'`, `out: '../../supabase/migrations'`, `dialect: 'postgresql'` を記載する（実テーブル定義と SQL 生成は `add-domain-schema` で行う）
 - [ ] 7.7 `pnpm install` で全依存が解決することを確認する
 
 ## 8. api-foundation: DB クライアントの singleton
@@ -104,8 +106,9 @@
 - [ ] 12.5 [Test] `apps/api/package.json` と `packages/contracts/package.json` を読み、必須スクリプトキー（apps/api: dev/build/test/typecheck/lint/format/format:check, packages/contracts: test/typecheck/lint/format/format:check）が揃っていることを検証する
 - [ ] 12.6 [Test] `.gitignore` に `.env` が含まれることを検証する
 - [ ] 12.7 [Test] `.env.example` が `DATABASE_URL=` で始まる行を含むことを検証する
-- [ ] 12.8 [Test] `docker-compose.yml` の PostgreSQL イメージタグが `latest` を含まず明示メジャーバージョン（`postgres:17-...` 等）であることを検証する
-- [ ] 12.9 [Test] `.env.example` の `DATABASE_URL` の user / password / database / port が `docker-compose.yml` の対応値と一致することを検証する
+- [ ] 12.8 [Test] `.env.example` の `DATABASE_URL` の host が `127.0.0.1` または `localhost`、port が `54322`、database が `postgres`、user が `postgres` であることを検証する（Supabase ローカル既定）
+- [ ] 12.9 [Test] `supabase/config.toml` が repository に含まれることを検証する
+- [ ] 12.10 [Test] `.tool-versions` に `supabase ` で始まる行が含まれ、特定バージョンが指定されていることを検証する
 
 ## 13. lint / format / typecheck の全 package 適用確認
 
@@ -118,7 +121,9 @@
 
 ## 14. 動作確認とドキュメント
 
-- [ ] 14.1 [Verify] `docker compose up -d` で PostgreSQL を起動した後、`pnpm --filter @pokedex/api dev` で API が 3000 番ポートに立ち上がることを手動検証する
+- [ ] 14.1 [Verify] `supabase start` で Supabase ローカルスタックを起動した後、`pnpm --filter @pokedex/api dev` で API が 3000 番ポートに立ち上がることを手動検証する
 - [ ] 14.2 [Verify] `curl -i http://localhost:3000/health` が 200、`Content-Type: application/json`、ボディ `{"success":true,"data":{"status":"ok"}}` を返すことを手動検証する
-- [ ] 14.3 README.md に開発手順（依存インストール、DB 起動、env 設定、API 起動、ヘルスチェック確認、テスト実行）を簡潔に追記する
-- [ ] 14.4 `apps/web` と `apps/mobile` の package.json には今回手を加えないこと、後続 change で扱うことを README または別途メモに明記する
+- [ ] 14.3 [Verify] `supabase stop` でローカルスタックを停止できることを確認する
+- [ ] 14.4 README.md に開発手順（asdf install、Docker Desktop / Colima 要件、`supabase start`、依存インストール、env 設定、API 起動、ヘルスチェック確認、テスト実行）を簡潔に追記する
+- [ ] 14.5 README に「`asdf-supabase` plugin が動かない場合のフォールバック」（例: `brew install supabase/tap/supabase`）を併記する
+- [ ] 14.6 `apps/web` と `apps/mobile` の package.json には今回手を加えないこと、後続 change で扱うことを README または別途メモに明記する

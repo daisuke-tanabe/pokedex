@@ -11,10 +11,11 @@ pokedex リポジトリは pnpm + turbo の monorepo 雛形だけが整ってお
 **Goals:**
 
 - `apps/api` を Hono サーバとして起動可能にし、`GET /health` がエンベロープ形式の 200 を返す
-- Drizzle + postgres ドライバの wiring を完了し、DB 接続クライアントをモジュールレベル singleton として export する
+- Drizzle + postgres ドライバの wiring を完了し、Supabase ローカル PostgreSQL に対する DB 接続クライアントをモジュールレベル singleton として export する
 - `packages/contracts` を新規作成し、レスポンスエンベロープ・ドメイン定数・エラーコードを集約する
 - monorepo の workspace 設定（`pnpm-workspace.yaml` への `packages/*` 追加、turbo タスク追加）を整える
-- ローカル開発用の PostgreSQL を `docker-compose.yml` で起動できる状態にする
+- `supabase init` / `supabase start` でローカル Supabase スタック（PostgreSQL + Storage 含む）を起動できる状態にする
+- `.tool-versions` に `supabase` を追加し、asdf 経由で CLI バージョンを固定する
 - `apps/api` に vitest を導入し、TDD ワークフローのテスト基盤を確立する
 - `apps/api` の Hono アプリを `AppType` として export し、後続 change で Web/Mobile から型のみ参照できる土台にする
 
@@ -25,8 +26,11 @@ pokedex リポジトリは pnpm + turbo の monorepo 雛形だけが整ってお
 - 検索エンドポイント（`GET /pokemon` 等）・マスタ取得エンドポイント → `add-search-api`
 - Web / Mobile の実装 → `add-web-listing` / `add-mobile-listing`
 - CORS 設定（Web/Mobile から API を叩くようになる change で対応）
-- 認証・認可（プロダクト全体で不要）
-- 本番デプロイ構成・CI 設定
+- 認証・認可（プロダクト全体で不要、Supabase Auth も使わない）
+- Supabase Realtime / Edge Functions（本プロダクトで使う予定なし）
+- Storage クライアント（`@supabase/supabase-js`）の wiring と画像 URL 解決ロジック（Web の change で実装）
+- Drizzle スキーマ定義と実マイグレーション（`add-domain-schema` で扱う）
+- 本番デプロイ構成・CI 設定（クラウド Supabase との接続切替も含む）
 
 ## Decisions
 
@@ -141,6 +145,7 @@ export const db = drizzle(client)
 - Hono サーバはサーバ独立起動なので Next.js のような Hot Reload 多重インスタンス問題は起きない
 - 起動時に `DATABASE_URL` 不在を fail-fast で検出する
 - 後続 change のマイグレーション/シードからも同じインスタンスを使い回せる
+- 開発環境では Supabase ローカルが提供する `postgres://postgres:postgres@127.0.0.1:54322/postgres` を `DATABASE_URL` として `.env` に書き、本番では実 Supabase の接続文字列に切り替える
 
 ### Decision 7: パッケージ依存の方向
 
@@ -158,13 +163,22 @@ export const db = drizzle(client)
 - AppType は型のみ参照なのでサーバ専用依存（drizzle、postgres）はランタイムに紛れない
 - `tsconfig` の `isolatedModules: true` と `import type` で型のみ参照を強制可能
 
-### Decision 8: 開発 DB は docker-compose で起動
+### Decision 8: 開発環境は Supabase ローカルスタックを採用する
 
-`docker-compose.yml`（リポジトリルート）に PostgreSQL コンテナを定義し、`docker compose up -d` で起動可能にする。`.env.example` に `DATABASE_URL=postgres://pokedex:pokedex@localhost:5432/pokedex` を記載。
+ローカル開発は **Supabase CLI（`supabase start`）でスタック一式を起動** する。`supabase init` で生成される `supabase/` ディレクトリ（`config.toml` 等）を repository に含め、開発者は `supabase start` を実行するだけで PostgreSQL（54322 番）、Studio（54323 番）、Storage、Kong など必要サービスが立ち上がる。`.env.example` には `DATABASE_URL=postgres://postgres:postgres@127.0.0.1:54322/postgres` を記載する。
 
 **理由**:
-- 開発者の OS（macOS / Linux）に依存しない
-- 後続 change で他のサービス（例: pgAdmin）を増やすときも同じファイルで追加可能
+- プロダクトとして Supabase（本番でも採用予定）を使うため、ローカルから本番までスキーマと挙動を揃えやすい
+- Storage を旧仕様の「スプライト画像はオブジェクトストレージから配信」の用途で使う前提があり、ローカルでも Storage が立ち上がる Supabase CLI と相性が良い
+- 自前 docker-compose と異なり、Supabase 公式が PostgreSQL バージョン・各サービス間の整合性をメンテしてくれる
+- Studio UI が同梱されるので、シード後の DB 確認が容易
+
+**代替案と却下理由**:
+- **自前 `docker-compose.yml`**: Postgres だけ立てるなら軽量だが、Storage を別建てするコストが重く、Supabase 本番との挙動差分のリスクが残る
+- **クラウド Supabase のみ（ローカル起動しない）**: 開発のたびにクラウドへ接続する必要があり、複数開発者でデータが衝突する。オフライン作業も不可
+- **DevContainer + Docker-in-Docker**: 環境統一は最も強いが個人開発で恩恵が薄く、Docker-in-Docker のオーバーヘッドが大きい
+
+**ホスト前提**: 開発者ホストには Docker Desktop または Colima が必要（`supabase start` が内部で利用）。これは README に明記する。
 
 ### Decision 9: テストフレームワークは vitest
 
@@ -175,7 +189,42 @@ export const db = drizzle(client)
 - pokedex の `tdd-workflow` skill が想定するテストランナーと一致
 - Hono のテストは `app.request()` を使うので Node だけで完結し、追加 DOM 環境は不要
 
-### Decision 10: turbo タスクの構成
+### Decision 11: マイグレーションは Drizzle Kit が主、SQL を `supabase/migrations/` に出力する
+
+`drizzle.config.ts` の `out` を `./supabase/migrations` に向け、`drizzle-kit generate` で生成される SQL を Supabase CLI が認識する形式（タイムスタンプ付きファイル名）に揃える。マイグレーションの適用は Supabase CLI 側のコマンド（`supabase db reset`、`supabase db push`、`supabase migration up`）を使う。
+
+**理由**:
+- Drizzle Kit の型一貫性（スキーマの TypeScript 定義から SQL を生成）と、Supabase CLI の管理体系（migration → deploy）の両方を活かせる
+- 1 箇所に migration SQL を集約できるので、レビュー時に追える
+- Supabase CLI の流儀に乗ることで、本番反映時も `supabase db push` だけで済む
+
+**代替案と却下理由**:
+- **Drizzle Kit 一本（`./drizzle/`）**: Supabase CLI の migration 体系を使えず、ローカル DB のリセットや本番反映で工夫が必要
+- **Supabase CLI 一本（SQL を手書き）**: Drizzle のスキーマ定義 → SQL 生成という型安全のループが切れる。手書き SQL のメンテコストが大きい
+
+**注意点**:
+- 本 change では `drizzle.config.ts` の置き場所と `out` パスだけ確定する。実マイグレーションの生成・適用は `add-domain-schema` で初めて走る
+- `supabase/migrations/` ディレクトリは `supabase init` 直後では空。Drizzle Kit の出力ファイル名フォーマット（`<timestamp>_<name>.sql`）が Supabase CLI の期待と一致することを `add-domain-schema` で確認する
+
+### Decision 12: 開発環境は asdf に統一し、`.tool-versions` を真実の源とする
+
+Node、pnpm に加え、`supabase` CLI も `.tool-versions` に記載して `asdf-supabase` plugin で管理する。DevContainer は今回採用しない。
+
+**理由**:
+- 既存の `.tool-versions`（Node 24.13.1 / pnpm 11.0.8）と同じ流儀で揃う
+- 個人開発の現状では DevContainer のオーバーヘッドが恩恵を上回る
+- 将来チームを増やすときも、DevContainer は後付けできる（asdf の流儀を壊さずに）
+
+**代替案と却下理由**:
+- **DevContainer フル**: VSCode 前提、Docker-in-Docker のオーバーヘッド、JetBrains 系 IDE と相性が弱い
+- **DevContainer 軽量 + supabase はホスト**: コンテナ越しのポート共有が DevContainer の体験と微妙、構成が増えるわりに恩恵が薄い
+- **README で個人裁量**: バージョンずれが起きやすく、再現性が下がる
+
+**運用**:
+- README に「`asdf plugin add supabase` → `asdf install`」の手順を明記する
+- ホストには Docker Desktop / Colima のどちらかが必要（asdf 管理外、README に記載）
+
+### Decision 13: turbo タスクの構成
 
 `turbo.json` に以下を定義:
 
@@ -204,19 +253,25 @@ export const db = drizzle(client)
 - **`@pokedex/api` を後続で型のみ import する設計のため、サーバ専用依存（postgres / drizzle-orm）が import 経路に紛れ込むリスク** → `import type` を徹底し、tsconfig の `verbatimModuleSyntax: true` または `isolatedModules` で型のみ import を強制する。Web/Mobile の change で実際に試す。
 - **`.tool-versions` の Node バージョン（24.13.1）が未インストールの開発者がいる** → `README` に asdf install 手順を記載。CI 用には `.tool-versions` を信頼源として使う。
 - **Drizzle のマイグレーション基盤は本 change では設定だけで運用しない** → `drizzle.config.ts` は雛形を置くだけ。実マイグレーションは `add-domain-schema` で導入する。雛形と実運用のギャップが残るので、コメントで「次 change で使う」と明記。
-- **docker-compose の PostgreSQL バージョン固定** → `postgres:17-alpine` のような明示タグで固定し、ローカル/CI で同一バージョンを使う。バージョン更新は別 change で扱う。
+- **Supabase CLI のバージョンドリフト** → `.tool-versions` で `supabase` を固定する。CLI のメジャー更新で `supabase/config.toml` のスキーマが変わる可能性があるため、バージョン更新は専用の change で扱う。
+- **`asdf-supabase` plugin の安定性** → 公式 plugin ではなく community plugin。インストール失敗時は README に「`brew install supabase/tap/supabase` への切替手順」を記載しておく（フォールバック）。
+- **Supabase ローカルが起動する Docker コンテナのリソース消費** → `supabase start` は 10 個前後のコンテナを起動する。低スペックマシンでメモリ逼迫の可能性。`supabase status` での確認、不要時は `supabase stop` を README に明記。
+- **Drizzle Kit の生成 SQL と Supabase CLI の migration ファイル名フォーマットが不整合になるリスク** → 本 change では `out` を `./supabase/migrations` に向けるのみで実 SQL は生成しない。整合確認は `add-domain-schema` のスコープに含める。
 - **既存の oxlint/oxfmt と vitest の併用** → vitest 用ファイル（`*.test.ts`）も oxlint の対象になるので、既存の `.oxlintrc.json` で test glob を許容済みであることを確認する。
 
 ## Migration Plan
 
 本 change はゼロから基盤を作るので「マイグレーション」は新規追加が中心になる。
 
-1. `packages/contracts` を新規作成し、最小コンテンツを置く
-2. `pnpm-workspace.yaml` に `packages/*` を追加
-3. `apps/api` に依存追加（`hono`, `@hono/node-server`, `@hono/valibot-validator`, `drizzle-orm`, `drizzle-kit`, `postgres`, `valibot`, `vitest`, `@pokedex/contracts`）
-4. `apps/api/src/` を実装
-5. `docker-compose.yml` と `.env.example` をリポジトリルートに追加
-6. `turbo.json` を更新
+1. `.tool-versions` に `supabase` を追記し、`asdf plugin add supabase` → `asdf install` で CLI を導入
+2. リポジトリルートで `supabase init` を実行し、`supabase/` ディレクトリを生成（`config.toml`、`migrations/`、`seed.sql` 等）
+3. `packages/contracts` を新規作成し、最小コンテンツを置く
+4. `pnpm-workspace.yaml` に `packages/*` を追加
+5. `apps/api` に依存追加（`hono`, `@hono/node-server`, `@hono/valibot-validator`, `drizzle-orm`, `drizzle-kit`, `postgres`, `valibot`, `vitest`, `@pokedex/contracts`）
+6. `apps/api/src/` を実装し、`drizzle.config.ts` の `out` を `./supabase/migrations` に向ける
+7. `.env.example` をリポジトリルートに追加（Supabase ローカル接続用 `DATABASE_URL`）
+8. `turbo.json` を更新
+9. README に開発手順（asdf install、`supabase start`、`pnpm install`、API 起動、ヘルスチェック確認）を追記
 
 **ロールバック戦略**: 本 change は他の change が依存する基盤なので、archive 後の差し戻しは想定しない。万一作業途中で方針変更が必要になった場合は、`openspec/changes/add-monorepo-foundation/` を削除し、新しい change を起こす。
 
