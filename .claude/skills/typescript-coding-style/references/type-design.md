@@ -1,9 +1,3 @@
----
-paths:
-  - "**/*.ts"
-  - "**/*.tsx"
----
-
 # TypeScript 型設計
 
 TypeScript の型をどう設計するかをまとめる。

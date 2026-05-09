@@ -1,11 +1,4 @@
----
-paths:
-  - "**/*.ts"
-  - "**/*.tsx"
-  - "**/*.js"
-  - "**/*.jsx"
----
-# TypeScript/JavaScript コーディングスタイル
+# TypeScript / JavaScript コーディングスタイル
 
 TypeScript / JavaScript 固有の書き方をまとめる。
 
