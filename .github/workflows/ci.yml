@@ -85,7 +85,7 @@ jobs:
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
 
   npm-deps-review:
-    name: npm-deps-reviewer
+    name: npm-deps-review
     needs: validate
     if: |
       github.event_name == 'pull_request' &&
@@ -135,7 +135,7 @@ jobs:
           fi
 
   npm-deps-merge:
-    name: auto-merge
+    name: npm-deps-merge
     needs: [validate, npm-deps-review]
     if: |
       github.event_name == 'pull_request' &&
