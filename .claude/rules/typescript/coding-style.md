@@ -7,99 +7,16 @@ paths:
 ---
 # TypeScript/JavaScript コーディングスタイル
 
-## 型とインターフェース
+## パブリック API の型注釈
 
-型を使用して、パブリックAPI、共有モデル、コンポーネントpropsを明示的・読みやすく・再利用可能にする。
+- エクスポートされる関数のパラメータと戻り値型を明示する
+- ローカル変数の型は TypeScript に推論させる（冗長な注釈は避ける）
+- 繰り返されるインラインオブジェクト形状は名前付き型に抽出する
 
-### パブリックAPI
+## JavaScript ファイル
 
-- エクスポートされる関数、共有ユーティリティ、パブリッククラスメソッドにはパラメータと戻り値の型を追加する
-- 明らかなローカル変数の型はTypeScriptに推論させる
-- 繰り返されるインラインオブジェクト形状は名前付き型またはインターフェースに抽出する
-
-```typescript
-// 誤り：明示的な型のないエクスポート関数
-export function formatUser(user) {
-  return `${user.firstName} ${user.lastName}`
-}
-
-// 正解：パブリックAPIに明示的な型
-interface User {
-  firstName: string
-  lastName: string
-}
-
-export function formatUser(user: User): string {
-  return `${user.firstName} ${user.lastName}`
-}
-```
-
-### インターフェース vs 型エイリアス
-
-- 拡張または実装される可能性のあるオブジェクト形状には `interface` を使用する
-- ユニオン、インターセクション、タプル、マップ型、ユーティリティ型には `type` を使用する
-- 相互運用性のために `enum` が必要な場合を除き、文字列リテラルユニオンを `enum` より優先する
-
-```typescript
-interface User {
-  id: string
-  email: string
-}
-
-type UserRole = 'admin' | 'member'
-type UserWithRole = User & {
-  role: UserRole
-}
-```
-
-### `any` を避ける
-
-- アプリケーションコードで `any` を避ける
-- 外部または信頼できない入力には `unknown` を使用し、安全にナローイングする
-- 値の型が呼び出し元に依存する場合はジェネリクスを使用する
-
-```typescript
-// 誤り：anyは型安全性を失わせる
-function getErrorMessage(error: any) {
-  return error.message
-}
-
-// 正解：unknownは安全なナローイングを強制する
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message
-  }
-
-  return 'Unexpected error'
-}
-```
-
-### React Props
-
-- コンポーネントpropsは名前付きの `interface` または `type` で定義する
-- コールバックpropsは明示的に型付けする
-- 特定の理由がない限り `React.FC` を使用しない
-
-```typescript
-interface User {
-  id: string
-  email: string
-}
-
-interface UserCardProps {
-  user: User
-  onSelect: (id: string) => void
-}
-
-function UserCard({ user, onSelect }: UserCardProps) {
-  return <button onClick={() => onSelect(user.id)}>{user.email}</button>
-}
-```
-
-### JavaScriptファイル
-
-- `.js` と `.jsx` ファイルでは、型が明確さを向上させ、TypeScriptへの移行が現実的でない場合にJSDocを使用する
-- JSDocをランタイムの動作に合わせて保つ
+- `.js` と `.jsx` ファイルでは、型を補うために JSDoc を使う
+- JSDoc をランタイムの動作に合わせて保つ
 
 ```javascript
 /**
@@ -138,63 +55,54 @@ function updateUser(user: Readonly<User>, name: string): User {
 
 ## エラーハンドリング
 
-async/awaitとtry-catchを使用し、unknownエラーを安全にナローイングする：
+### 回復可能なエラーは Result 型で表現
+
+回復可能な失敗（バリデーション失敗、外部 API エラー、フォーマット不正等）は
+例外ではなく Result 型で表現し、型システムに「失敗の可能性」を組み込む。
+制御フロー目的で例外を投げない。
 
 ```typescript
-interface User {
-  id: string
-  email: string
+type Result<T, E = Error> =
+  | { ok: true; value: T }
+  | { ok: false; error: E }
+
+async function fetchUser(id: UserId): Promise<Result<User, FetchError>> {
+  try {
+    const user = await api.get(`/users/${id}`)
+    return { ok: true, value: user }
+  } catch (e) {
+    return { ok: false, error: e instanceof FetchError ? e : new FetchError(String(e)) }
+  }
 }
 
-declare function riskyOperation(userId: string): Promise<User>
+const result = await fetchUser(userId)
+if (!result.ok) return showError(result.error)
+const user = result.value  // 型は User に絞り込まれている
+```
 
+呼び出し側に `if (!result.ok) return ...` を強制できるため、エラー処理漏れが
+コンパイル時に発見できる。
+
+### 真に異常な状態は throw
+
+予期しないバグや回復不可能な状態は throw する。catch する側は `unknown` として
+受け取り、安全にナローイングする。
+
+```typescript
 function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message
-  }
-
+  if (error instanceof Error) return error.message
   return 'Unexpected error'
-}
-
-const logger = {
-  error: (message: string, error: unknown) => {
-    // Replace with your production logger (for example, pino or winston).
-  }
 }
 
 async function loadUser(userId: string): Promise<User> {
   try {
-    const result = await riskyOperation(userId)
-    return result
+    return await riskyOperation(userId)
   } catch (error: unknown) {
     logger.error('Operation failed', error)
     throw new Error(getErrorMessage(error))
   }
 }
 ```
-
-## 入力バリデーション
-
-Zodを使用したスキーマベースのバリデーションと、スキーマからの型推論：
-
-```typescript
-import { z } from 'zod'
-
-const userSchema = z.object({
-  email: z.string().email(),
-  age: z.number().int().min(0).max(150)
-})
-
-type UserInput = z.infer<typeof userSchema>
-
-const validated: UserInput = userSchema.parse(input)
-```
-
-## Console.log
-
-- 本番コードに `console.log` 文を残さない
-- 代わりに適切なロギングライブラリを使用する
-- 自動検出についてはフックを参照
 
 ## Async/Await
 
@@ -212,6 +120,29 @@ const [users, orders, stats] = await Promise.all([
 const users = await fetchUsers()
 const orders = await fetchOrders()
 const stats = await fetchStats()
+```
+
+## エクスポート
+
+ワイルドカードバレルと default export を避け、名前付き export を使う。
+
+```typescript
+// FAIL: BAD: ワイルドカードバレル
+export * from './user'
+export * from './order'
+// 何が公開されているか不明、tree-shaking が効きにくい、衝突に気づきにくい
+
+// PASS: GOOD: 名前付き export
+export { fetchUser, createUser } from './user'
+export { fetchOrder, createOrder } from './order'
+```
+
+```typescript
+// FAIL: BAD: default export はリネームの追跡が難しい
+export default function fetchUser() { /* ... */ }
+
+// PASS: GOOD: named export
+export function fetchUser() { /* ... */ }
 ```
 
 ## コメントとドキュメント
@@ -259,96 +190,3 @@ export async function searchResources(
 }
 ```
 
-## コードスメル
-
-### 長い関数
-
-```typescript
-// FAIL: BAD: 50 行超
-function processData() {
-  // 100 行のコード
-}
-
-// PASS: GOOD: 責務単位の小関数に分割
-function processData() {
-  const validated = validate()
-  const transformed = transform(validated)
-  return save(transformed)
-}
-```
-
-### 深いネスト
-
-```typescript
-// FAIL: BAD: 5 段以上のネスト
-if (user) {
-  if (user.isAdmin) {
-    if (resource) {
-      if (resource.isActive) {
-        if (hasPermission) {
-          // 何かする
-        }
-      }
-    }
-  }
-}
-
-// PASS: GOOD: 早期リターン
-if (!user) return
-if (!user.isAdmin) return
-if (!resource) return
-if (!resource.isActive) return
-if (!hasPermission) return
-
-// 何かする
-```
-
-### マジックナンバー
-
-```typescript
-// FAIL: BAD: 説明のない数値
-if (retryCount > 3) { }
-setTimeout(callback, 500)
-
-// PASS: GOOD: 名前付き定数
-const MAX_RETRIES = 3
-const DEBOUNCE_DELAY_MS = 500
-
-if (retryCount > MAX_RETRIES) { }
-setTimeout(callback, DEBOUNCE_DELAY_MS)
-```
-
-## ファイル構成
-
-### プロジェクト構造（Next.js App Router 例）
-
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── api/                # API ルート
-│   ├── <feature>/          # 機能ごとのページ
-│   └── (auth)/             # ルートグループ
-├── components/             # React コンポーネント
-│   ├── ui/                 # 汎用 UI コンポーネント
-│   ├── forms/              # フォームコンポーネント
-│   └── layouts/            # レイアウトコンポーネント
-├── hooks/                  # カスタム React フック
-├── lib/                    # ユーティリティと設定
-│   ├── api/                # API クライアント
-│   ├── utils/              # ヘルパー関数
-│   └── constants/          # 定数
-├── types/                  # TypeScript の型
-└── styles/                 # グローバルスタイル
-```
-
-### ファイルの命名
-
-```
-components/Button.tsx          # コンポーネントは PascalCase + .tsx
-hooks/useAuth.ts               # 'use' プレフィックス + camelCase + .ts
-lib/formatDate.ts              # ユーティリティは camelCase
-types/order.types.ts           # camelCase + .types サフィックス
-```
-
-- `.tsx`: JSX を含むファイル
-- `.ts`: 型定義のみ／純粋ロジック
