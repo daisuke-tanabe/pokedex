@@ -8,14 +8,14 @@
 #   修正までを 1 セッション内で完結させる構造。
 #
 # 【段階的導入】
-#   現時点では review-typescript のみ起動 (動作確認用)。
-#   問題なければ review-* を順次追加していく。
+#   現時点では typescript-reviewer のみ起動 (動作確認用)。
+#   問題なければ他のレビュー agent (review-security 等) を順次追加していく。
 #
 # 【動作】
 #   1. stop_hook_active=true ならスキップ (ループ防止)
 #   2. apps/ または packages/ 配下の TS/JS 変更がなければスキップ
-#   3. メイン Claude に「review-typescript を Agent ツールで起動して
-#      レビューせよ。CRITICAL/HIGH は修正せよ」と指示
+#   3. メイン Claude に「typescript-reviewer を Agent ツールで起動して
+#      レビューせよ。Critical / Major は修正せよ」と指示
 #   4. exit 2 で stderr が次プロンプトに注入される
 #
 # 【exit コード】
@@ -45,9 +45,9 @@ src_changed=$(git status --porcelain --untracked-files=all 2>/dev/null \
 cat >&2 <<EOF
 [stop-orchestrator] AI レビューを実行してください
 
-Agent ツールで review-typescript を起動し、変更ファイルをレビューさせる。
-CRITICAL/HIGH の指摘があれば Edit/Write で修正する。
-MEDIUM/LOW は情報共有のみで修正不要。
+Agent ツールで typescript-reviewer を起動し、変更ファイルをレビューさせる。
+Critical / Major の指摘があれば Edit/Write で修正する。
+Minor は情報共有のみで修正不要。
 
 完了後、応答を終了。次の Stop は stop_hook_active で自動スキップされる。
 EOF

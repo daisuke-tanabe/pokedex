@@ -1,14 +1,16 @@
 ---
 name: typescript-coding-style
-description: "このプロジェクト (pokedex) における TypeScript / JavaScript のコーディング規約と型設計ルール。型安全 (`unknown` 優先・`any` 禁止)、イミュータビリティ、判別ユニオン、ブランド型、Result 型でのエラー表現、命名規約、async/await の並列化、`import type`、名前付きエクスポート、type-fest 活用などをプロジェクト全体で統一する。.ts / .tsx / .js / .jsx ファイルを書く・編集する作業、TypeScript / JavaScript のコードレビュー・リファクタ・型設計、`unknown` / `any` / `interface` vs `type` / `Result` / 判別ユニオン / `as` キャスト / バレル / `default export` / 並列 await / `Readonly` / `Opaque` / `never` チェックといったテーマが出てきたときは、たとえユーザーが「規約」と明言しなくても必ず参照する。"
+description: TypeScript / JavaScript のコーディング規約と型設計ルール。型安全 (`unknown` 優先・`any` 禁止)、イミュータビリティ、判別ユニオン、ブランド型、Result 型でのエラー表現、命名規約、async/await の並列化、`import type`、名前付きエクスポート、type-fest 活用などをプロジェクト全体で統一する。.ts / .tsx / .js / .jsx ファイルを書く・編集する作業、TypeScript / JavaScript のコードレビュー・リファクタ・型設計、`unknown` / `any` / `interface` vs `type` / `Result` / 判別ユニオン / `as` キャスト / バレル / `default export` / 並列 await / `Readonly` / `Opaque` / `never` チェックといったテーマが出てきたときは、たとえユーザーが「規約」と明言しなくても必ず参照する。
 paths:
   - "**/*.ts"
   - "**/*.tsx"
   - "**/*.js"
   - "**/*.jsx"
+  - "**/*.mjs"
+  - "**/*.cjs"
 ---
 
-# TypeScript / JavaScript コーディング規約
+# TypeScript / JavaScript コーディングスタイル
 
 このプロジェクトの TypeScript / JavaScript コードを書く・読む・レビューするときに参照する規約。
 .ts / .tsx / .js / .jsx を編集するときは必ず守る。

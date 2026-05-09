@@ -165,7 +165,7 @@ WHERE mean_exec_time > 100 ORDER BY mean_exec_time DESC LIMIT 20;
 - **マイグレーション戦略の深堀り（Expand-Contract 等）** → skill `database-migrations`
 - **一般コード品質**（関数長 / ファイル長 / マジックナンバー / JSDoc 等）→ oxlint で機械的に検出
 - **汎用セキュリティ（OWASP 等）** → `review-security`
-- **TypeScript の型設計** → `review-typescript` / `type-design-analyzer`
+- **TypeScript の型設計** → `typescript-reviewer` (skill `typescript-coding-style` の規約に基づく)
 
 ## リファレンス
 
