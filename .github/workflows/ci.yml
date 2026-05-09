@@ -84,9 +84,59 @@ jobs:
           claude_args: |
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
 
+  dependency-reviewer:
+    name: dependency-reviewer
+    needs: validate
+    if: |
+      github.event_name == 'pull_request' &&
+      github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Run dependency-reviewer
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          use_sticky_comment: true
+          track_progress: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            この Dependabot PR を dependency-reviewer agent でレビューしてください。
+            最終行に必ず "FINAL_VERDICT: <Merge|Verify|Investigate|Hold>" を単独行で出力してください。
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh release:*),Bash(pnpm audit:*),Bash(pnpm view:*),Read,Grep,Glob,LS"
+
+      - name: Verify final verdict
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          verdict=$(gh pr view "$PR_NUMBER" --json comments \
+            --jq '.comments[].body' \
+            | grep -oE 'FINAL_VERDICT:[[:space:]]*[A-Za-z]+' \
+            | tail -1 \
+            | awk '{print $NF}')
+          echo "Final verdict: ${verdict:-unknown}"
+          if [ "$verdict" = "Merge" ]; then
+            exit 0
+          else
+            echo "Manual review needed: ${verdict:-unknown}"
+            exit 1
+          fi
+
   auto-merge:
     name: auto-merge
-    needs: validate
+    needs: [validate, dependency-reviewer]
     if: |
       github.event_name == 'pull_request' &&
       github.actor == 'dependabot[bot]'
@@ -99,8 +149,10 @@ jobs:
         id: meta
         uses: dependabot/fetch-metadata@v3
 
-      - name: Auto-merge patch updates
-        if: steps.meta.outputs.update-type == 'version-update:semver-patch'
+      - name: Auto-merge patch and minor updates
+        if: |
+          steps.meta.outputs.update-type == 'version-update:semver-patch' ||
+          steps.meta.outputs.update-type == 'version-update:semver-minor'
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
