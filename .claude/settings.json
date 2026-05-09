@@ -51,6 +51,16 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \".claude/scripts/stop-orchestrator.sh\""
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {
