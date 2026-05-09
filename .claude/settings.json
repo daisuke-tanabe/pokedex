@@ -57,7 +57,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \".claude/scripts/stop-orchestrator.sh\""
+            "command": "bash \".claude/scripts/self-review.sh\""
           }
         ]
       }
