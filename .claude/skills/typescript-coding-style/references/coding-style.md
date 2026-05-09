@@ -290,6 +290,115 @@ async function loadUser(userId: string): Promise<User> {
 }
 ```
 
+### 空 catch とエラー無視を禁止
+
+catch ブロックを空にしない。捕まえた以上は、ログ・再スロー・Result 型での明示的な失敗処理のいずれかを行う。
+ログだけ出して握り潰すのもサイレント障害の温床になる (呼び出し元には成功に見える)。
+
+```typescript
+// Bad: 例外を握り潰す
+try {
+  await riskyOp()
+} catch {}
+
+// Bad: ログだけで握り潰す (呼び出し元には成功扱い)
+try {
+  await riskyOp()
+} catch (e) {
+  console.error(e)
+}
+
+// Good: ログを出した上で再スロー or Result で返す
+try {
+  await riskyOp()
+} catch (error: unknown) {
+  logger.error('riskyOp failed', { error: getErrorMessage(error) })
+  throw new Error('riskyOp failed', { cause: error })
+}
+```
+
+### 危険なフォールバックを避ける
+
+「失敗時にデフォルト値を返す」フォールバックは、本物の障害を隠蔽し下流のバグを生む。
+
+```typescript
+// Bad: 障害時に空配列でグレースフルに見せかけてしまう
+const users = await fetchUsers().catch(() => [])
+// → ネットワーク障害でも DB 接続エラーでも、ユーザー 0 人として処理が続く
+
+// Good: 失敗を明示してハンドリング
+const result = await fetchUsersResult()
+if (!result.ok) {
+  logger.error('fetchUsers failed', { error: result.error })
+  return showRetryUI()
+}
+const users = result.value
+```
+
+意図的にフォールバックする場合でも、フォールバックを使ったこと自体はログに残し severity を `warn` 以上にする。
+
+### ログには十分なコンテキストを含める
+
+ログから障害箇所と原因が再現できるよう、以下を含める:
+
+- 操作名 (どの処理が失敗したか)
+- 入力 (機密情報を除く)
+- error の型 / message / stack (`getErrorMessage` 等で安全に取り出す)
+- 関連する識別子 (userId / requestId / traceId 等)
+
+```typescript
+// Bad: コンテキストなし
+logger.error('failed')
+
+// Good: 再現に必要な情報を含める
+logger.error('fetchUser failed', {
+  userId,
+  error: getErrorMessage(error),
+  stack: error instanceof Error ? error.stack : undefined,
+})
+```
+
+### 再スロー時は `cause` を保持する
+
+ES2022 の `Error.cause` で元の例外を保持する。スタックトレースのチェーンが切れると障害解析が困難になる。
+
+```typescript
+// Bad: 元の例外を捨てて新しい Error を投げる
+try {
+  await fetchUser(id)
+} catch {
+  throw new Error('user not found')
+}
+
+// Good: cause で元の例外をチェーンする
+try {
+  await fetchUser(id)
+} catch (error) {
+  throw new Error('user not found', { cause: error })
+}
+```
+
+### トランザクションは失敗時にロールバック
+
+DB トランザクションや複数リソースを更新する処理は、catch でロールバックを必ず呼ぶ。
+
+```typescript
+// Bad: 失敗時に commit に到達しないだけで、開いたトランザクションが残る
+const tx = await db.begin()
+await tx.update(...)
+await tx.commit()
+
+// Good: try/catch で失敗時にロールバック
+const tx = await db.begin()
+try {
+  await tx.update(...)
+  await tx.commit()
+} catch (error) {
+  await tx.rollback()
+  throw new Error('tx failed', { cause: error })
+}
+```
+
 ## Async/Await
 
 ### 不要な async を避ける
