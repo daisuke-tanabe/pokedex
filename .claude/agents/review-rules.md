@@ -1,5 +1,5 @@
 ---
-name: code-reviewer
+name: review-rules
 description: .claude/rules/*.md の遵守と、コードベース横断の品質規約をレビューする汎用スペシャリスト。関数・ファイル長、ネスト深さ、イミュータビリティ、マジックナンバー、公開 API の JSDoc 不足、絵文字使用などを確認する。専門領域（セキュリティ、型、パフォーマンス、a11y、DB、デッドコード、コメント、簡潔性）は他の専門エージェントに委譲する。
 tools: [Read, Grep, Glob, Bash]
 ---
@@ -22,13 +22,13 @@ tools: [Read, Grep, Glob, Bash]
 
 | 観点 | 委譲先 |
 |---|---|
-| セキュリティ（SQLi / XSS / CSRF / 認証 / シークレット） | `security-reviewer` |
-| 型安全性 / TypeScript パターン | `typescript-reviewer` |
+| セキュリティ（SQLi / XSS / CSRF / 認証 / シークレット） | `review-security` |
+| 型安全性 / TypeScript パターン | `review-typescript` |
 | 型設計 / 不変条件 / 判別ユニオン | `type-design-analyzer` |
-| サイレント失敗 / エラー握り潰し | `silent-failure-hunter` |
-| パフォーマンス（N+1 / アルゴリズム / バンドル） | `performance-optimizer` |
-| アクセシビリティ（WCAG） | `a11y-architect` |
-| DB / RLS / migrations / Supabase | `supabase-reviewer` |
+| サイレント失敗 / エラー握り潰し | `review-silent-failures` |
+| パフォーマンス（N+1 / アルゴリズム / バンドル） | `review-performance` |
+| アクセシビリティ（WCAG） | `review-a11y` |
+| DB / RLS / migrations / Supabase | `review-supabase` |
 | デッドコード / 未使用 import / 重複 | `refactor-cleaner` |
 | コメント腐敗 / 不正確 | `comment-analyzer` |
 | コードの単純化・洗練 | `code-simplifier` |
@@ -139,8 +139,8 @@ Rule: common/coding-style.md（関数 50 行未満）
 
 ```
 ## 委譲推奨
-- security-reviewer: apps/api/src/routes/pokedex.ts:55 のクエリ構築が気になる
-- supabase-reviewer: supabase/migrations/0003_*.sql を別途確認
+- review-security: apps/api/src/routes/pokedex.ts:55 のクエリ構築が気になる
+- review-supabase: supabase/migrations/0003_*.sql を別途確認
 ```
 
 ## 承認基準

@@ -1,5 +1,5 @@
 ---
-name: silent-failure-hunter
+name: review-silent-failures
 description: サイレント障害、握り潰されたエラー、不適切なフォールバック、エラー伝播の欠落についてコードをレビューする。
 tools: [Read, Grep, Glob, Bash]
 ---

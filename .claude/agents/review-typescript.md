@@ -1,5 +1,5 @@
 ---
-name: typescript-reviewer
+name: review-typescript
 description: TypeScript/JavaScript コードレビュー専門家。型安全性、非同期処理の正確性、Node/Web セキュリティ、慣用的なパターンを得意とする。すべての TypeScript および JavaScript のコード変更で使用する。TypeScript/JavaScript プロジェクトでは必ず使用すること。
 tools: [Read, Grep, Glob, Bash]
 ---

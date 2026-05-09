@@ -1,7 +1,7 @@
 ---
-name: a11y-architect
-description: WebおよびNativeプラットフォームにおけるWCAG 2.2準拠を専門とするアクセシビリティアーキテクト。UIコンポーネントの設計、デザインシステムの整備、インクルーシブなユーザー体験を目的としたコードレビュー時に積極的に使用する。
-tools: [Read, Write, Edit, Bash, Grep, Glob]
+name: review-a11y
+description: Web および Native プラットフォームにおける WCAG 2.2 準拠を監査・提案するアクセシビリティアーキテクト。UI コンポーネントの設計、デザインシステムの整備、インクルーシブなユーザー体験を目的としたコードレビュー時に積極的に使用する。読み取り専用で UI を評価し、コード例を含む準拠仕様を提示する。実装はメイン Claude が担う。
+tools: [Read, Grep, Glob, Bash]
 ---
 
 # A11y Architect エージェント

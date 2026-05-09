@@ -1,5 +1,5 @@
 ---
-name: supabase-reviewer
+name: review-supabase
 description: Supabase スタック（Supabase プロダクト層 + PostgreSQL）を敵対的視点で監査する読み取り専用レビュー専門家。SQL / マイグレーション / RLS / Auth / Storage / Edge Functions / クライアント統合の変更時に積極的に使用する。サイレント脆弱性（user_metadata の認可利用、view の security_invoker 抜け、UPDATE の SELECT ポリシー欠落、storage upsert 権限不足、service_role 漏洩）に加え、クエリ最適化・インデックス設計・型選定・並行性まで一括レビューする。
 tools: [Read, Grep, Glob, Bash]
 ---
@@ -163,8 +163,8 @@ WHERE mean_exec_time > 100 ORDER BY mean_exec_time DESC LIMIT 20;
 ## レビュー範囲外（委譲先）
 
 - **マイグレーション戦略の深堀り（Expand-Contract 等）** → skill `database-migrations`
-- **一般コード品質 / 汎用セキュリティ（OWASP 等）** → `code-reviewer` / `security-reviewer`
-- **TypeScript の型設計** → `typescript-reviewer` / `type-design-analyzer`
+- **一般コード品質 / 汎用セキュリティ（OWASP 等）** → `review-rules` / `review-security`
+- **TypeScript の型設計** → `review-typescript` / `type-design-analyzer`
 
 ## リファレンス
 

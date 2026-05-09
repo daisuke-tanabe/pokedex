@@ -1,7 +1,7 @@
 ---
-name: performance-optimizer
-description: パフォーマンス分析と最適化のスペシャリスト。ボトルネック特定、低速コードの最適化、バンドルサイズ削減、ランタイムパフォーマンス改善のため積極的に使用する。プロファイリング、メモリリーク、レンダリング最適化、アルゴリズム改善を扱う。
-tools: [Read, Write, Edit, Bash, Grep, Glob]
+name: review-performance
+description: パフォーマンス分析と最適化提案のスペシャリスト。ボトルネック特定、低速コードの改善提案、バンドルサイズ削減、ランタイムパフォーマンス改善のため積極的に使用する。プロファイリング、メモリリーク、レンダリング最適化、アルゴリズム改善を扱う。読み取り専用でボトルネックを特定し、改善コード例を提示する。実コード変更はメイン Claude が担う。
+tools: [Read, Grep, Glob, Bash]
 ---
 
 # Performance Optimizer エージェント
