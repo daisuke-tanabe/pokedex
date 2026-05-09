@@ -6,6 +6,8 @@ paths:
 
 # TypeScript 型設計
 
+TypeScript の型をどう設計するかをまとめる。
+
 ## interface と type の使い分け
 
 - 拡張または実装される可能性のあるオブジェクト形状には `interface` を使う
@@ -87,9 +89,7 @@ function getErrorMessage(error: unknown): string {
 }
 ```
 
-## 網羅性の保証
-
-### never チェック
+## never チェックで網羅性を保証
 
 `switch` の `default` で `never` 型を受け取り、新ケース追加忘れを
 コンパイルエラーで検出する。

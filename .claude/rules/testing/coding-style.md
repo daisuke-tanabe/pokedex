@@ -11,6 +11,8 @@ paths:
 ---
 # テスト コーディングスタイル
 
+テストフレームワークに依存しない、テストの書き方の方針をまとめる。
+
 ## テストの種類
 
 - ユニット・統合テスト（関数・モジュール単位、振る舞いを検証）
@@ -39,12 +41,12 @@ test('calculates similarity correctly', () => {
 期待する振る舞いと境界条件が伝わる説明的な名前にする。テスト名だけで何が起きるかわかることを目指す。
 
 ```typescript
-// PASS: GOOD: 説明的なテスト名
+// Good: 説明的なテスト名
 test('returns empty array when no markets match query', () => { })
 test('throws error when OpenAI API key is missing', () => { })
 test('falls back to substring search when Redis unavailable', () => { })
 
-// FAIL: BAD: 曖昧なテスト名
+// Bad: 曖昧なテスト名
 test('works', () => { })
 test('test search', () => { })
 ```

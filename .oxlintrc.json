@@ -11,6 +11,7 @@
   },
   "rules": {
     "no-param-reassign": "error",
+    "no-unused-expressions": ["error", { "allowShortCircuit": true, "allowTernary": false, "allowTaggedTemplates": false }],
     "eqeqeq": ["error", "always", { "null": "ignore" }],
     "max-depth": ["error", 4],
     "require-await": "off",
