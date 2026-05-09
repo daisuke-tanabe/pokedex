@@ -22,14 +22,14 @@ color: cyan
 
 | レイヤー | 内容 | 参照タイミング |
 |---|---|---|
+| `.claude/rules/common/coding-style.md` | 言語非依存の原則 (命名、深いネスト、マジックナンバー、関数サイズ、リファクタリング原則等) | **必ず** Read |
+| `.claude/rules/common/patterns.md` | スタートポロジー、リポジトリパターン、API レスポンスエンベロープ等 | **必ず** Read |
 | skill `vercel-react-best-practices` | React の rendering / rerender / async / bundle / advanced / client / server 全般 | **必ず** Read (全 React コードに適用) |
 | skill `next-best-practices` | Next.js の file conventions / RSC 境界 / data patterns / async APIs / metadata / error handling / route handlers / image・font 最適化 / bundling | Next 配下のファイル (`app/`, `pages/`, route handlers 等) を扱うときに Read |
 | skill `next-cache-components` | Next 16 の Cache Components (`use cache` / `cacheLife` / `cacheTag` / `updateTag` / PPR) | Cache Components 機能を扱うときに Read |
 
 判定基準が agent 本文と skill で矛盾した場合は **skill 側を正** とします。
-本文の「## レビュー観点」は観点の整理であり、個別ルールの根拠は skill にあります。
-
-TS/JS の型・命名・エクスポート等の言語側規約レビューは `typescript-reviewer` の領分なので、本 agent では React/Next 固有観点に集中します。
+本文の「## レビュー観点」は観点の整理であり、個別ルールの根拠は skill / rules にあります。
 
 ## レビュー観点
 
@@ -39,7 +39,7 @@ TS/JS の型・命名・エクスポート等の言語側規約レビューは `
 - **再レンダリング**: 不要な再レンダリング、`useMemo` / `useCallback` / `memo` の適切な使用、derived state を effect で計算しない、props の安定化
 - **非同期・データ取得**: Server Component での fetch、並列フェッチ、Suspense 境界、Client / Server 境界の妥当性
 - **Next.js 固有** (Next 配下のみ): App Router の file conventions、`metadata` / `generateMetadata`、async APIs (`cookies()` / `headers()` / `params`)、Cache Components (`use cache` / `cacheLife` / `cacheTag`)、`<Image>` / `<Script>` の最適化
-- **アクセシビリティ**: セマンティック HTML、ARIA、キーボード操作、フォーカス管理 (深掘りは `review-a11y` へ委譲)
+- **アクセシビリティ**: セマンティック HTML、ARIA、キーボード操作、フォーカス管理
 - **バンドル・パフォーマンス**: dynamic imports、third-party の defer、barrel imports 回避、画像・スクリプトの defer/async
 - **テスタビリティ**: 副作用の分離、props 設計、依存性注入の余地
 

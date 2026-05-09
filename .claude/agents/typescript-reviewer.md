@@ -16,21 +16,18 @@ color: cyan
 
 ## プロジェクト規約の参照元
 
-このプロジェクトの TypeScript / JavaScript コーディング規約と型設計ルールは skill `.claude/skills/typescript-coding-style/SKILL.md` に集約されています。
-レビューを始める前に **必ず** SKILL.md を Read してください。SKILL.md 内の誘導に従い、必要な詳細 (`references/coding-style.md` / `references/type-design.md`) は判断して読み足してください。
-
-判定基準が agent 本文と skill で矛盾した場合は **skill 側を正** とします。
-本文の「## レビュー観点」は観点の整理であり、個別ルールの根拠は skill にあります。
-
-## レビュー観点
-
 判定基準は以下のレイヤーから取得する。重複時は最も詳細なレイヤーを優先:
 
-| レイヤー | 内容 |
-|---|---|
-| skill `typescript-coding-style` | TS/JS のコーディングスタイル・型設計 (`any` vs `unknown`、判別ユニオン、Result 型、async/await、export 等) |
-| `.claude/rules/common/coding-style.md` | 言語非依存の原則 (命名、深いネスト、マジックナンバー、関数サイズ等) |
-| `.claude/rules/common/patterns.md` | スタートポロジー、リポジトリパターン、API レスポンスエンベロープ等 |
+| レイヤー | 内容 | 参照タイミング |
+|---|---|---|
+| `.claude/rules/common/coding-style.md` | 言語非依存の原則 (命名、深いネスト、マジックナンバー、関数サイズ、リファクタリング原則等) | **必ず** Read |
+| `.claude/rules/common/patterns.md` | スタートポロジー、リポジトリパターン、API レスポンスエンベロープ等 | **必ず** Read |
+| skill `typescript-coding-style` | TS/JS のコーディングスタイル・型設計 (`any` vs `unknown`、判別ユニオン、Result 型、async/await、export 等) | **必ず** Read (SKILL.md → 必要に応じて `references/coding-style.md` / `references/type-design.md`) |
+
+判定基準が agent 本文と skill / rules で矛盾した場合は **skill / rules 側を正** とします。
+本文の「## レビュー観点」は観点の整理であり、個別ルールの根拠は skill / rules にあります。
+
+## レビュー観点
 
 これらを起点に、本 agent では以下の総合的観点で網羅レビューを行う:
 
