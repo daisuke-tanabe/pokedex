@@ -1,3 +1,7 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+allowBuilds:
+  # lefthook は npm パッケージに binary が同梱されており、postinstall の
+  # build script は不要 (実測で `./node_modules/.bin/lefthook` が直接動作する)
+  lefthook: false

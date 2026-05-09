@@ -1,0 +1,30 @@
+# =============================================================================
+# lefthook.yml
+# =============================================================================
+# Git hooks 管理 (lefthook)
+#
+# pre-commit  : 機械的チェック (oxfmt --fix → oxlint --fix → typecheck)
+# pre-push    : AI Worker 並列起動 (Worker-Aggregator パターン)
+#
+# 有効化: pnpm install 時に postinstall で `lefthook install` が走り、
+#         .git/hooks/ にリンクが作られる。手動操作不要。
+# =============================================================================
+
+pre-commit:
+  parallel: false # oxfmt と oxlint --fix が同じファイルを書き換える可能性を避ける
+  commands:
+    1_oxfmt:
+      glob: "*.{ts,tsx,js,jsx,cjs,mjs}"
+      run: ./node_modules/.bin/oxfmt {staged_files}
+      stage_fixed: true # autofix で変更されたファイルを自動 stage
+    2_oxlint:
+      glob: "*.{ts,tsx,js,jsx,cjs,mjs}"
+      run: ./node_modules/.bin/oxlint --fix {staged_files}
+      stage_fixed: true
+    3_typecheck:
+      run: ./node_modules/.bin/turbo run typecheck
+
+pre-push:
+  commands:
+    ai-review:
+      run: bash .claude/scripts/pre-push-review.sh

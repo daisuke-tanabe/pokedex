@@ -163,7 +163,8 @@ WHERE mean_exec_time > 100 ORDER BY mean_exec_time DESC LIMIT 20;
 ## レビュー範囲外（委譲先）
 
 - **マイグレーション戦略の深堀り（Expand-Contract 等）** → skill `database-migrations`
-- **一般コード品質 / 汎用セキュリティ（OWASP 等）** → `review-rules` / `review-security`
+- **一般コード品質**（関数長 / ファイル長 / マジックナンバー / JSDoc 等）→ oxlint で機械的に検出
+- **汎用セキュリティ（OWASP 等）** → `review-security`
 - **TypeScript の型設計** → `review-typescript` / `type-design-analyzer`
 
 ## リファレンス
