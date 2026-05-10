@@ -2,6 +2,36 @@
   "$schema": "https://turborepo.com/schema.json",
   "globalDependencies": [".oxlintrc.json", ".oxfmtrc.json", "tsconfig.base.json"],
   "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "**/*.{ts,tsx}",
+        "vitest.config.ts",
+        "!**/dist/**",
+        "!**/.next/**",
+        "!**/node_modules/**"
+      ],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "**/*.{ts,tsx}",
+        "tsconfig.json",
+        "!**/dist/**",
+        "!**/.next/**",
+        "!**/node_modules/**"
+      ],
+      "outputs": []
+    },
     "lint": {
       "inputs": [
         "**/*.{ts,tsx,js,jsx}",
@@ -28,16 +58,6 @@
       "inputs": [
         "**/*.{ts,tsx,js,jsx,json,md}",
         ".oxfmtrc.json",
-        "!**/dist/**",
-        "!**/.next/**",
-        "!**/node_modules/**"
-      ],
-      "outputs": []
-    },
-    "typecheck": {
-      "inputs": [
-        "**/*.{ts,tsx}",
-        "tsconfig.json",
         "!**/dist/**",
         "!**/.next/**",
         "!**/node_modules/**"

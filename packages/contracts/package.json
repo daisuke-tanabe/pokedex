@@ -1,0 +1,23 @@
+{
+  "name": "@pokedex/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint --type-aware .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check ."
+  },
+  "dependencies": {
+    "valibot": "^1.0.0"
+  },
+  "devDependencies": {
+    "oxfmt": "0.48.0",
+    "oxlint": "1.63.0",
+    "vitest": "^3.0.0"
+  }
+}
