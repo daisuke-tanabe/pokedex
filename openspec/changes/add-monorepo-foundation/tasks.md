@@ -8,7 +8,7 @@
 - [x] 1.6 リポジトリルートで `supabase init` を実行し、生成された `supabase/` ディレクトリ（`config.toml`、`.gitignore`、`migrations/`、`seed.sql` 等）をコミット対象に含める
 - [x] 1.7 リポジトリルートに `.env.development` を作成し、`DATABASE_URL=postgres://postgres:postgres@127.0.0.1:54322/postgres` をコメント付きで記載する（Supabase ローカル既定値、機密ゼロ）
 - [x] 1.8 README に「`.env.development` は機密を含まないコミット対象」「個人の機密上書きは `.env.local`（gitignore 済み）」「本番値は GitHub Secrets / 各ホスティングで注入し、リポジトリには置かない」という env 管理方針を明記する
-- [ ] 1.9 `supabase start` を実行し、ローカル PostgreSQL が `54322` で立ち上がること、`supabase status` で URL が確認できることを手動検証する
+- [x] 1.9 `supabase start` を実行し、ローカル PostgreSQL が `54322` で立ち上がること、`supabase status` で URL が確認できることを手動検証する
 - [x] 1.10 `pnpm install` を実行し、ワークスペース解決が壊れていないことを確認する（既存の apps/* がリンクされ続けること）
 
 ## 2. packages/contracts パッケージの雛形作成
@@ -124,9 +124,9 @@
 
 ## 14. 動作確認とドキュメント
 
-- [ ] 14.1 [Verify] `supabase start` で Supabase ローカルスタックを起動した後、`pnpm --filter @pokedex/api dev` で API が 3000 番ポートに立ち上がることを手動検証する
-- [ ] 14.2 [Verify] `curl -i http://localhost:3000/health` が 200、`Content-Type: application/json`、ボディ `{"success":true,"data":{"status":"ok"}}` を返すことを手動検証する
-- [ ] 14.3 [Verify] `supabase stop` でローカルスタックを停止できることを確認する
+- [x] 14.1 [Verify] `supabase start` で Supabase ローカルスタックを起動した後、`pnpm --filter @pokedex/api dev` で API が 3000 番ポートに立ち上がることを手動検証する
+- [x] 14.2 [Verify] `curl -i http://localhost:3000/health` が 200、`Content-Type: application/json`、ボディ `{"success":true,"data":{"status":"ok"}}` を返すことを手動検証する
+- [x] 14.3 [Verify] `supabase stop` でローカルスタックを停止できることを確認する
 - [x] 14.4 README.md に開発手順（asdf install、Docker Desktop / Colima 要件、`supabase start`、依存インストール、API 起動、ヘルスチェック確認、テスト実行）を簡潔に追記する
 - [x] 14.5 README に env 管理方針セクションを追加する（`.env.development` はコミット対象・機密ゼロ、`.env.local` は gitignore された個人の機密上書き、本番値は GitHub Secrets / 各ホスティングで注入）
 - [x] 14.6 README に「`asdf-supabase` plugin が動かない場合のフォールバック」（例: `brew install supabase/tap/supabase`）を併記する
