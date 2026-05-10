@@ -22,10 +22,17 @@ export function successEnvelope<TData>(
 }
 
 /**
+ * 失敗側のエンベロープ型。`Envelope<T>` から `success: false` ブランチだけを抽出する。
+ */
+type ErrorEnvelope = Extract<Envelope<unknown>, { success: false }>;
+
+/**
  * 失敗エンベロープを生成する。
  *
  * `code` は `ErrorCode` ユニオン型に制約され、未定義のコードは型エラーになる。
+ * 返り値は失敗ブランチに限定された型なので、呼び出し側で `success: true` の
+ * 到達不能 union を扱う必要がない。
  */
-export function errorEnvelope<TData = never>(code: ErrorCode, message: string): Envelope<TData> {
+export function errorEnvelope(code: ErrorCode, message: string): ErrorEnvelope {
   return { success: false, error: { code, message } };
 }
