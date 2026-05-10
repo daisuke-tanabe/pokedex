@@ -72,6 +72,10 @@ importers:
   apps/web: {}
 
   packages/contracts:
+    dependencies:
+      valibot:
+        specifier: ^1.0.0
+        version: 1.4.0(typescript@6.0.3)
     devDependencies:
       oxfmt:
         specifier: 0.48.0
@@ -79,9 +83,6 @@ importers:
       oxlint:
         specifier: 1.63.0
         version: 1.63.0(oxlint-tsgolint@0.22.1)
-      valibot:
-        specifier: ^1.0.0
-        version: 1.4.0(typescript@6.0.3)
       vitest:
         specifier: ^3.0.0
         version: 3.2.4(@types/node@24.12.3)(tsx@4.21.0)
