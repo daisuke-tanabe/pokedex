@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ErrorCode } from '../index.js';
+import { ErrorCode } from './index.js';
 
 describe('ErrorCode', () => {
   it('POKEDEX_NOT_FOUND は同名文字列にマップされる', () => {

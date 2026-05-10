@@ -17,7 +17,7 @@ describe('db client', () => {
 
   it('DATABASE_URL 未設定時に "DATABASE_URL is required" で例外を投げる', async () => {
     delete process.env.DATABASE_URL;
-    await expect(import('../client.js')).rejects.toThrow('DATABASE_URL is required');
+    await expect(import('./client.js')).rejects.toThrow('DATABASE_URL is required');
   });
 
   it('DATABASE_URL 設定時に db シンボルが取得できる', async () => {
@@ -25,7 +25,7 @@ describe('db client', () => {
     // 接続を確立しない (最初のクエリ実行時に接続する)。よって CI 環境で
     // Supabase が起動していなくてもこのテストは通る。
     process.env.DATABASE_URL = 'postgres://postgres:postgres@127.0.0.1:54322/postgres';
-    const { db } = await import('../client.js');
+    const { db } = await import('./client.js');
     expect(db).toBeDefined();
   });
 
@@ -33,8 +33,8 @@ describe('db client', () => {
     // ESM のモジュールキャッシュにより、同じパスの import は同一インスタンスを返す。
     // singleton 性を担保していることの確認。
     process.env.DATABASE_URL = 'postgres://postgres:postgres@127.0.0.1:54322/postgres';
-    const first = await import('../client.js');
-    const second = await import('../client.js');
+    const first = await import('./client.js');
+    const second = await import('./client.js');
     expect(first.db).toBe(second.db);
   });
 });
