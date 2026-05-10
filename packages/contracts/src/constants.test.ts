@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import { DEFAULT_POKEDEX_SLUG, MAX_TYPES, PAGE_SIZE } from '../index.js';
+import { DEFAULT_POKEDEX_SLUG, MAX_TYPES, PAGE_SIZE } from './index.js';
 
 describe('domain constants', () => {
   it('PAGE_SIZE は 30 で固定される', () => {

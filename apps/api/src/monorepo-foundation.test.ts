@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-const ROOT = resolve(import.meta.dirname, '../../../..');
+const ROOT = resolve(import.meta.dirname, '../../..');
 
 async function readText(path: string): Promise<string> {
   return await readFile(resolve(ROOT, path), 'utf-8');

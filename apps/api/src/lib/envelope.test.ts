@@ -2,7 +2,7 @@ import { envelopeSchema } from '@pokedex/contracts';
 import * as v from 'valibot';
 import { describe, expect, it } from 'vitest';
 
-import { errorEnvelope, successEnvelope } from '../envelope.js';
+import { errorEnvelope, successEnvelope } from './envelope.js';
 
 describe('successEnvelope', () => {
   it('data のみのエンベロープを返す', () => {

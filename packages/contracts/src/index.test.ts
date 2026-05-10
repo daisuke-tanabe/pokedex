@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import { DEFAULT_POKEDEX_SLUG, ErrorCode, MAX_TYPES, PAGE_SIZE, envelopeSchema } from '../index.js';
+import { DEFAULT_POKEDEX_SLUG, ErrorCode, MAX_TYPES, PAGE_SIZE, envelopeSchema } from './index.js';
 
 describe('@pokedex/contracts entry point', () => {
   it('全ての公開シンボルがインポート解決できる (smoke)', () => {
