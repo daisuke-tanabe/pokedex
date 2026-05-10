@@ -36,7 +36,7 @@ export const successEnvelopeSchema = <const TSchema extends v.GenericSchema>(dat
  */
 export const errorEnvelopeSchema = v.strictObject({
   success: v.literal(false),
-  error: v.object({
+  error: v.strictObject({
     code: v.picklist(Object.values(ErrorCode) as readonly ErrorCode[]),
     message: v.string(),
   }),
