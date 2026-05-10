@@ -5,3 +5,6 @@ allowBuilds:
   # lefthook は npm パッケージに binary が同梱されており、postinstall の
   # build script は不要 (実測で `./node_modules/.bin/lefthook` が直接動作する)
   lefthook: false
+  # vitest が依存する esbuild は postinstall でネイティブバイナリを取得する
+  # 必要があるため明示的に許可する。
+  esbuild: true

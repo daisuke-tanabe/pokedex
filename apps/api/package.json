@@ -4,9 +4,27 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "tsx watch --env-file=../../.env.development --env-file-if-exists=../../.env.local src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
     "lint": "oxlint --type-aware .",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.0",
+    "@hono/valibot-validator": "^0.5.0",
+    "@pokedex/contracts": "workspace:*",
+    "drizzle-orm": "^0.36.0",
+    "hono": "^4.6.0",
+    "postgres": "^3.4.5",
+    "valibot": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "drizzle-kit": "^0.28.0",
+    "tsx": "^4.19.0",
+    "vitest": "^3.0.0"
   }
 }
