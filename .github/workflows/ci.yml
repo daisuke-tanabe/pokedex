@@ -146,9 +146,9 @@ jobs:
             exit 0
           fi
 
-          # 2. FINAL_VERDICT を抽出
+          # 2. FINAL_VERDICT を抽出 (claude bot コメントに限定して詐称防止)
           verdict=$(gh pr view "$PR_NUMBER" --json comments \
-            --jq '.comments[].body' \
+            --jq '.comments[] | select(.author.login == "claude") | .body' \
             | grep -oE 'FINAL_VERDICT:[[:space:]]*[A-Za-z]+' \
             | tail -1 \
             | awk '{print $NF}')

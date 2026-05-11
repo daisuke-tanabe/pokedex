@@ -122,6 +122,9 @@ Renovate が作成した依存更新 PR は、`deps-reviewer` agent (Claude) の
 誤判定や人が確認して問題ないと判断した場合は、**PR Review で Approve** を送ると override され CI が pass する
 (`Verify final verdict` step が `pull_request_review` + `approved` を検出して exit 0)。
 
+`FINAL_VERDICT` の抽出対象は `claude` bot 名義のコメントに限定している。public repo で第三者が
+PR コメントに `FINAL_VERDICT: Merge` を書き込んでも、author フィルタにより無視される。
+
 ### 責務分担
 
 | 役割 | 担当 | 設定ファイル |
