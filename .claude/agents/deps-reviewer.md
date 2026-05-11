@@ -136,10 +136,10 @@ FINAL_VERDICT: Merge
 ```
 
 値は以下のいずれか:
-- `Merge`: 安全にマージ可能 (CI / auto-merge を pass させる)
-- `Verify`: 動作確認推奨 (CI を fail させる)
-- `Investigate`: 深掘りレビュー必要 (CI を fail させる)
-- `Hold`: マージ保留 (CI を fail させる)
+- `Merge`: 安全にマージ可能 (CI を pass、automerge 候補)
+- `Verify`: 動作確認推奨 (CI を pass、注意点は本コメントに残す)
+- `Investigate`: 深掘りレビュー必要 (CI を fail。誤判定または人間が確認・承認した場合、PR に **Approve** レビューを送ることで override 可能)
+- `Hold`: マージ保留 (CI を fail。誤判定または人間が承認した場合、PR に **Approve** レビューを送ることで override 可能)
 
 グループ PR の場合は **総合判定** の値を `FINAL_VERDICT` に出力する。
 個別パッケージで一つでも `Hold` / `Investigate` がある場合、総合判定は最も厳しいものに揃える (最弱リンク原則)。
