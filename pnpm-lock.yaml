@@ -16,7 +16,7 @@ catalogs:
       specifier: 0.22.1
       version: 0.22.1
     vitest:
-      specifier: ^3.0.0
+      specifier: 3.2.4
       version: 3.2.4
 
 importers:
@@ -24,7 +24,7 @@ importers:
   .:
     devDependencies:
       lefthook:
-        specifier: ^2.1.6
+        specifier: 2.1.6
         version: 2.1.6
       oxfmt:
         specifier: 'catalog:'
@@ -39,7 +39,7 @@ importers:
         specifier: 2.9.10
         version: 2.9.10
       type-fest:
-        specifier: ^5.6.0
+        specifier: 5.6.0
         version: 5.6.0
       typescript:
         specifier: 6.0.3
@@ -48,35 +48,35 @@ importers:
   apps/api:
     dependencies:
       '@hono/node-server':
-        specifier: ^1.13.0
+        specifier: 1.19.14
         version: 1.19.14(hono@4.12.18)
       '@hono/valibot-validator':
-        specifier: ^0.5.0
+        specifier: 0.5.3
         version: 0.5.3(hono@4.12.18)(valibot@1.4.0(typescript@6.0.3))
       '@pokedex/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
       drizzle-orm:
-        specifier: ^0.36.0
+        specifier: 0.36.4
         version: 0.36.4(postgres@3.4.9)
       hono:
-        specifier: ^4.6.0
+        specifier: 4.12.18
         version: 4.12.18
       postgres:
-        specifier: ^3.4.5
+        specifier: 3.4.9
         version: 3.4.9
       valibot:
-        specifier: ^1.0.0
+        specifier: 1.4.0
         version: 1.4.0(typescript@6.0.3)
     devDependencies:
       '@types/node':
-        specifier: ^24.0.0
+        specifier: 24.12.3
         version: 24.12.3
       drizzle-kit:
-        specifier: ^0.28.0
+        specifier: 0.28.1
         version: 0.28.1
       tsx:
-        specifier: ^4.19.0
+        specifier: 4.21.0
         version: 4.21.0
       vitest:
         specifier: 'catalog:'
@@ -89,7 +89,7 @@ importers:
   packages/contracts:
     dependencies:
       valibot:
-        specifier: ^1.0.0
+        specifier: 1.4.0
         version: 1.4.0(typescript@6.0.3)
     devDependencies:
       vitest:
