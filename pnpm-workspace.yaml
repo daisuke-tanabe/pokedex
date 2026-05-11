@@ -1,6 +1,11 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+catalog:
+  oxfmt: 0.48.0
+  oxlint: 1.63.0
+  oxlint-tsgolint: 0.22.1
+  vitest: ^3.0.0
 allowBuilds:
   # lefthook は npm パッケージに binary が同梱されており、postinstall の
   # build script は不要 (実測で `./node_modules/.bin/lefthook` が直接動作する)

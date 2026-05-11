@@ -4,6 +4,21 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    oxfmt:
+      specifier: 0.48.0
+      version: 0.48.0
+    oxlint:
+      specifier: 1.63.0
+      version: 1.63.0
+    oxlint-tsgolint:
+      specifier: 0.22.1
+      version: 0.22.1
+    vitest:
+      specifier: ^3.0.0
+      version: 3.2.4
+
 importers:
 
   .:
@@ -12,13 +27,13 @@ importers:
         specifier: ^2.1.6
         version: 2.1.6
       oxfmt:
-        specifier: 0.48.0
+        specifier: 'catalog:'
         version: 0.48.0
       oxlint:
-        specifier: 1.63.0
+        specifier: 'catalog:'
         version: 1.63.0(oxlint-tsgolint@0.22.1)
       oxlint-tsgolint:
-        specifier: 0.22.1
+        specifier: 'catalog:'
         version: 0.22.1
       turbo:
         specifier: 2.9.10
@@ -64,7 +79,7 @@ importers:
         specifier: ^4.19.0
         version: 4.21.0
       vitest:
-        specifier: ^3.0.0
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@24.12.3)(tsx@4.21.0)
 
   apps/mobile: {}
@@ -77,14 +92,8 @@ importers:
         specifier: ^1.0.0
         version: 1.4.0(typescript@6.0.3)
     devDependencies:
-      oxfmt:
-        specifier: 0.48.0
-        version: 0.48.0
-      oxlint:
-        specifier: 1.63.0
-        version: 1.63.0(oxlint-tsgolint@0.22.1)
       vitest:
-        specifier: ^3.0.0
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@24.12.3)(tsx@4.21.0)
 
 packages:
