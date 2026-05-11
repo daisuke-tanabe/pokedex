@@ -101,3 +101,36 @@ pre-push               AI Worker 並列レビュー (Worker-Aggregator パター
 - `.claude/settings.json` ... PostToolUse / PreToolUse hook
 - `.claude/scripts/` ... hook 本体
 - `.claude/agents/review-*.md` ... AI Worker (read-only エージェント)
+
+## 依存関係の自動マージフロー
+
+Renovate が作成した依存更新 PR は、`deps-reviewer` agent (Claude) のレビュー結果に基づいて
+自動マージされる。判定 → マージの経路を Claude に一本化し、人手介入を最小化する設計。
+
+### 判定別の挙動
+
+`deps-reviewer` agent は PR コメントの末尾に `FINAL_VERDICT: <Merge|Verify|Investigate|Hold>` を出力する。
+`deps-review` ジョブはこれを抽出して以下のように分岐する。
+
+| FINAL_VERDICT | CI | 自動マージ |
+|---|---|---|
+| `Merge` | pass | **する** (`gh pr merge --squash --delete-branch`) |
+| `Verify` | pass | しない (動作確認推奨ステータス、人手マージ前提) |
+| `Investigate` / `Hold` / unknown | fail | しない |
+
+`Investigate` / `Hold` で CI が落ちた PR は GitHub ruleset の `deps-review` 必須化によりマージブロックされる。
+誤判定や人が確認して問題ないと判断した場合は、**PR Review で Approve** を送ると override され CI が pass する
+(`Verify final verdict` step が `pull_request_review` + `approved` を検出して exit 0)。
+
+### 責務分担
+
+| 役割 | 担当 | 設定ファイル |
+|---|---|---|
+| PR 作成 | Renovate | `.github/renovate.json` |
+| 安全性判定 | `deps-reviewer` agent (Claude) | `.claude/agents/deps-reviewer.md` |
+| 自動マージ (Merge 判定時) | `deps-review` ジョブ | `.github/workflows/ci.yml` |
+| 人手マージの安全装置 | GitHub ruleset | `main` ブランチに `deps-review` を required_status_checks として設定 |
+| 誤判定時の escape hatch | PR Review で Approve override | (手動操作) |
+
+Renovate 側の `automerge` 設定は意図的に持たない (Claude マージと役割重複になるため)。
+Renovate は「PR を作るだけ」で、マージ判断は Claude に集約されている。
