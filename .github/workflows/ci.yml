@@ -2,6 +2,7 @@ name: CI
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   push:
     branches:
       - main
@@ -120,15 +121,29 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # 1. deps-review-approved ラベルがあれば人間承認とみなして pass
+          if gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name' \
+            | grep -qx "deps-review-approved"; then
+            echo "deps-review approved by human reviewer (deps-review-approved label)"
+            exit 0
+          fi
+
+          # 2. FINAL_VERDICT を抽出
           verdict=$(gh pr view "$PR_NUMBER" --json comments \
             --jq '.comments[].body' \
             | grep -oE 'FINAL_VERDICT:[[:space:]]*[A-Za-z]+' \
             | tail -1 \
             | awk '{print $NF}')
           echo "Final verdict: ${verdict:-unknown}"
-          if [ "$verdict" = "Merge" ]; then
-            exit 0
-          else
-            echo "Manual review needed: ${verdict:-unknown}"
-            exit 1
-          fi
+
+          # 3. Merge / Verify は pass、Investigate / Hold / unknown は fail
+          case "$verdict" in
+            Merge|Verify)
+              exit 0
+              ;;
+            *)
+              echo "Manual review needed: ${verdict:-unknown}"
+              echo "If reviewed and approved, add the 'deps-review-approved' label to this PR to override."
+              exit 1
+              ;;
+          esac
