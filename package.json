@@ -20,6 +20,7 @@
     "oxlint-tsgolint": "catalog:",
     "turbo": "2.9.10",
     "type-fest": "5.6.0",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "yaml": "2.8.4"
   }
 }
