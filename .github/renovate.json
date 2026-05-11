@@ -4,7 +4,11 @@
   "timezone": "Asia/Tokyo",
   "schedule": ["at any time"],
   "labels": ["dependencies"],
-  "minimumReleaseAge": "7 days",
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "baseBranchPatterns": ["main"],
+  "minimumReleaseAge": "3 days",
   "rangeStrategy": "pin",
   "lockFileMaintenance": {
     "enabled": true,
