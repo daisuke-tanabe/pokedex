@@ -16,8 +16,6 @@
     "valibot": "^1.0.0"
   },
   "devDependencies": {
-    "oxfmt": "0.48.0",
-    "oxlint": "1.63.0",
-    "vitest": "^3.0.0"
+    "vitest": "catalog:"
   }
 }
