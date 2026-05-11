@@ -12,6 +12,10 @@
   },
   "packageRules": [
     {
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
       "matchPackageNames": ["oxfmt", "oxlint", "/^oxlint-/"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "oxc-toolchain"
