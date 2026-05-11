@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "24.12.3",
-    "drizzle-kit": "0.28.1",
+    "drizzle-kit": "0.31.10",
     "tsx": "4.21.0",
     "vitest": "catalog:"
   }
