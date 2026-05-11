@@ -62,7 +62,7 @@ jobs:
     needs: validate
     if: |
       github.event_name == 'pull_request' &&
-      github.actor != 'dependabot[bot]'
+      github.actor != 'renovate[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -83,12 +83,12 @@ jobs:
           claude_args: |
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
 
-  npm-deps-review:
-    name: npm-deps-review
+  deps-review:
+    name: deps-review
     needs: validate
     if: |
       github.event_name == 'pull_request' &&
-      github.actor == 'dependabot[bot]'
+      github.actor == 'renovate[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -100,17 +100,17 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Run npm-deps-reviewer
+      - name: Run deps-reviewer
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           track_progress: true
-          allowed_bots: "dependabot[bot]"
+          allowed_bots: "renovate[bot]"
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
-            この Dependabot PR を npm-deps-reviewer agent でレビューしてください。
+            この Renovate PR を deps-reviewer agent でレビューしてください。
             最終行に必ず "FINAL_VERDICT: <Merge|Verify|Investigate|Hold>" を単独行で出力してください。
           claude_args: |
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh release:*),Bash(pnpm audit:*),Bash(pnpm view:*),Read,Grep,Glob,LS"
@@ -132,27 +132,3 @@ jobs:
             echo "Manual review needed: ${verdict:-unknown}"
             exit 1
           fi
-
-  npm-deps-merge:
-    name: npm-deps-merge
-    needs: [validate, npm-deps-review]
-    if: |
-      github.event_name == 'pull_request' &&
-      github.actor == 'dependabot[bot]'
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write
-    steps:
-      - name: Fetch Dependabot metadata
-        id: meta
-        uses: dependabot/fetch-metadata@v3
-
-      - name: Auto-merge patch and minor updates
-        if: |
-          steps.meta.outputs.update-type == 'version-update:semver-patch' ||
-          steps.meta.outputs.update-type == 'version-update:semver-minor'
-        run: gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
