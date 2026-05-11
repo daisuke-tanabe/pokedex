@@ -14,12 +14,13 @@
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
-    "lefthook": "^2.1.6",
+    "lefthook": "2.1.6",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "turbo": "2.9.10",
-    "type-fest": "^5.6.0",
-    "typescript": "6.0.3"
+    "type-fest": "5.6.0",
+    "typescript": "6.0.3",
+    "yaml": "2.8.4"
   }
 }
