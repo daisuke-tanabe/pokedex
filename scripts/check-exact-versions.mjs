@@ -29,9 +29,16 @@ import { parse as parseYaml } from 'yaml';
 const PACKAGE_JSON_SECTIONS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
 
 const EXACT_RE = /^\d+\.\d+\.\d+([-+][0-9A-Za-z.-]+)?$/;
-const ALLOWED_PREFIX_RE = /^(catalog:|workspace:|link:|file:|git\+|github:|https?:\/\/|npm:[^@]+@\d)/;
+const ALLOWED_PREFIX_RE = /^(catalog:|workspace:|link:|file:|git\+|github:|https?:\/\/)/;
+const NPM_ALIAS_RE = /^npm:[^@]+@(.+)$/;
 
-const isExact = (value) => typeof value !== 'string' || ALLOWED_PREFIX_RE.test(value) || EXACT_RE.test(value);
+const isExact = (value) => {
+  if (typeof value !== 'string') return true;
+  if (ALLOWED_PREFIX_RE.test(value)) return true;
+  const npmAlias = value.match(NPM_ALIAS_RE);
+  if (npmAlias) return EXACT_RE.test(npmAlias[1]);
+  return EXACT_RE.test(value);
+};
 
 const collectViolations = (entries, file, section) =>
   Object.entries(entries ?? {})
@@ -72,7 +79,7 @@ const report = [
   '',
   '修正方法:',
   '  - package.json        : 該当パッケージで `pnpm add -E <pkg>` で追加し直す',
-  '                          (.npmrc の save-exact=true があっても -E を付けるほうが確実)',
+  '                          (pnpm 11 では .npmrc の save-exact が機能しないため -E は必須)',
   "  - pnpm-workspace.yaml : catalog の値から '^' / '~' などの prefix を削除",
   '',
   '許容: exact (1.2.3) / catalog: / workspace:* / link: / file: / git+ / github: / https://',
