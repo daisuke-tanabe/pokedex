@@ -1,7 +1,12 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/"
+    directories:
+      - "/"
+      - "/apps/api"
+      - "/apps/web"
+      - "/apps/mobile"
+      - "/packages/contracts"
     schedule:
       interval: "daily"
     cooldown:
