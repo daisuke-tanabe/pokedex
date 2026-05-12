@@ -7,7 +7,6 @@
   "semanticCommitType": "chore",
   "semanticCommitScope": "deps",
   "baseBranchPatterns": ["main"],
-  "minimumReleaseAge": "3 days",
   "rangeStrategy": "pin",
   "ignorePaths": [".claude/skills/**"],
   "lockFileMaintenance": {
@@ -40,6 +39,18 @@
     {
       "extends": ["monorepo:vitest"],
       "groupName": "vitest"
+    },
+    {
+      "matchUpdateTypes": ["patch"],
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "minimumReleaseAge": "14 days"
     }
   ]
 }
