@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
   "timezone": "Asia/Tokyo",
   "labels": ["dependencies"],
   "semanticCommits": "enabled",
@@ -8,6 +8,7 @@
   "semanticCommitScope": "deps",
   "baseBranchPatterns": ["main"],
   "rangeStrategy": "pin",
+  "minimumReleaseAge": "3 days",
   "ignorePaths": [".claude/skills/**"],
   "lockFileMaintenance": {
     "enabled": true,
@@ -16,7 +17,7 @@
   "vulnerabilityAlerts": {
     "enabled": true,
     "addLabels": ["security"],
-    "minimumReleaseAge": "0 days",
+    "minimumReleaseAge": "3 days",
     "schedule": ["at any time"]
   },
   "packageRules": [
@@ -39,10 +40,6 @@
     {
       "extends": ["monorepo:vitest"],
       "groupName": "vitest"
-    },
-    {
-      "matchUpdateTypes": ["patch"],
-      "minimumReleaseAge": "3 days"
     },
     {
       "matchUpdateTypes": ["minor"],
