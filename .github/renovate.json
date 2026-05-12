@@ -29,6 +29,18 @@
       "matchPackageNames": ["oxfmt", "oxlint", "/^oxlint-/"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "oxc-toolchain"
+    },
+    {
+      "matchPackageNames": ["hono", "/^@hono\\//"],
+      "groupName": "hono"
+    },
+    {
+      "matchPackageNames": ["drizzle-orm", "drizzle-kit"],
+      "groupName": "drizzle"
+    },
+    {
+      "matchPackageNames": ["vitest", "/^@vitest\\//"],
+      "groupName": "vitest"
     }
   ]
 }
