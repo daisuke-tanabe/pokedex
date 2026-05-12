@@ -106,9 +106,11 @@ jobs:
       )
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
       id-token: write
+    outputs:
+      verdict: ${{ steps.verdict.outputs.verdict }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -167,10 +169,18 @@ jobs:
               ;;
           esac
 
-      - name: Auto-merge on verdict=Merge
-        if: |
-          github.event_name == 'pull_request' &&
-          steps.verdict.outputs.verdict == 'Merge'
+  deps-merge:
+    name: deps-merge
+    needs: deps-review
+    if: |
+      github.event_name == 'pull_request' &&
+      needs.deps-review.outputs.verdict == 'Merge'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Auto-merge
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
