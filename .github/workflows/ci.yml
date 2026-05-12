@@ -74,8 +74,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
 
       - name: Run Claude Code Review
         uses: anthropics/claude-code-action@v1
@@ -114,8 +112,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
 
       - name: Run deps-reviewer
         if: github.event_name != 'pull_request_review'
@@ -182,8 +178,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
 
       - name: Auto-merge
         env:
