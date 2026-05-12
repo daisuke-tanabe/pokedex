@@ -120,8 +120,8 @@ Renovate が作成した依存更新 PR は、`deps-reviewer` agent (Claude) の
 
 `deps-merge` を `deps-review` から分離している理由: ruleset の required_status_checks に `deps-review`
 自身が含まれており、同一ジョブ内で `gh pr merge` を呼ぶと「自分自身の完了を待ちながらマージしようとする」
-デッドロックが発生するため。`deps-merge` は ruleset の必須 check には含まれないので、必須 4 つ
-(`validate (typecheck|lint|format:check)` + `deps-review`) が pass した状態で安全にマージできる。
+デッドロックが発生するため。`deps-merge` は ruleset の必須 check には含まれないので、必須 2 つ
+(`validate` + `deps-review`) が pass した状態で安全にマージできる。
 
 `Investigate` / `Hold` で CI が落ちた PR は GitHub ruleset の `deps-review` 必須化によりマージブロックされる。
 誤判定や人が確認して問題ないと判断した場合は、**PR Review で Approve** を送ると override され CI が pass する
