@@ -34,6 +34,7 @@ color: cyan
 - **Breaking changes**: GitHub Releases / CHANGELOG.md / Migration guide を解析し、対象バージョン範囲で発生する非互換変更を抽出
 - **Deprecation**: 新バージョンで廃止予定にマークされた API を特定し、プロジェクト内での利用有無を `grep` で確認
 - **Security**: `pnpm audit` で当該パッケージに既知脆弱性がないか、CVE が修正対象に含まれるかを確認
+- **Supply chain**: `package.json` / lockfile に **非 npm registry 参照** (`github:`, `git+https://`, `git+ssh://`, `http(s)://`, `file:`) が含まれていないか確認。とくに `optionalDependencies` への新規追加や、既存パッケージのバージョン文字列が semver 範囲から git/URL 参照に書き換わっていないかをチェック。これらは TanStack 2026-05 型のサプライチェーン汚染（毒入りパッケージが追加依存を引き込む）の典型シグナル
 - **Peer dependencies**: 新バージョンの peer-deps 要件を確認し、他依存と矛盾しないか検証 (例: TypeScript major アップで oxlint / type-fest の連動が必要か)
 - **プロジェクト内利用箇所**: import / require をプロジェクト内で `grep` し、影響範囲を把握
 - **Migration cost**: 上記を総合し「高 / 中 / 低」で評価
@@ -45,7 +46,7 @@ color: cyan
 | **Merge** | 利用箇所無し / patch update / breaking change 該当なし / セキュリティ問題なし |
 | **Verify** | minor update で該当 API を利用しているが、非互換ではない (動作確認のみ推奨) |
 | **Investigate** | major update / breaking change が利用箇所に該当 / peer-deps 連動が必要 |
-| **Hold** | CVE 残存 / 重大な breaking change / cooldown / 関連依存の同時更新待ち |
+| **Hold** | CVE 残存 / 重大な breaking change / cooldown / 関連依存の同時更新待ち / **非 npm registry 参照 (`github:` / `git+` / `http(s):` / `file:`) が新規追加された場合** |
 
 ## 取得コマンド例
 
@@ -69,6 +70,10 @@ pnpm view <pkg>@<version> peerDependencies
 # プロジェクト内利用箇所
 grep -rn --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' "from ['\"]<pkg>" .
 grep -rn --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' "require(['\"]<pkg>" .
+
+# サプライチェーン: 非 npm registry 参照の検出 (package.json / lockfile 差分)
+gh pr diff <PR_NUMBER> -- package.json '**/package.json' pnpm-lock.yaml \
+  | grep -nE '^\+.*"(github:|git\+|https?://|file:)'
 ```
 
 ## 出力フォーマット
@@ -97,6 +102,10 @@ grep -rn --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' "
 ### Security
 
 - (`pnpm audit` の結果、関連 CVE、無ければ「なし」)
+
+### Supply chain
+
+- (`package.json` / lockfile 内の非 npm registry 参照 `github:` `git+` `http(s):` `file:` の検出結果。新規追加があればパッケージ名・追加先 (`dependencies` / `optionalDependencies` 等) ・参照先 URL を明記。無ければ「なし」)
 
 ### Peer dependencies
 
