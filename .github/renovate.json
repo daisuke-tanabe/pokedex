@@ -26,9 +26,20 @@
       "enabled": false
     },
     {
-      "matchPackageNames": ["oxfmt", "oxlint", "/^oxlint-/"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "oxc-toolchain"
+      "extends": ["monorepo:oxlint"],
+      "groupName": "oxc"
+    },
+    {
+      "matchPackageNames": ["hono", "/^@hono\\//"],
+      "groupName": "hono"
+    },
+    {
+      "matchPackageNames": ["drizzle-orm", "drizzle-kit"],
+      "groupName": "drizzle"
+    },
+    {
+      "extends": ["monorepo:vitest"],
+      "groupName": "vitest"
     }
   ]
 }
