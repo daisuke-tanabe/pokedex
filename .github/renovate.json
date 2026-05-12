@@ -27,7 +27,7 @@
     },
     {
       "extends": ["monorepo:oxlint"],
-      "groupName": "oxc-toolchain"
+      "groupName": "oxc"
     },
     {
       "matchPackageNames": ["hono", "/^@hono\\//"],
