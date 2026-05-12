@@ -8,6 +8,7 @@
   "semanticCommitScope": "deps",
   "baseBranchPatterns": ["main"],
   "rangeStrategy": "pin",
+  "minimumReleaseAge": "3 days",
   "ignorePaths": [".claude/skills/**"],
   "lockFileMaintenance": {
     "enabled": true,
@@ -39,10 +40,6 @@
     {
       "extends": ["monorepo:vitest"],
       "groupName": "vitest"
-    },
-    {
-      "matchUpdateTypes": ["patch"],
-      "minimumReleaseAge": "3 days"
     },
     {
       "matchUpdateTypes": ["minor"],
