@@ -26,8 +26,7 @@
       "enabled": false
     },
     {
-      "matchPackageNames": ["oxfmt", "oxlint", "/^oxlint-/"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "extends": ["monorepo:oxlint"],
       "groupName": "oxc-toolchain"
     },
     {
