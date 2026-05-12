@@ -39,7 +39,7 @@
       "groupName": "drizzle"
     },
     {
-      "matchPackageNames": ["vitest", "/^@vitest\\//"],
+      "extends": ["monorepo:vitest"],
       "groupName": "vitest"
     }
   ]
