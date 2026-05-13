@@ -1,10 +1,10 @@
 ## 1. リポジトリ設定の準備
 
-- [ ] 1.1 `apps/api/package.json` の `scripts` に `seed`（`tsx --env-file=../../.env.development --env-file-if-exists=../../.env.local ./src/db/seed/seed.ts`）と `db:reset`（`supabase db reset && pnpm seed`）を追加する
-- [ ] 1.2 `apps/api/drizzle.config.ts` の `schema` を `./src/db/schema/index.ts` に更新する（既存の `out: '../../supabase/migrations'` はそのまま維持）
-- [ ] 1.3 `apps/api/src/db/schema/` ディレクトリを作成し、空の `index.ts`（`export {}` のみ）を置く
-- [ ] 1.4 `apps/api/src/db/seed/` と `apps/api/src/db/seed/data/`、`apps/api/src/db/seed/schemas/` ディレクトリを作成する
-- [ ] 1.5 `pnpm install` を実行し、ワークスペース解決が壊れていないことを確認する
+- [x] 1.1 `apps/api/package.json` の `scripts` に `seed`（`tsx --env-file=../../.env.development --env-file-if-exists=../../.env.local ./src/db/seed/seed.ts`）と `db:reset`（`supabase db reset && pnpm seed`）を追加する
+- [x] 1.2 `apps/api/drizzle.config.ts` の `schema` を `./src/db/schema/index.ts` に更新する（既存の `out: '../../supabase/migrations'` はそのまま維持）
+- [x] 1.3 `apps/api/src/db/schema/` ディレクトリを作成する（`index.ts` は最初のスキーマファイル `enums.ts` を作るセクション 6 で内容付きで生成する。lint の `unicorn/no-empty-file` を踏むため、ここでは空ファイルを置かない）
+- [x] 1.4 `apps/api/src/db/seed/` と `apps/api/src/db/seed/data/`、`apps/api/src/db/seed/schemas/` ディレクトリを作成する
+- [x] 1.5 `pnpm install` を実行し、ワークスペース解決が壊れていないことを確認する
 
 ## 2. shared-contracts: FormCategory
 
@@ -43,7 +43,7 @@
 - [ ] 6.1 [Test] `apps/api/src/db/schema/__tests__/enums.test.ts` を作成し、Drizzle の `pgEnum` から生成される `form_category` の値配列が contracts の `FormCategory` 値配列と等価になることを検証する（赤、`satisfies` でコンパイル時にも検証）
 - [ ] 6.2 [Test] 同テストに `sprite_gender` / `sprite_kind` の値配列も contracts と整合することを検証する（赤）
 - [ ] 6.3 [Impl] `apps/api/src/db/schema/enums.ts` を作成し、`formCategoryEnum`、`spriteGenderEnum`、`spriteKindEnum` の 3 pgEnum を contracts の値配列から定義して export する
-- [ ] 6.4 [Impl] `apps/api/src/db/schema/index.ts` から `enums.ts` を re-export する
+- [ ] 6.4 [Impl] `apps/api/src/db/schema/index.ts` を新規作成し、`enums.ts` を re-export する（schema フォルダ初回のエントリポイント。空ファイルではなく実 export を含む形で生成して `unicorn/no-empty-file` を回避する）
 - [ ] 6.5 [Refactor] pgEnum 名と TS シンボル名の対応を整え、JSDoc を追記する
 
 ## 7. domain-schema: locales lookup テーブル
