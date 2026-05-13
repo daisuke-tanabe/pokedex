@@ -10,6 +10,7 @@
   "rangeStrategy": "pin",
   "automerge": false,
   "platformAutomerge": false,
+  "minimumReleaseAge": "3 days",
   "ignorePaths": [".claude/skills/**"],
   "lockFileMaintenance": {
     "enabled": true,
@@ -18,6 +19,7 @@
   "vulnerabilityAlerts": {
     "enabled": true,
     "addLabels": ["security"],
+    "minimumReleaseAge": "3 days",
     "schedule": ["at any time"]
   },
   "packageRules": [
@@ -40,6 +42,14 @@
     {
       "extends": ["monorepo:vitest"],
       "groupName": "vitest"
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "minimumReleaseAge": "14 days"
     }
   ]
 }
