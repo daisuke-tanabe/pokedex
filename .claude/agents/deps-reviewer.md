@@ -138,24 +138,19 @@ gh pr diff <PR_NUMBER> -- package.json '**/package.json' pnpm-lock.yaml \
 **推奨マージ順序**: ...
 ````
 
-## CI 連動用の最終判定
+## CI 連動アクション
 
-レビューレポートの **最後に必ず** 以下の形式で最終判定を **単独行** で出力する:
+レビュー完了後、判定に応じて以下のアクションを取る:
 
-```
-FINAL_VERDICT: Merge
-```
+| 判定 | アクション |
+|------|---------|
+| `Merge` / `Verify` | `gh pr review <PR_NUMBER> --approve` を実行する (claude bot による approve として登録され、auto-merge ワークフローが自動マージを行う) |
+| `Investigate` / `Hold` | approve は実行しない。レビューコメントで指摘事項を明示する (誤判定または人間が確認・承認した場合、PR に **Approve** レビューを送ることでマージ可能) |
 
-値は以下のいずれか:
-- `Merge`: 安全にマージ可能 (CI を pass、automerge 候補)
-- `Verify`: 動作確認推奨 (CI を pass、注意点は本コメントに残す)
-- `Investigate`: 深掘りレビュー必要 (CI を fail。誤判定または人間が確認・承認した場合、PR に **Approve** レビューを送ることで override 可能)
-- `Hold`: マージ保留 (CI を fail。誤判定または人間が承認した場合、PR に **Approve** レビューを送ることで override 可能)
-
-グループ PR の場合は **総合判定** の値を `FINAL_VERDICT` に出力する。
+グループ PR の場合は **総合判定** に従う。
 個別パッケージで一つでも `Hold` / `Investigate` がある場合、総合判定は最も厳しいものに揃える (最弱リンク原則)。
 
-この行は GitHub Actions の後段 step が grep で抽出して CI の成否判定に使う。形式を厳密に守ること。
+approve は GitHub Actions runner 上の `gh` CLI で実行する。レビュー本文やコメントに `gh pr review ... --approve` の文字列をそのまま書かないこと (実行は Bash ツール経由のみ)。
 
 ## 行動原則
 
