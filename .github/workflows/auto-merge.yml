@@ -9,7 +9,7 @@ jobs:
     name: auto-merge
     if: |
       github.event.review.state == 'approved' &&
-      github.event.review.user.login == 'claude' &&
+      github.event.review.user.login == 'claude[bot]' &&
       github.event.pull_request.user.login == 'renovate[bot]'
     runs-on: ubuntu-latest
     permissions:
