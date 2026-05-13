@@ -15,7 +15,6 @@ concurrency:
 jobs:
   validate:
     name: validate
-    if: github.event_name != 'pull_request_review'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -92,8 +91,6 @@ jobs:
       contents: read
       pull-requests: write
       id-token: write
-    outputs:
-      verdict: ${{ steps.verdict.outputs.verdict }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -111,63 +108,27 @@ jobs:
             PR NUMBER: ${{ github.event.pull_request.number }}
 
             この Renovate PR を deps-reviewer agent でレビューしてください。
-            最終行に必ず "FINAL_VERDICT: <Merge|Verify|Investigate|Hold>" を単独行で出力してください。
-          claude_args: |
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh release:*),Bash(pnpm audit:*),Bash(pnpm view:*),Read,Grep,Glob,LS"
+            自動マージしても問題ないと判断した場合のみ、以下のコマンドを実行してください:
 
-      - name: Verify final verdict
-        id: verdict
+                gh pr review ${{ github.event.pull_request.number }} --approve
+
+            問題がある場合は PR コメントで指摘し、approve はしないでください。
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr review:*),Bash(gh release:*),Bash(pnpm audit:*),Bash(pnpm view:*),Read,Grep,Glob,LS"
+
+      - name: Verify approval
+        if: github.event_name != 'pull_request_review'
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 1. PR Review (Approve) で override
-          if [ "${{ github.event_name }}" = "pull_request_review" ] \
-             && [ "${{ github.event.review.state }}" = "approved" ]; then
-            echo "deps-review overridden by submitted PR review (approved)"
-            echo "verdict=approved" >> "$GITHUB_OUTPUT"
+          # claude bot による approve が登録されているか確認
+          approved=$(gh pr view "$PR_NUMBER" --json reviews \
+            --jq '[.reviews[] | select(.author.login == "claude" and .state == "APPROVED")] | length')
+          if [ "$approved" -gt 0 ]; then
+            echo "Claude bot approved; auto-merge.yml will pick this up"
             exit 0
           fi
 
-          # 2. FINAL_VERDICT を抽出 (claude bot コメントに限定して詐称防止)
-          verdict=$(gh pr view "$PR_NUMBER" --json comments \
-            --jq '.comments[] | select(.author.login == "claude") | .body' \
-            | grep -oE 'FINAL_VERDICT:[[:space:]]*[A-Za-z]+' \
-            | tail -1 \
-            | awk '{print $NF}')
-          echo "Final verdict: ${verdict:-unknown}"
-          echo "verdict=${verdict:-unknown}" >> "$GITHUB_OUTPUT"
-
-          # 3. Merge / Verify は pass、Investigate / Hold / unknown は fail
-          case "$verdict" in
-            Merge|Verify)
-              exit 0
-              ;;
-            *)
-              echo "Manual review needed: ${verdict:-unknown}"
-              echo "If reviewed and approved, submit a PR Review with 'Approve' to override."
-              exit 1
-              ;;
-          esac
-
-  deps-merge:
-    name: deps-merge
-    needs: deps-review
-    if: |
-      github.event_name == 'pull_request' &&
-      needs.deps-review.outputs.verdict == 'Merge'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Auto-merge
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "deps-reviewer 判定が Merge のため自動マージします: PR #$PR_NUMBER"
-          gh pr merge "$PR_NUMBER" --squash --delete-branch
+          echo "Manual review needed. Submit a PR Review with 'Approve' to merge."
+          exit 1
