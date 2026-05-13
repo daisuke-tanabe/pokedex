@@ -8,6 +8,8 @@
   "semanticCommitScope": "deps",
   "baseBranchPatterns": ["main"],
   "rangeStrategy": "pin",
+  "automerge": false,
+  "platformAutomerge": false,
   "ignorePaths": [".claude/skills/**"],
   "lockFileMaintenance": {
     "enabled": true,

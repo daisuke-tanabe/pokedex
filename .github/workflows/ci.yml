@@ -2,8 +2,6 @@ name: CI
 
 on:
   pull_request:
-  pull_request_review:
-    types: [submitted]
   push:
     branches:
       - main
@@ -15,9 +13,6 @@ concurrency:
 jobs:
   validate:
     name: validate
-    if: |
-      github.event_name != 'pull_request_review' ||
-      github.event.review.user.login != 'claude[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -76,20 +71,9 @@ jobs:
     name: deps-review
     needs: validate
     if: |
-      always() &&
-      (
-        (
-          github.event_name == 'pull_request' &&
-          github.actor == 'renovate[bot]' &&
-          needs.validate.result == 'success'
-        ) ||
-        (
-          github.event_name == 'pull_request_review' &&
-          github.event.review.state == 'approved' &&
-          github.event.review.user.login != 'claude[bot]' &&
-          github.event.pull_request.user.login == 'renovate[bot]'
-        )
-      )
+      github.event_name == 'pull_request' &&
+      github.actor == 'renovate[bot]' &&
+      needs.validate.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -100,7 +84,6 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Run deps-reviewer
-        if: github.event_name != 'pull_request_review'
         uses: anthropics/claude-code-action@dde2242db6af13460b916652159b6ba19a598f30 # v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -121,7 +104,6 @@ jobs:
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr review:*),Bash(gh release:*),Bash(pnpm audit:*),Bash(pnpm view:*),Read,Grep,Glob,LS"
 
       - name: Verify approval
-        if: github.event_name != 'pull_request_review'
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -134,5 +116,5 @@ jobs:
             exit 0
           fi
 
-          echo "Manual review needed. Submit a PR Review with 'Approve' to merge."
+          echo "Claude did not approve. Review the PR manually before merging."
           exit 1
