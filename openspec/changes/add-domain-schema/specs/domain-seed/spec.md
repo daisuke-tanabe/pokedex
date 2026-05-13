@@ -76,22 +76,27 @@
 
 ### Requirement: species.json の evolution_chain 表現
 
-`species.json` の各エントリは `evolution_chain_id`（または進化系統を識別する別名キー、例: `evolution_chain_key`）を含み、シード時に `evolution_chains` テーブルへの insert と `species.evolution_chain_id` の解決ができなければならない（MUST）。進化しない種族にも独自の `evolution_chain_id` を割り当てなければならない（MUST）。
+`species.json` の各エントリは `evolution_chain_key`（進化系統を識別する任意文字列キー、例: `'bulbasaur-line'`）を **任意フィールド** として持てなければならない（MUST）。同一進化系統に属する species は同じ `evolution_chain_key` を共有する（MUST）。`evolution_chain_key` が省略された species は「進化系統に属さない単独種族」として扱い、シード時に `species.evolution_chain_id` を NULL のまま投入する（MUST）。シードスクリプトは `evolution_chain_key` の一意集合から `evolution_chains` 行を自動生成し、各 species の `evolution_chain_id` を解決する（MUST）。
 
-#### Scenario: species.json の全エントリに evolution_chain 識別子が含まれる
-
-- **WHEN** `species.json` を読み込み、各エントリで evolution_chain 識別キーを検査する
-- **THEN** すべてのエントリに非 null の値が設定されている
-
-#### Scenario: 同一進化系統の species は同じ evolution_chain 識別子を持つ
+#### Scenario: 進化系統に属する species は evolution_chain_key を持つ
 
 - **WHEN** `species.json` から `slug = 'bulbasaur'`、`'ivysaur'`、`'venusaur'` のエントリを抽出する
-- **THEN** 3 エントリすべてが同じ evolution_chain 識別子を持つ
+- **THEN** 3 エントリすべてが同じ `evolution_chain_key` を持つ
 
-#### Scenario: 進化しない種族にも独自の evolution_chain 識別子が割り当てられる
+#### Scenario: 進化しない種族は evolution_chain_key を省略できる
 
 - **WHEN** `species.json` から `slug = 'mew'`（または進化しない他種族）のエントリを抽出する
-- **THEN** 非 null の evolution_chain 識別子が設定されている
+- **THEN** `evolution_chain_key` フィールドが存在しない、または `null` である
+
+#### Scenario: seed 後に進化しない species の evolution_chain_id は NULL になる
+
+- **WHEN** シード適用後の `species` テーブルから `slug = 'mew'` の行を取得する
+- **THEN** `evolution_chain_id` が NULL である
+
+#### Scenario: seed 後に同一進化系統の species は同じ evolution_chain_id を持つ
+
+- **WHEN** シード適用後の `species` テーブルから `slug IN ('bulbasaur', 'ivysaur', 'venusaur')` の行を取得する
+- **THEN** 3 行すべてが同じ非 NULL の `evolution_chain_id` を持つ
 
 ### Requirement: シードスクリプトのコマンド
 
@@ -118,6 +123,20 @@
 - **WHEN** `forms.json` の 1 エントリから `category` キーを削除して `pnpm --filter @pokedex/api seed` を実行する
 - **THEN** valibot パースエラーをログに出した上で、プロセスが終了コード `1` で終わる
 
+### Requirement: form_sprites.url は placeholder で投入できる
+
+本 change ではスプライト画像の実アップロードを行わないため、`form_sprites.url` には **placeholder 文字列**（例: `'placeholder/<species_slug>/<form_slug>/<gender>/<kind>.png'`）を格納してよい（MAY）。`url` 列は NOT NULL であり空文字も拒否する（MUST）。実画像との整合性検証は後続 `add-sprite-assets` change で対応する。
+
+#### Scenario: placeholder URL で form_sprites を insert できる
+
+- **WHEN** `(form_id=X, gender='male', kind='default', url='placeholder/pikachu/normal/male/default.png')` を insert する
+- **THEN** 成功する
+
+#### Scenario: 空文字の url は拒否される
+
+- **WHEN** `url = ''` の `form_sprites` 行を insert する
+- **THEN** NOT NULL もしくはチェック制約違反、あるいは valibot パースエラーで失敗する
+
 ### Requirement: Invariant Tests による不変条件検証
 
 `apps/api/src/db/seed/invariants.test.ts`（vitest）は、シード適用後の DB に対して以下の不変条件をすべて検証しなければならない（MUST）。
@@ -128,7 +147,8 @@
 - `form_types` で `(form_id, type_id)` が重複していないこと
 - `pokedex_entries` で `(pokedex_id, pokedex_number)` および `(pokedex_id, species_id)` がそれぞれ重複していないこと
 - `species_evolutions` で `from_species_id = to_species_id` の行が存在しないこと
-- `species_evolutions` の `from_species_id` と `to_species_id` が同じ `evolution_chain_id` を指していること
+- `species_evolutions` に登場する species は必ず非 NULL の `evolution_chain_id` を持ち、`from` と `to` が同じ `evolution_chain_id` を共有すること
+- `pokedex_entries.form_id` が非 NULL の場合、その form の `species_id` が `pokedex_entries.species_id` と一致すること
 
 #### Scenario: national_dex_number と national pokedex の番号が一致する
 
@@ -165,9 +185,19 @@
 - **WHEN** `species_evolutions WHERE from_species_id = to_species_id` を実行する
 - **THEN** 0 行返る
 
-#### Scenario: species_evolutions の両端が同じ evolution_chain_id を指す
+#### Scenario: species_evolutions に登場する species は非 NULL の evolution_chain_id を持つ
+
+- **WHEN** `species_evolutions e JOIN species fs ON e.from_species_id = fs.id JOIN species ts ON e.to_species_id = ts.id WHERE fs.evolution_chain_id IS NULL OR ts.evolution_chain_id IS NULL` を実行する
+- **THEN** 0 行返る
+
+#### Scenario: species_evolutions の両端が同じ evolution_chain_id を共有する
 
 - **WHEN** `species_evolutions e JOIN species fs ON e.from_species_id = fs.id JOIN species ts ON e.to_species_id = ts.id WHERE fs.evolution_chain_id <> ts.evolution_chain_id` を実行する
+- **THEN** 0 行返る
+
+#### Scenario: pokedex_entries.form_id が指す form は同じ species に属する
+
+- **WHEN** `pokedex_entries pe JOIN forms f ON pe.form_id = f.id WHERE pe.form_id IS NOT NULL AND pe.species_id <> f.species_id` を実行する
 - **THEN** 0 行返る
 
 ### Requirement: db:reset スクリプト

@@ -101,7 +101,7 @@
 
 ### Requirement: species テーブルと species_names
 
-`species` テーブルは `id`（主キー）、`slug`（UNIQUE）、`national_dex_number`（INTEGER、NOT NULL、UNIQUE）、`evolution_chain_id`（`evolution_chains.id` への FK、NOT NULL）を持たなければならない（MUST）。TS 側のシンボルは `species`、型は `Species` / `NewSpecies` として export されなければならない（MUST）。`species_names` は `(species_id, locale)` UNIQUE を持たなければならない（MUST）。
+`species` テーブルは `id`（主キー）、`slug`（UNIQUE）、`national_dex_number`（INTEGER、NOT NULL、UNIQUE）、`evolution_chain_id`（`evolution_chains.id` への FK、**NULL 許容**）を持たなければならない（MUST）。進化しない単独種族は `evolution_chain_id` を NULL にしてもよい（MAY）。TS 側のシンボルは `species`、型は `Species` / `NewSpecies` として export されなければならない（MUST）。`species_names` は `(species_id, locale)` UNIQUE を持たなければならない（MUST）。
 
 #### Scenario: species テーブルの物理名と複数形表現
 
@@ -113,10 +113,15 @@
 - **WHEN** 生成されたマイグレーション SQL を読む
 - **THEN** `species` テーブルで `slug` と `national_dex_number` がそれぞれ UNIQUE 制約を持つ
 
-#### Scenario: species.evolution_chain_id が NOT NULL FK である
+#### Scenario: species.evolution_chain_id が NULL 許容 FK である
 
 - **WHEN** 生成された SQL を読む
-- **THEN** `species.evolution_chain_id` が `evolution_chains(id)` を REFERENCES し、NOT NULL 制約が付いている
+- **THEN** `species.evolution_chain_id` が `evolution_chains(id)` を REFERENCES し、NOT NULL 制約が **付いていない**
+
+#### Scenario: 進化しない species は evolution_chain_id を NULL で insert できる
+
+- **WHEN** `(slug='mew', national_dex_number=151, evolution_chain_id=null)` の行を insert する
+- **THEN** 成功する
 
 #### Scenario: Species / NewSpecies 型がペアで export される
 
@@ -229,9 +234,9 @@
 - **WHEN** `kind = 'icon'` の行を insert する
 - **THEN** pgEnum の値エラーで失敗する
 
-### Requirement: pokedex_entries テーブル（図鑑番号と species の一意性）
+### Requirement: pokedex_entries テーブル（図鑑番号と species の一意性、表示フォーム指定）
 
-`pokedex_entries` テーブルは `id`、`pokedex_id`（`pokedexes.id` を参照）、`species_id`（`species.id` を参照）、`pokedex_number`（INTEGER、NOT NULL）を持たなければならない（MUST）。`(pokedex_id, pokedex_number)` は UNIQUE でなければならない（MUST）。`(pokedex_id, species_id)` は UNIQUE でなければならない（MUST、同一図鑑に同一 species が二重登録されることを防ぐ）。
+`pokedex_entries` テーブルは `id`、`pokedex_id`（`pokedexes.id` を参照）、`species_id`（`species.id` を参照）、`pokedex_number`（INTEGER、NOT NULL）、`form_id`（`forms.id` を参照、**NULL 許容**）を持たなければならない（MUST）。`(pokedex_id, pokedex_number)` は UNIQUE でなければならない（MUST）。`(pokedex_id, species_id)` は UNIQUE でなければならない（MUST、同一図鑑に同一 species が二重登録されることを防ぐ）。`form_id` はその図鑑エントリで表示するフォームを指定する。NULL の場合は UI 側で `category='normal'` の form をデフォルト表示する（MAY）。
 
 #### Scenario: 同じ図鑑で同じ番号を 2 回登録できない
 
@@ -247,6 +252,21 @@
 
 - **WHEN** `(pokedex_id=national_id, species_id=25)` と `(pokedex_id=paldea_id, species_id=25)` を順に insert する
 - **THEN** 両方成功する
+
+#### Scenario: form_id が NULL 許容で forms を参照する
+
+- **WHEN** 生成された SQL を読む
+- **THEN** `pokedex_entries.form_id` 列が `forms(id)` を REFERENCES し、NOT NULL 制約が **付いていない**
+
+#### Scenario: form_id を NULL で登録できる
+
+- **WHEN** `(pokedex_id=national_id, species_id=25, pokedex_number=25, form_id=null)` を insert する
+- **THEN** 成功する
+
+#### Scenario: form_id にパルデア用のオーガポン形態を指定して登録できる
+
+- **WHEN** `(pokedex_id=paldea_id, species_id=ogerpon_id, pokedex_number=400, form_id=ogerpon_teal_id)` を insert する
+- **THEN** 成功する（FK 解決済みの form_id を持つ）
 
 ### Requirement: マイグレーション SQL の生成
 
@@ -267,10 +287,15 @@
 - **WHEN** 生成された SQL をテキスト検索する
 - **THEN** `from_species_id <> to_species_id` の CHECK 制約が含まれる
 
-#### Scenario: 生成 SQL に species.evolution_chain_id の NOT NULL FK が含まれる
+#### Scenario: 生成 SQL に species.evolution_chain_id の NULL 許容 FK が含まれる
 
 - **WHEN** 生成された SQL をテキスト検索する
-- **THEN** `species.evolution_chain_id` が `NOT NULL` かつ `evolution_chains(id)` を REFERENCES している
+- **THEN** `species.evolution_chain_id` が `evolution_chains(id)` を REFERENCES し、NOT NULL 制約が付いていない
+
+#### Scenario: 生成 SQL に pokedex_entries.form_id の NULL 許容 FK が含まれる
+
+- **WHEN** 生成された SQL をテキスト検索する
+- **THEN** `pokedex_entries.form_id` が `forms(id)` を REFERENCES し、NOT NULL 制約が付いていない
 
 ### Requirement: relations() による関連定義
 

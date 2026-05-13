@@ -91,12 +91,13 @@
 
 - [ ] 12.1 [Test] `apps/api/src/db/schema/__tests__/species.test.ts` を作成し、`species` の物理名が `'species'` であることを検証する（赤）
 - [ ] 12.2 [Test] 同テストに `species.slug` と `species.national_dex_number` がそれぞれ UNIQUE 制約を持つことを生成 SQL から検証する（赤）
-- [ ] 12.3 [Test] 同テストに `species.evolution_chain_id` が NOT NULL かつ `evolution_chains(id)` を REFERENCES することを検証する（赤）
-- [ ] 12.4 [Test] 同テストに `Species` / `NewSpecies` 両型が型エラーなく import できることを `expectTypeOf` で検証する（赤）
-- [ ] 12.5 [Test] `species_names` の `(species_id, locale)` UNIQUE と `locale` FK を期待値として追記する（赤）
-- [ ] 12.6 [Impl] `apps/api/src/db/schema/species.ts` を作成し、`species`（`id` PK、`slug` UNIQUE、`national_dex_number` NOT NULL UNIQUE、`evolution_chain_id` NOT NULL FK）と `species_names`（`(species_id, locale)` UNIQUE）を定義する。`Species` / `NewSpecies` を export する
-- [ ] 12.7 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 12.8 [Refactor] 列順序・JSDoc・型 export を整える
+- [ ] 12.3 [Test] 同テストに `species.evolution_chain_id` が NULL 許容かつ `evolution_chains(id)` を REFERENCES することを検証する（赤）
+- [ ] 12.4 [Test] `apps/api/src/db/__tests__/species.integration.test.ts` を作成し、ローカル Supabase に対して `(slug='mew', national_dex_number=151, evolution_chain_id=null)` の行が insert 成功するシナリオを書く（赤）
+- [ ] 12.5 [Test] 同テストに `Species` / `NewSpecies` 両型が型エラーなく import できることを `expectTypeOf` で検証する（赤）
+- [ ] 12.6 [Test] `species_names` の `(species_id, locale)` UNIQUE と `locale` FK を期待値として追記する（赤）
+- [ ] 12.7 [Impl] `apps/api/src/db/schema/species.ts` を作成し、`species`（`id` PK、`slug` UNIQUE、`national_dex_number` NOT NULL UNIQUE、`evolution_chain_id` **NULL 許容** FK）と `species_names`（`(species_id, locale)` UNIQUE）を定義する。`Species` / `NewSpecies` を export する
+- [ ] 12.8 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [ ] 12.9 [Refactor] 列順序・JSDoc・型 export を整える
 
 ## 13. domain-schema: species_evolutions
 
@@ -140,10 +141,11 @@
 ## 17. domain-schema: pokedex_entries
 
 - [ ] 17.1 [Test] `apps/api/src/db/schema/__tests__/pokedex-entries.test.ts` を作成し、`(pokedex_id, pokedex_number)` UNIQUE と `(pokedex_id, species_id)` UNIQUE が生成 SQL に含まれることを検証する（赤）
-- [ ] 17.2 [Test] `apps/api/src/db/__tests__/pokedex-entries.integration.test.ts` を作成し、「同じ `(pokedex_id, pokedex_number)` の 2 度 insert で UNIQUE 違反」「同じ `(pokedex_id, species_id)` の 2 度 insert で UNIQUE 違反」「別 `pokedex_id` なら同じ `species_id` で両方成功」のシナリオを書く（赤）
-- [ ] 17.3 [Impl] `apps/api/src/db/schema/pokedexes.ts` の同ファイル内、あるいは `pokedex-entries.ts` として分離し、`pokedex_entries`（`id` PK、`pokedex_id` FK、`species_id` FK、`pokedex_number` INTEGER NOT NULL、`(pokedex_id, pokedex_number)` UNIQUE、`(pokedex_id, species_id)` UNIQUE）を定義する
-- [ ] 17.4 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 17.5 [Refactor] 列順序・JSDoc を整える
+- [ ] 17.2 [Test] 同テストに `pokedex_entries.form_id` が NULL 許容で `forms(id)` を REFERENCES することを検証する（赤）
+- [ ] 17.3 [Test] `apps/api/src/db/__tests__/pokedex-entries.integration.test.ts` を作成し、「同じ `(pokedex_id, pokedex_number)` の 2 度 insert で UNIQUE 違反」「同じ `(pokedex_id, species_id)` の 2 度 insert で UNIQUE 違反」「別 `pokedex_id` なら同じ `species_id` で両方成功」「`form_id=null` で insert 成功」「`form_id=ogerpon_teal_id` のような form 指定 insert 成功」のシナリオを書く（赤）
+- [ ] 17.4 [Impl] `apps/api/src/db/schema/pokedexes.ts` の同ファイル内、あるいは `pokedex-entries.ts` として分離し、`pokedex_entries`（`id` PK、`pokedex_id` FK、`species_id` FK、`pokedex_number` INTEGER NOT NULL、`form_id` FK to `forms.id` NULL 許容、`(pokedex_id, pokedex_number)` UNIQUE、`(pokedex_id, species_id)` UNIQUE）を定義する
+- [ ] 17.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [ ] 17.6 [Refactor] 列順序・JSDoc を整える
 
 ## 18. domain-schema: relations() と schema/index.ts の最終形
 
@@ -159,7 +161,7 @@
 ## 19. domain-schema: マイグレーション SQL の生成と検証
 
 - [ ] 19.1 [Test] `apps/api/src/db/__tests__/migrations.test.ts` を作成し、`supabase/migrations/` 配下に `YYYYMMDDHHMMSS_*.sql` パターンの SQL ファイルが少なくとも 1 つ存在することを検証する（赤、まだ実行前）
-- [ ] 19.2 [Test] 同テストに「生成 SQL に `form_types` の主キーが `(form_id, slot)` の複合キーで定義されている」「`from_species_id <> to_species_id` の CHECK 制約が含まれる」「`species.evolution_chain_id` が `NOT NULL` かつ `evolution_chains(id)` を REFERENCES する」シナリオを追記する（赤）
+- [ ] 19.2 [Test] 同テストに「生成 SQL に `form_types` の主キーが `(form_id, slot)` の複合キーで定義されている」「`from_species_id <> to_species_id` の CHECK 制約が含まれる」「`species.evolution_chain_id` が NULL 許容 FK である」「`pokedex_entries.form_id` が NULL 許容 FK である」シナリオを追記する（赤）
 - [ ] 19.3 [Impl] `pnpm --filter @pokedex/api drizzle-kit generate --name add_domain_schema` を実行し、生成 SQL を目視レビューする
 - [ ] 19.4 [Impl] 生成された SQL をコミット対象に追加する（手書き修正は最小限、Drizzle Kit 出力を尊重）
 - [ ] 19.5 [Refactor] ファイル名・タイムスタンプが Supabase CLI の期待形式と一致するか `supabase db reset` で確認する
@@ -179,25 +181,26 @@
 
 - [ ] 21.1 [Test] `apps/api/src/db/seed/__tests__/load-species.test.ts` を作成し、`species.json` を valibot スキーマでパースできることを検証する（赤）
 - [ ] 21.2 [Test] 同テストに `national_dex_number` が 1 始まりの連番（重複なし）であることを検証する（赤）
-- [ ] 21.3 [Test] 同テストに「全エントリに `evolution_chain_key`（または同等識別子）が設定されている」「同一進化系統の species は同じ識別子を共有する」「進化しない種族にも独自の識別子が設定される」シナリオを追加する（赤）
-- [ ] 21.4 [Impl] `apps/api/src/db/seed/data/species.json` を作成し、最低限第 1 〜 第 9 世代の代表 species を含む配列を記述する（カントー御三家 + ピカチュウ + ロトム + アルセウス + シルヴァディ + アンノーン + ジガルデ + ネクロズマ + ザシアン + ザマゼンタ + グラードン + カイオーガ + テラパゴス + オーガポンを最低カバー）。各エントリは `slug` / `national_dex_number` / `evolution_chain_key` / `names` を持つ
-- [ ] 21.5 [Impl] valibot スキーマで `(slug, national_dex_number, evolution_chain_key)` のフォーマットを定義する
+- [ ] 21.3 [Test] 同テストに「進化系統に属する species は `evolution_chain_key` を持つ」「同一進化系統の species は同じ `evolution_chain_key` を共有する」「進化しない種族は `evolution_chain_key` を省略できる（任意フィールド）」シナリオを追加する（赤）
+- [ ] 21.4 [Impl] `apps/api/src/db/seed/data/species.json` を作成し、最低限第 1 〜 第 9 世代の代表 species を含む配列を記述する（カントー御三家 + ピカチュウ + ロトム + アルセウス + シルヴァディ + アンノーン + ジガルデ + ネクロズマ + ザシアン + ザマゼンタ + グラードン + カイオーガ + テラパゴス + オーガポン + ミュウ（進化しない species 代表）を最低カバー）。各エントリは `slug` / `national_dex_number` / `names` を持ち、進化系統に属する species のみ `evolution_chain_key` を持つ
+- [ ] 21.5 [Impl] valibot スキーマで `(slug, national_dex_number)` を必須・`evolution_chain_key` を任意フィールドとして定義する
 - [ ] 21.6 [Refactor] JSON の整形・ソート規約を README に追記する
 
 ## 22. domain-seed: forms JSON（100+ フォーム）
 
 - [ ] 22.1 [Test] `apps/api/src/db/seed/__tests__/load-forms.test.ts` を作成し、`forms.json` を valibot スキーマでパースできることを検証する（赤）
 - [ ] 22.2 [Test] 同テストに「`forms.json` のエントリ数が 100 以上である」「`species_slug = 'ogerpon'` で 4 件以上のエントリが含まれる」「`species_slug = 'unown'` で 28 件のエントリが含まれる」シナリオを追記する（赤）
-- [ ] 22.3 [Impl] `apps/api/src/db/seed/data/forms.json` を作成し、Decision で挙げた特殊フォームを全部含む 100+ エントリを記述する。各エントリは `species_slug` / `slug` / `category` / `types[]` / `sprites[]` / `names[]` を持つ
-- [ ] 22.4 [Impl] valibot スキーマで `FormCategory` / `SpriteGender` / `SpriteKind` / `Locale` の制約を組み込む
-- [ ] 22.5 [Refactor] JSON の整形ルール・ソート（species_slug → slug の順）を README に追記する
+- [ ] 22.3 [Test] 同テストに「`sprites[].url` が空文字でない（placeholder 文字列を許容）」シナリオを追記する（赤）
+- [ ] 22.4 [Impl] `apps/api/src/db/seed/data/forms.json` を作成し、Decision で挙げた特殊フォームを全部含む 100+ エントリを記述する。各エントリは `species_slug` / `slug` / `category` / `types[]` / `sprites[]` / `names[]` を持つ。`sprites[].url` は placeholder 文字列（`'placeholder/<species_slug>/<form_slug>/<gender>/<kind>.png'` パターン）で構わない
+- [ ] 22.5 [Impl] valibot スキーマで `FormCategory` / `SpriteGender` / `SpriteKind` / `Locale` の制約と `sprites[].url` の非空チェックを組み込む
+- [ ] 22.6 [Refactor] JSON の整形ルール・ソート（species_slug → slug の順）を README に追記する。スプライト画像の実投入は後続 `add-sprite-assets` change で扱う旨も追記する
 
 ## 23. domain-seed: seed.ts スクリプト
 
 - [ ] 23.1 [Test] `apps/api/src/db/seed/__tests__/seed.test.ts` を作成し、テスト用に空 DB に対して `seed()` 関数を呼ぶと終了コード `0` 相当で完了することを検証する（赤）
 - [ ] 23.2 [Test] 同テストに「`forms.json` の 1 エントリから `category` キーを削除した状態で `seed()` を呼ぶと例外を投げる」シナリオを追記する（赤、モックされた JSON 入力で）
 - [ ] 23.3 [Impl] `apps/api/src/db/seed/seed.ts` を作成し、以下の手順を実装する: (1) JSON ファイル群を valibot パース、(2) `locales` → `types` → `regions` → `pokedexes` → `evolution_chains` → `species` を順に insert、(3) `species_names` → `species_evolutions` → `forms` → `form_*` → `pokedex_entries` → `type_names` → `region_names` → `pokedex_names` を順に insert、(4) Invariant Tests を呼ぶ、(5) 失敗時は終了コード `1`
-- [ ] 23.4 [Impl] `evolution_chains` の insert は `species.json` 内の `evolution_chain_key` 一意集合から自動生成する（事前マッピング）
+- [ ] 23.4 [Impl] `evolution_chains` の insert は `species.json` 内に **存在する** `evolution_chain_key` の一意集合から自動生成する（`evolution_chain_key` を持たない species は NULL のまま投入）
 - [ ] 23.5 [Impl] `apps/api/src/db/seed/invariants.ts` を作成し、Invariant Tests から呼ばれる検証関数を export する（テストロジックの本体）
 - [ ] 23.6 [Refactor] insert を `db.transaction()` で囲み、途中失敗時にロールバックする
 - [ ] 23.7 [Refactor] エラーメッセージ・進捗ログを「ja 開発者が読みやすい」形に整える
@@ -210,10 +213,11 @@
 - [ ] 24.4 [Test] 同テストに「全 `forms` に `form_names(locale='ja')` が存在する」シナリオを追記する（赤）
 - [ ] 24.5 [Test] 同テストに「`pokedex_entries` で `(pokedex_id, pokedex_number)` および `(pokedex_id, species_id)` がいずれも重複していない」シナリオを追記する（赤）
 - [ ] 24.6 [Test] 同テストに「`species_evolutions` に `from_species_id = to_species_id` の行が存在しない」シナリオを追記する（赤）
-- [ ] 24.7 [Test] 同テストに「`species_evolutions` の両端が同じ `evolution_chain_id` を指す」シナリオを追記する（赤）
+- [ ] 24.7 [Test] 同テストに「`species_evolutions` に登場する species は非 NULL の `evolution_chain_id` を持つ」「`species_evolutions` の両端が同じ `evolution_chain_id` を共有する」シナリオを追記する（赤）
 - [ ] 24.8 [Test] 同テストに「`form_types` で `(form_id, slot)` および `(form_id, type_id)` がいずれも重複していない」シナリオを追記する（赤）
-- [ ] 24.9 [Impl] 23.5 の `invariants.ts` を上記シナリオを満たす形に実装する。各検証関数は違反行のサンプルを含むエラーメッセージを返す
-- [ ] 24.10 [Refactor] 検証ロジックの並べ替え（親テーブル → 子テーブル順）と共通ヘルパー（`countByGroup` 等）の抽出
+- [ ] 24.9 [Test] 同テストに「`pokedex_entries.form_id` が非 NULL の場合、その form の `species_id` が `pokedex_entries.species_id` と一致する」シナリオを追記する（赤）
+- [ ] 24.10 [Impl] 23.5 の `invariants.ts` を上記シナリオを満たす形に実装する。各検証関数は違反行のサンプルを含むエラーメッセージを返す
+- [ ] 24.11 [Refactor] 検証ロジックの並べ替え（親テーブル → 子テーブル順）と共通ヘルパー（`countByGroup` 等）の抽出
 
 ## 25. domain-seed: db:reset コマンドの確認
 
