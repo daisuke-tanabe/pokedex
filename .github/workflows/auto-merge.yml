@@ -1,0 +1,25 @@
+name: Auto Merge
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  auto-merge:
+    name: auto-merge
+    if: |
+      github.event.review.state == 'approved' &&
+      github.event.review.user.login == 'claude' &&
+      github.event.pull_request.user.login == 'renovate[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Merge
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "claude bot による approve を検知。自動マージします: PR #$PR_NUMBER"
+          gh pr merge "$PR_NUMBER" --squash --delete-branch
