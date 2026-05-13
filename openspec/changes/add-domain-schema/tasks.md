@@ -8,35 +8,35 @@
 
 ## 2. shared-contracts: FormCategory
 
-- [ ] 2.1 [Test] `packages/contracts/src/__tests__/enums/form-category.test.ts` を作成し、`Object.values(FormCategory)` が 8 値 `['normal', 'regional', 'mega', 'mega-x', 'mega-y', 'gigantamax', 'tera', 'other']` を含むことを検証する（赤）
-- [ ] 2.2 [Test] 同テストに `expectTypeOf<FormCategory>().toEqualTypeOf<'normal' | 'regional' | 'mega' | 'mega-x' | 'mega-y' | 'gigantamax' | 'tera' | 'other'>()` を追加する（赤）
-- [ ] 2.3 [Test] 同テストに `// @ts-expect-error` で `const x: FormCategory = 'unknown-category'` がエラーになることを示す（赤）
-- [ ] 2.4 [Impl] `packages/contracts/src/enums/form-category.ts` を作成し、`as const` オブジェクト + 型エイリアスで `FormCategory` を export する
-- [ ] 2.5 [Impl] `packages/contracts/src/index.ts` から `enums/form-category.ts` を re-export する
-- [ ] 2.6 [Refactor] 命名・JSDoc・export 形式の整合を見直す
+- [x] 2.1 [Test] `packages/contracts/src/enums/form-category.test.ts` を作成し、`Object.values(FormCategory)` が 8 値 `['normal', 'regional', 'mega', 'mega-x', 'mega-y', 'gigantamax', 'tera', 'other']` を含むことを検証する（既存 colocate 規約に合わせ `__tests__/` ではなく同階層に置く）
+- [x] 2.2 [Test] 同テストに `FormCategory.NORMAL` がリテラル `'normal'` であること、`MEGA_X` がハイフン入りの `'mega-x'` を表すことを検証する
+- [x] 2.3 [Test] 同テストに `// @ts-expect-error` で `const x: FormCategory = 'unknown-category'` がエラーになることを示す
+- [x] 2.4 [Impl] `packages/contracts/src/enums/form-category.ts` を作成し、`as const` オブジェクト + 型エイリアスで `FormCategory` を export する
+- [x] 2.5 [Impl] `packages/contracts/src/index.ts` から `enums/form-category.js` を re-export する
+- [x] 2.6 [Refactor] 命名・JSDoc・export 形式の整合を見直す
 
 ## 3. shared-contracts: Locale
 
-- [ ] 3.1 [Test] `packages/contracts/src/__tests__/enums/locale.test.ts` を作成し、`Object.values(Locale)` に `'ja'` と `'en'` の 2 値が最低含まれることを検証する（赤）
-- [ ] 3.2 [Test] 同テストに `// @ts-expect-error` で `const l: Locale = 'xx'` がエラーになることを示す（赤）
-- [ ] 3.3 [Impl] `packages/contracts/src/enums/locale.ts` を作成し、`as const` オブジェクト + 型エイリアスで `Locale` を export する。将来 `fr / de / it / es / ko / zh-Hans / zh-Hant` を追加可能な構造にする
-- [ ] 3.4 [Impl] `packages/contracts/src/index.ts` から `enums/locale.ts` を re-export する
-- [ ] 3.5 [Refactor] 命名・JSDoc を整える
+- [x] 3.1 [Test] `packages/contracts/src/enums/locale.test.ts` を作成し、`Object.values(Locale)` に `'ja'` と `'en'` の 2 値が最低含まれることを検証する
+- [x] 3.2 [Test] 同テストに `// @ts-expect-error` で `const l: Locale = 'xx'` がエラーになることを示す
+- [x] 3.3 [Impl] `packages/contracts/src/enums/locale.ts` を作成し、`as const` オブジェクト + 型エイリアスで `Locale` を export する。将来 `fr / de / it / es / ko / zh-Hans / zh-Hant` を追加可能な構造にする
+- [x] 3.4 [Impl] `packages/contracts/src/index.ts` から `enums/locale.js` を re-export する
+- [x] 3.5 [Refactor] 命名・JSDoc を整える
 
 ## 4. shared-contracts: SpriteGender / SpriteKind
 
-- [ ] 4.1 [Test] `packages/contracts/src/__tests__/enums/sprite.test.ts` を作成し、`SpriteGender` の値に `'male'` / `'female'` / `'unknown'` の 3 値が含まれることを検証する（赤）
-- [ ] 4.2 [Test] 同テストに `SpriteKind` の値に `'default'` / `'shiny'` / `'back'` / `'back_shiny'` の 4 値が含まれることを検証する（赤）
-- [ ] 4.3 [Test] 同テストに `// @ts-expect-error` で `const g: SpriteGender = 'other'` と `const k: SpriteKind = 'thumbnail'` がそれぞれエラーになることを示す（赤）
-- [ ] 4.4 [Impl] `packages/contracts/src/enums/sprite.ts` を作成し、`SpriteGender` と `SpriteKind` を `as const` オブジェクト + 型エイリアスで export する
-- [ ] 4.5 [Impl] `packages/contracts/src/index.ts` から `enums/sprite.ts` を re-export する
-- [ ] 4.6 [Refactor] 命名・JSDoc・export 形式を整える
+- [x] 4.1 [Test] `packages/contracts/src/enums/sprite.test.ts` を作成し、`SpriteGender` の値に `'male'` / `'female'` / `'unknown'` の 3 値が含まれることを検証する
+- [x] 4.2 [Test] 同テストに `SpriteKind` の値に `'default'` / `'shiny'` / `'back'` / `'back_shiny'` の 4 値が含まれることを検証する
+- [x] 4.3 [Test] 同テストに `// @ts-expect-error` で `const g: SpriteGender = 'other'` と `const k: SpriteKind = 'thumbnail'` がそれぞれエラーになることを示す
+- [x] 4.4 [Impl] `packages/contracts/src/enums/sprite.ts` を作成し、`SpriteGender` と `SpriteKind` を `as const` オブジェクト + 型エイリアスで export する
+- [x] 4.5 [Impl] `packages/contracts/src/index.ts` から `enums/sprite.js` を re-export する
+- [x] 4.6 [Refactor] 命名・JSDoc・export 形式を整える
 
 ## 5. shared-contracts: 単一エントリポイントからの追加 export
 
-- [ ] 5.1 [Test] `packages/contracts/src/__tests__/index.test.ts` に「`FormCategory` / `Locale` / `SpriteGender` / `SpriteKind` の 4 シンボルが `@pokedex/contracts` から型エラーなく import できる」smoke テストを追記する
-- [ ] 5.2 [Impl] `packages/contracts/src/index.ts` の re-export 漏れを補完する
-- [ ] 5.3 [Refactor] export 順序の整理（既存の `envelopeSchema` / 定数 / `ErrorCode` の並びに新 enums を追加）
+- [x] 5.1 [Test] `packages/contracts/src/index.test.ts` に「`FormCategory` / `Locale` / `SpriteGender` / `SpriteKind` の 4 シンボルが `@pokedex/contracts` から型エラーなく import できる」smoke テストを追記する
+- [x] 5.2 [Impl] `packages/contracts/src/index.ts` の re-export 漏れを補完する
+- [x] 5.3 [Refactor] export 順序の整理（既存の `envelopeSchema` / 定数 / `ErrorCode` の並びに新 enums を追加）
 
 ## 6. domain-schema: pgEnum 定義
 
