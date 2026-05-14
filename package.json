@@ -18,7 +18,7 @@
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
-    "turbo": "2.9.12",
+    "turbo": "2.9.14",
     "type-fest": "5.6.0",
     "typescript": "6.0.3",
     "yaml": "2.9.0"
