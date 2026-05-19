@@ -30,6 +30,10 @@
       "groupName": "oxc"
     },
     {
+      "matchPackageNames": ["oxlint", "oxlint-tsgolint"],
+      "groupName": "oxc"
+    },
+    {
       "matchPackageNames": ["hono", "/^@hono\\//"],
       "groupName": "hono"
     },
