@@ -104,41 +104,63 @@ pre-push               AI Worker 並列レビュー (Worker-Aggregator パター
 
 ## 依存関係の自動マージフロー
 
-Renovate が作成した依存更新 PR は、`deps-reviewer` agent (Claude) のレビュー結果に基づいて
-自動マージされる。判定 → マージの経路を Claude に一本化し、人手介入を最小化する設計。
+Renovate が作成した依存更新 PR は、`deps-reviewer` agent (Claude) が安全と判断した場合のみ
+自動マージされる。安全性判定からマージまでを Claude に一本化し、人手介入を最小化する設計。
+
+### パイプライン
+
+1. **Renovate** が依存更新 PR を作成 (`.github/renovate.json`)。Renovate 側の `automerge` /
+   `platformAutomerge` は意図的に `false` (マージ判断を Claude に集約するため)。
+2. **`validate`** ジョブ (typecheck / lint / format) が全 PR で走る。`main` ブランチ
+   ruleset の **唯一の必須ステータスチェック**。
+3. `renovate[bot]` の PR で `validate` が成功すると **`deps-review`** ジョブが走る
+   (`needs: validate` + `actor == 'renovate[bot]'`)。3 ステップ構成:
+   - **Run deps-reviewer**: `deps-reviewer` agent が依存差分を監査し、**安全 (Merge /
+     Verify) と判断した場合のみ** `gh pr review --approve` を実行 (`claude` bot 名義の
+     approve として登録)。Investigate / Hold ならコメントで指摘し approve しない。
+   - **Notify review unavailable**: `Run deps-reviewer` が失敗した場合のみ発火。PR が
+     `.github/workflows/**` を変更していると claude-code-action の OIDC→App トークン
+     交換が検証ゲートで 401 になり agent を起動できない。その旨を PR コメントで明示し、
+     `deps-review` は意図的に失敗させる (手動レビュー・手動マージが必要)。
+   - **Verify approval**: `claude` bot の APPROVED レビューが存在すれば pass (exit 0)、
+     無ければ「手動レビューが必要」と出力して **fail (exit 1)**。
+4. **`auto-merge.yml`** (独立ワークフロー、トリガ: `pull_request_review` submitted):
+   `renovate[bot]` の PR に **`claude[bot]` の approve** が提出されると
+   `gh pr merge --squash --delete-branch --auto` を実行する。
 
 ### 判定別の挙動
 
-`deps-reviewer` agent は PR コメントの末尾に `FINAL_VERDICT: <Merge|Verify|Investigate|Hold>` を出力する。
-`deps-review` ジョブはこれを抽出して以下のように分岐する。
-
-| FINAL_VERDICT | deps-review | deps-merge | 自動マージ |
+| deps-reviewer の判定 | agent の動作 | `deps-review` | 自動マージ (`auto-merge.yml`) |
 |---|---|---|---|
-| `Merge` | pass | run (`gh pr merge --squash --delete-branch`) | **する** |
-| `Verify` | pass | skip | しない (動作確認推奨ステータス、人手マージ前提) |
-| `Investigate` / `Hold` / unknown | fail | skip | しない |
+| Merge / Verify (安全) | `gh pr review --approve` | Verify approval が approve 検出 → **pass** | `claude[bot]` approve を検出して **自動マージ** |
+| Investigate / Hold | approve せずコメント | approve 無し → **fail** | 発火しない。人手レビュー & 手動マージ |
+| 認証不可 (workflow 変更 PR 等) | agent 起動不可 | Notify がコメント → **fail** | 発火しない。手動マージ必須 |
 
-`deps-merge` を `deps-review` から分離している理由: ruleset の required_status_checks に `deps-review`
-自身が含まれており、同一ジョブ内で `gh pr merge` を呼ぶと「自分自身の完了を待ちながらマージしようとする」
-デッドロックが発生するため。`deps-merge` は ruleset の必須 check には含まれないので、必須 2 つ
-(`validate` + `deps-review`) が pass した状態で安全にマージできる。
+`Verify approval` は `author.login == "claude"` の APPROVED レビューのみを承認とみなす。
+第三者や他 bot の approve は無視される。
 
-`Investigate` / `Hold` で CI が落ちた PR は GitHub ruleset の `deps-review` 必須化によりマージブロックされる。
-誤判定や人が確認して問題ないと判断した場合は、**PR Review で Approve** を送ると override され CI が pass する
-(`Verify final verdict` step が `pull_request_review` + `approved` を検出して exit 0)。
+### 必須ゲートと escape hatch
 
-`FINAL_VERDICT` の抽出対象は `claude` bot 名義のコメントに限定している。public repo で第三者が
-PR コメントに `FINAL_VERDICT: Merge` を書き込んでも、author フィルタにより無視される。
+`main` ブランチには GitHub ruleset (enforcement: active) が設定されている:
+
+- 必須ステータスチェック: **`validate` のみ** (`deps-review` は必須ではない)
+- ブランチ削除禁止 / non-fast-forward (force push) 禁止
+
+`deps-review` は必須チェックではないため、その失敗自体はマージをブロックしない。誤判定
+(Investigate / Hold) や認証不可の workflow 変更 PR は、**人間が内容を確認のうえ手動で
+マージ**できる (必須の `validate` さえ通っていればよい)。「自動マージされない = 人手判断を
+強制するゲート」という位置づけで、CI を強制 pass させる override 経路は持たない。
 
 ### 責務分担
 
 | 役割 | 担当 | 設定ファイル |
 |---|---|---|
 | PR 作成 | Renovate | `.github/renovate.json` |
-| 安全性判定 | `deps-reviewer` agent (Claude) | `.claude/agents/deps-reviewer.md` |
-| 自動マージ (Merge 判定時) | `deps-merge` ジョブ | `.github/workflows/ci.yml` |
-| 人手マージの安全装置 | GitHub ruleset | `main` ブランチに `deps-review` を required_status_checks として設定 |
-| 誤判定時の escape hatch | PR Review で Approve override | (手動操作) |
+| 安全性判定 + approve | `deps-reviewer` agent (Claude) / `deps-review` ジョブ | `.claude/agents/deps-reviewer.md`, `.github/workflows/ci.yml` |
+| 自動マージ | `auto-merge.yml` (`claude[bot]` approve 起点) | `.github/workflows/auto-merge.yml` |
+| 認証不可 PR の通知 | `Notify review unavailable` ステップ | `.github/workflows/ci.yml` |
+| 必須ゲート | GitHub ruleset (`validate` 必須 / 削除・force push 禁止) | (GitHub ruleset / repo 設定) |
+| 誤判定・認証不可時の対処 | 人手レビュー & 手動マージ | (手動操作) |
 
 Renovate 側の `automerge` 設定は意図的に持たない (Claude マージと役割重複になるため)。
 Renovate は「PR を作るだけ」で、マージ判断は Claude に集約されている。
