@@ -26,10 +26,6 @@
       "enabled": false
     },
     {
-      "extends": ["monorepo:oxlint"],
-      "groupName": "oxc"
-    },
-    {
       "matchPackageNames": ["oxlint", "oxlint-tsgolint"],
       "groupName": "oxc"
     },
