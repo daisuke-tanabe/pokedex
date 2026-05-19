@@ -10,6 +10,8 @@
   "rangeStrategy": "pin",
   "automerge": false,
   "platformAutomerge": false,
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
   "ignorePaths": [".claude/skills/**"],
   "lockFileMaintenance": {
     "enabled": true,
