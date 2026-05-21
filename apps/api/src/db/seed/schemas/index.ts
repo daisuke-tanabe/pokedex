@@ -39,13 +39,13 @@ export type RegionSeed = v.InferOutput<typeof regionRowSchema>;
 
 const pokedexRowSchema = v.object({
   slug: v.pipe(v.string(), v.nonEmpty()),
-  regionSlug: v.optional(v.nullable(v.pipe(v.string(), v.nonEmpty()))),
+  regionSlug: v.nullish(v.pipe(v.string(), v.nonEmpty())),
   names: v.array(nameEntrySchema),
   entries: v.array(
     v.object({
       speciesSlug: v.pipe(v.string(), v.nonEmpty()),
       pokedexNumber: v.pipe(v.number(), v.integer(), v.minValue(1)),
-      formSlug: v.optional(v.nullable(v.pipe(v.string(), v.nonEmpty()))),
+      formSlug: v.nullish(v.pipe(v.string(), v.nonEmpty())),
     }),
   ),
 });
@@ -56,7 +56,7 @@ export type PokedexSeed = v.InferOutput<typeof pokedexRowSchema>;
 const speciesRowSchema = v.object({
   slug: v.pipe(v.string(), v.nonEmpty()),
   nationalDexNumber: v.pipe(v.number(), v.integer(), v.minValue(1)),
-  evolutionChainKey: v.optional(v.nullable(v.pipe(v.string(), v.nonEmpty()))),
+  evolutionChainKey: v.nullish(v.pipe(v.string(), v.nonEmpty())),
   names: v.array(nameEntrySchema),
   evolutions: v.optional(
     v.array(

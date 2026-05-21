@@ -368,7 +368,10 @@ export async function seed(): Promise<void> {
 }
 
 // 直接 CLI で呼ばれた場合は実行する (test ファイルからの import は実行しない)
-const isMain = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+// 直接 CLI から `tsx src/db/seed/seed.ts` で呼ばれた場合のみ seed を実行する。
+// REPL 等で `process.argv[1]` が undefined の場合は明示的に false 扱いにして
+// `resolve(undefined)` の例外を回避する。
+const isMain = process.argv[1] !== undefined && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
 if (isMain) {
   seed()
     .then(() => {

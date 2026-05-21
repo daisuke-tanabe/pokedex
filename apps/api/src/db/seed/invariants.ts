@@ -14,15 +14,24 @@ const JA_LOCALE = Locale.JA;
  */
 type Runner = DB | Parameters<Parameters<DB['transaction']>[0]>[0];
 
-const queryFirstId = async (runner: Runner, table: typeof pokedexes, slug: string): Promise<number | null> => {
-  const rows = await runner.select({ id: table.id }).from(table).where(eq(table.slug, slug)).limit(1);
+/**
+ * national 図鑑の id を取得する。本不変条件チェック専用の単純な lookup で
+ * 汎用化しない (YAGNI)。他の slug 検索が必要になったら専用関数として
+ * 別途追加する想定。
+ */
+const queryNationalPokedexId = async (runner: Runner): Promise<number | null> => {
+  const rows = await runner
+    .select({ id: pokedexes.id })
+    .from(pokedexes)
+    .where(eq(pokedexes.slug, NATIONAL_POKEDEX_SLUG))
+    .limit(1);
   return rows[0]?.id ?? null;
 };
 
 const countRows = (row: { count: number } | undefined): number => row?.count ?? 0;
 
 const checkNationalDexAlignment = async (runner: Runner): Promise<readonly string[]> => {
-  const nationalId = await queryFirstId(runner, pokedexes, NATIONAL_POKEDEX_SLUG);
+  const nationalId = await queryNationalPokedexId(runner);
   if (nationalId === null) {
     return ['national 図鑑が見つからない (pokedexes.slug = "national")'];
   }
