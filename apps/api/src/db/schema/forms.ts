@@ -1,6 +1,9 @@
+import { relations } from 'drizzle-orm';
 import { integer, pgTable, serial, text, unique, varchar } from 'drizzle-orm/pg-core';
 
 import { formCategoryEnum } from './enums.js';
+import { formSprites } from './form-sprites.js';
+import { formTypes } from './form-types.js';
 import { locales } from './locales.js';
 import { species } from './species.js';
 
@@ -46,3 +49,13 @@ export const formNames = pgTable(
 
 export type FormName = typeof formNames.$inferSelect;
 export type NewFormName = typeof formNames.$inferInsert;
+
+export const formsRelations = relations(forms, ({ many, one }) => ({
+  species: one(species, {
+    fields: [forms.speciesId],
+    references: [species.id],
+  }),
+  types: many(formTypes),
+  sprites: many(formSprites),
+  names: many(formNames),
+}));

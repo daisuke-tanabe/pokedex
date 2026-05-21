@@ -1,7 +1,8 @@
-import { sql } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { check, integer, pgTable, serial, text, unique, varchar } from 'drizzle-orm/pg-core';
 
 import { evolutionChains } from './evolution-chains.js';
+import { forms } from './forms.js';
 import { locales } from './locales.js';
 
 /**
@@ -66,3 +67,25 @@ export const speciesEvolutions = pgTable(
 
 export type SpeciesEvolution = typeof speciesEvolutions.$inferSelect;
 export type NewSpeciesEvolution = typeof speciesEvolutions.$inferInsert;
+
+export const speciesRelations = relations(species, ({ many, one }) => ({
+  evolutionChain: one(evolutionChains, {
+    fields: [species.evolutionChainId],
+    references: [evolutionChains.id],
+  }),
+  forms: many(forms),
+  names: many(speciesNames),
+}));
+
+export const speciesEvolutionsRelations = relations(speciesEvolutions, ({ one }) => ({
+  from: one(species, {
+    fields: [speciesEvolutions.fromSpeciesId],
+    references: [species.id],
+    relationName: 'speciesEvolutionFrom',
+  }),
+  to: one(species, {
+    fields: [speciesEvolutions.toSpeciesId],
+    references: [species.id],
+    relationName: 'speciesEvolutionTo',
+  }),
+}));

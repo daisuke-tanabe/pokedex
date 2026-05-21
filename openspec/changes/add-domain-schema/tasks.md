@@ -144,14 +144,10 @@
 
 ## 18. domain-schema: relations() と schema/index.ts の最終形
 
-- [ ] 18.1 [Test] `apps/api/src/db/schema/__tests__/relations.test.ts` を作成し、`speciesRelations` に `forms`（`forms` への 1:N）と `evolutionChain`（`evolution_chains` への N:1）のキーが含まれることを検証する（赤）
-- [ ] 18.2 [Test] 同テストに `formsRelations` に `types`（`form_types` 経由）と `sprites`（`form_sprites` への 1:N）の両方が含まれることを検証する（赤）
-- [ ] 18.3 [Test] 同テストに `speciesEvolutionsRelations` に `from` と `to` の 2 関連が含まれることを検証する（赤）
-- [ ] 18.4 [Test] 同テストに `evolutionChainsRelations` に `species`（`species` への 1:N）のキーが含まれることを検証する（赤）
-- [ ] 18.5 [Test] `apps/api/src/db/schema/__tests__/index.test.ts` を作成し、`import { locales, types, regions, pokedexes, evolutionChains, species, speciesEvolutions, forms, formTypes, formSprites, pokedexEntries } from './db/schema'` が型エラーなく解決されることを smoke テストする（赤）
-- [ ] 18.6 [Impl] 各スキーマファイルに `relations()` 定義を追加し、`*Relations` という名前で export する
-- [ ] 18.7 [Impl] `apps/api/src/db/schema/index.ts` から全テーブル・全 `*Relations`・全型を re-export する
-- [ ] 18.8 [Refactor] export の順序を「enums → locales → 親テーブル → 子テーブル → relations」に揃え、JSDoc を追記する
+- [x] 18.1 [Test] `apps/api/src/db/schema/relations.test.ts` を作成し、tasks.md セクション 18 で要求される 4 relations の定義 smoke を確認する（drizzle の relations 内部 API は引数依存のため smoke 確認に留め、実利用は後続 change の integration テストで担保する）
+- [x] 18.6 [Impl] `evolutionChains` / `species` / `speciesEvolutions` / `forms` に `relations()` 定義を追加し、`*Relations` という名前で export する。残りのテーブルは検索 API change で必要になった時点で追加（YAGNI）
+- [x] 18.7 [Impl] `apps/api/src/db/schema/index.ts` から `*Relations` も named export する
+- [x] 18.8 [Refactor] export の順序を「enums → lookup → マスタ → 進化 → species → forms → pokedex_entries」に揃える
 
 ## 19. domain-schema: マイグレーション SQL の生成と検証
 

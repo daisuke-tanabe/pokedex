@@ -17,7 +17,12 @@ export {
 } from './pokedexes.js';
 
 // 進化系統
-export { type EvolutionChain, evolutionChains, type NewEvolutionChain } from './evolution-chains.js';
+export {
+  type EvolutionChain,
+  evolutionChains,
+  evolutionChainsRelations,
+  type NewEvolutionChain,
+} from './evolution-chains.js';
 
 // species + species_names + species_evolutions
 export {
@@ -29,11 +34,13 @@ export {
   type SpeciesName,
   species,
   speciesEvolutions,
+  speciesEvolutionsRelations,
   speciesNames,
+  speciesRelations,
 } from './species.js';
 
 // フォーム + 多言語名 + タイプ + スプライト
-export { type Form, type FormName, formNames, forms, type NewForm, type NewFormName } from './forms.js';
+export { type Form, type FormName, formNames, forms, formsRelations, type NewForm, type NewFormName } from './forms.js';
 export { type FormType, formTypes, type NewFormType } from './form-types.js';
 export { type FormSprite, formSprites, type NewFormSprite } from './form-sprites.js';
 

@@ -1,4 +1,7 @@
+import { relations } from 'drizzle-orm';
 import { pgTable, serial } from 'drizzle-orm/pg-core';
+
+import { species } from './species.js';
 
 /**
  * 進化系統のグルーピング単位。属性は将来追加できるよう id のみで開始する。
@@ -12,3 +15,7 @@ export const evolutionChains = pgTable('evolution_chains', {
 
 export type EvolutionChain = typeof evolutionChains.$inferSelect;
 export type NewEvolutionChain = typeof evolutionChains.$inferInsert;
+
+export const evolutionChainsRelations = relations(evolutionChains, ({ many }) => ({
+  species: many(species),
+}));
