@@ -55,6 +55,21 @@ async function loadJson<T>(filename: string, schema: v.GenericSchema<T>): Promis
 
 type SlugIdMap = ReadonlyMap<string, number>;
 
+/**
+ * `Map.get` 等で `undefined` が返ったときに明示的なエラーで停止するヘルパー。
+ *
+ * `INSERT ... RETURNING` 直後の Map 参照は論理的には undefined にならないが、`!` を
+ * 並べると将来 returning から該当列が抜けたときに型エラーではなく runtime の暗黙
+ * undefined 伝播になる。すべての lookup を `required()` 経由にすることで、失敗時に
+ * 「どの参照で undefined が出たか」を seed のエラーメッセージから即座に特定できる。
+ */
+const required = <T>(value: T | undefined, message: string): T => {
+  if (value === undefined) {
+    throw new Error(`[seed] ${message}`);
+  }
+  return value;
+};
+
 async function seedLocales(tx: Tx, rows: readonly LocaleSeed[]): Promise<void> {
   if (rows.length === 0) return;
   await tx.insert(locales).values(rows.map((row) => ({ code: row.code, name: row.name })));
@@ -69,7 +84,7 @@ async function seedTypes(tx: Tx, rows: readonly TypeSeed[]): Promise<SlugIdMap> 
   const map = new Map(inserted.map((row) => [row.slug, row.id]));
   const nameValues = rows.flatMap((row) =>
     row.names.map((entry) => ({
-      typeId: map.get(row.slug)!,
+      typeId: required(map.get(row.slug), `type_names lookup: unknown type slug '${row.slug}'`),
       locale: entry.locale,
       name: entry.name,
     })),
@@ -89,7 +104,7 @@ async function seedRegions(tx: Tx, rows: readonly RegionSeed[]): Promise<SlugIdM
   const map = new Map(inserted.map((row) => [row.slug, row.id]));
   const nameValues = rows.flatMap((row) =>
     row.names.map((entry) => ({
-      regionId: map.get(row.slug)!,
+      regionId: required(map.get(row.slug), `region_names lookup: unknown region slug '${row.slug}'`),
       locale: entry.locale,
       name: entry.name,
     })),
@@ -111,7 +126,11 @@ async function seedSpecies(tx: Tx, rows: readonly SpeciesSeed[]): Promise<SlugId
       .values(chainKeys.map(() => ({})))
       .returning({ id: evolutionChains.id });
     chainKeys.forEach((key, index) => {
-      chainIdByKey.set(key, insertedChains[index]!.id);
+      const row = required(
+        insertedChains[index],
+        `evolution_chains RETURNING row at index ${index} for key '${key}' is missing`,
+      );
+      chainIdByKey.set(key, row.id);
     });
   }
 
@@ -129,7 +148,7 @@ async function seedSpecies(tx: Tx, rows: readonly SpeciesSeed[]): Promise<SlugId
 
   const nameValues = rows.flatMap((row) =>
     row.names.map((entry) => ({
-      speciesId: speciesIds.get(row.slug)!,
+      speciesId: required(speciesIds.get(row.slug), `species_names lookup: unknown species slug '${row.slug}'`),
       locale: entry.locale,
       name: entry.name,
     })),
@@ -178,31 +197,21 @@ async function seedForms(
   const inserted = await tx
     .insert(forms)
     .values(
-      rows.map((row) => {
-        const speciesId = speciesIds.get(row.speciesSlug);
-        if (speciesId === undefined) {
-          throw new Error(`[seed] forms: unknown species slug '${row.speciesSlug}'`);
-        }
-        return {
-          speciesId,
-          slug: row.slug,
-          category: row.category,
-        };
-      }),
+      rows.map((row) => ({
+        speciesId: required(speciesIds.get(row.speciesSlug), `forms: unknown species slug '${row.speciesSlug}'`),
+        slug: row.slug,
+        category: row.category,
+      })),
     )
     .returning({ id: forms.id, slug: forms.slug, speciesId: forms.speciesId });
   const formIds = new Map<FormCompositeKey, number>(inserted.map((row) => [formKey(row.speciesId, row.slug), row.id]));
 
   const resolveFormId = (speciesSlug: string, formSlug: string): number => {
-    const speciesId = speciesIds.get(speciesSlug);
-    if (speciesId === undefined) {
-      throw new Error(`[seed] forms lookup: unknown species slug '${speciesSlug}'`);
-    }
-    const id = formIds.get(formKey(speciesId, formSlug));
-    if (id === undefined) {
-      throw new Error(`[seed] forms lookup: unknown form '${speciesSlug}:${formSlug}'`);
-    }
-    return id;
+    const speciesId = required(speciesIds.get(speciesSlug), `forms lookup: unknown species slug '${speciesSlug}'`);
+    return required(
+      formIds.get(formKey(speciesId, formSlug)),
+      `forms lookup: unknown form '${speciesSlug}:${formSlug}'`,
+    );
   };
 
   const nameValues = rows.flatMap((row) =>
@@ -217,13 +226,14 @@ async function seedForms(
   }
 
   const typeValues = rows.flatMap((row) =>
-    row.types.map((entry) => {
-      const typeId = typeIds.get(entry.typeSlug);
-      if (typeId === undefined) {
-        throw new Error(`[seed] form_types: unknown type slug '${entry.typeSlug}' for form '${row.slug}'`);
-      }
-      return { formId: resolveFormId(row.speciesSlug, row.slug), slot: entry.slot, typeId };
-    }),
+    row.types.map((entry) => ({
+      formId: resolveFormId(row.speciesSlug, row.slug),
+      slot: entry.slot,
+      typeId: required(
+        typeIds.get(entry.typeSlug),
+        `form_types: unknown type slug '${entry.typeSlug}' for form '${row.slug}'`,
+      ),
+    })),
   );
   if (typeValues.length > 0) {
     await tx.insert(formTypes).values(typeValues);
@@ -266,7 +276,7 @@ async function seedPokedexes(
 
   const nameValues = rows.flatMap((row) =>
     row.names.map((entry) => ({
-      pokedexId: pokedexIds.get(row.slug)!,
+      pokedexId: required(pokedexIds.get(row.slug), `pokedex_names lookup: unknown pokedex slug '${row.slug}'`),
       locale: entry.locale,
       name: entry.name,
     })),
@@ -277,16 +287,18 @@ async function seedPokedexes(
 
   const entryValues = rows.flatMap((row) =>
     row.entries.map((entry) => {
-      const speciesId = speciesIds.get(entry.speciesSlug);
-      if (speciesId === undefined) {
-        throw new Error(`[seed] pokedex_entries: unknown species slug '${entry.speciesSlug}'`);
-      }
-      const formId = entry.formSlug ? (formIds.get(formKey(speciesId, entry.formSlug)) ?? null) : null;
-      if (entry.formSlug && formId === null) {
-        throw new Error(`[seed] pokedex_entries: unknown form '${entry.speciesSlug}:${entry.formSlug}'`);
-      }
+      const speciesId = required(
+        speciesIds.get(entry.speciesSlug),
+        `pokedex_entries: unknown species slug '${entry.speciesSlug}'`,
+      );
+      const formId = entry.formSlug
+        ? required(
+            formIds.get(formKey(speciesId, entry.formSlug)),
+            `pokedex_entries: unknown form '${entry.speciesSlug}:${entry.formSlug}'`,
+          )
+        : null;
       return {
-        pokedexId: pokedexIds.get(row.slug)!,
+        pokedexId: required(pokedexIds.get(row.slug), `pokedex_entries: unknown pokedex slug '${row.slug}'`),
         speciesId,
         pokedexNumber: entry.pokedexNumber,
         formId,
