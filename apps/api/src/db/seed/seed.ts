@@ -140,7 +140,12 @@ async function seedSpecies(tx: Tx, rows: readonly SpeciesSeed[]): Promise<SlugId
       rows.map((row) => ({
         slug: row.slug,
         nationalDexNumber: row.nationalDexNumber,
-        evolutionChainId: row.evolutionChainKey ? chainIdByKey.get(row.evolutionChainKey) : null,
+        evolutionChainId: row.evolutionChainKey
+          ? required(
+              chainIdByKey.get(row.evolutionChainKey),
+              `species: unknown evolutionChainKey '${row.evolutionChainKey}'`,
+            )
+          : null,
       })),
     )
     .returning({ id: species.id, slug: species.slug });
