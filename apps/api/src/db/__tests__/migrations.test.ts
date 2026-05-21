@@ -5,13 +5,22 @@ import { describe, expect, it } from 'vitest';
 
 const MIGRATIONS_DIR = resolve(import.meta.dirname, '../../../../../supabase/migrations');
 
+/**
+ * `supabase/migrations` 配下の `<timestamp>_*.sql` を全て読み、結合した文字列を返す。
+ *
+ * 将来 `0001_*.sql` 以降が追加されても全ファイルが検査対象に含まれるよう、`find` ではなく
+ * `filter` で全件取得する。これにより本 change で定義した制約が後続マイグレーションで
+ * 誤って解除された場合も気付ける (CREATE TYPE / PRIMARY KEY / CHECK 等は ALTER で
+ * 取り除かれない限り全ファイルの結合文字列に残る)。
+ */
 const readGeneratedSql = (): string => {
-  const files = readdirSync(MIGRATIONS_DIR).filter((file) => file.endsWith('.sql'));
-  const sqlFile = files.find((file) => /\d{4}_/.test(file));
-  if (!sqlFile) {
+  const files = readdirSync(MIGRATIONS_DIR)
+    .filter((file) => file.endsWith('.sql') && /\d{4}_/.test(file))
+    .toSorted();
+  if (files.length === 0) {
     throw new Error(`SQL migration file not found in ${MIGRATIONS_DIR}`);
   }
-  return readFileSync(resolve(MIGRATIONS_DIR, sqlFile), 'utf8');
+  return files.map((file) => readFileSync(resolve(MIGRATIONS_DIR, file), 'utf8')).join('\n');
 };
 
 describe('migration SQL', () => {
