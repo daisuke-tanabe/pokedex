@@ -1,0 +1,31 @@
+[
+  {
+    "slug": "national",
+    "regionSlug": null,
+    "names": [{ "locale": "ja", "name": "全国図鑑" }, { "locale": "en", "name": "National Pokédex" }],
+    "entries": [
+      { "speciesSlug": "bulbasaur", "pokedexNumber": 1 },
+      { "speciesSlug": "ivysaur", "pokedexNumber": 2 },
+      { "speciesSlug": "venusaur", "pokedexNumber": 3 },
+      { "speciesSlug": "charmander", "pokedexNumber": 4 },
+      { "speciesSlug": "charmeleon", "pokedexNumber": 5 },
+      { "speciesSlug": "charizard", "pokedexNumber": 6 },
+      { "speciesSlug": "pikachu", "pokedexNumber": 25 },
+      { "speciesSlug": "raichu", "pokedexNumber": 26 },
+      { "speciesSlug": "muk", "pokedexNumber": 89 },
+      { "speciesSlug": "mew", "pokedexNumber": 151 },
+      { "speciesSlug": "rotom", "pokedexNumber": 479 },
+      { "speciesSlug": "ogerpon", "pokedexNumber": 1017 },
+      { "speciesSlug": "terapagos", "pokedexNumber": 1024 }
+    ]
+  },
+  {
+    "slug": "paldea",
+    "regionSlug": "paldea",
+    "names": [{ "locale": "ja", "name": "パルデア図鑑" }, { "locale": "en", "name": "Paldea Pokédex" }],
+    "entries": [
+      { "speciesSlug": "pikachu", "pokedexNumber": 74 },
+      { "speciesSlug": "ogerpon", "pokedexNumber": 400, "formSlug": "ogerpon-teal" }
+    ]
+  }
+]

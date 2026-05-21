@@ -1,0 +1,5 @@
+[
+  { "slug": "kanto", "names": [{ "locale": "ja", "name": "カントー" }, { "locale": "en", "name": "Kanto" }] },
+  { "slug": "alola", "names": [{ "locale": "ja", "name": "アローラ" }, { "locale": "en", "name": "Alola" }] },
+  { "slug": "paldea", "names": [{ "locale": "ja", "name": "パルデア" }, { "locale": "en", "name": "Paldea" }] }
+]

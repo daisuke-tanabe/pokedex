@@ -1,0 +1,325 @@
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import * as v from 'valibot';
+
+import { db } from '../client.js';
+import {
+  evolutionChains,
+  formNames,
+  formSprites,
+  formTypes,
+  forms,
+  locales,
+  pokedexEntries,
+  pokedexNames,
+  pokedexes,
+  regionNames,
+  regions,
+  species,
+  speciesEvolutions,
+  speciesNames,
+  typeNames,
+  types,
+} from '../schema/index.js';
+import { runInvariants } from './invariants.js';
+import {
+  type FormSeed,
+  formsFileSchema,
+  type LocaleSeed,
+  localesFileSchema,
+  type PokedexSeed,
+  pokedexesFileSchema,
+  type RegionSeed,
+  regionsFileSchema,
+  type SpeciesSeed,
+  speciesFileSchema,
+  type TypeSeed,
+  typesFileSchema,
+} from './schemas/index.js';
+
+const dataDir = resolve(fileURLToPath(import.meta.url), '../data');
+
+async function loadJson<T>(filename: string, schema: v.GenericSchema<T>): Promise<T> {
+  const raw = await readFile(resolve(dataDir, filename), 'utf8');
+  const parsed: unknown = JSON.parse(raw);
+  return v.parse(schema, parsed);
+}
+
+type SlugIdMap = ReadonlyMap<string, number>;
+
+async function seedLocales(rows: readonly LocaleSeed[]): Promise<void> {
+  if (rows.length === 0) return;
+  await db.insert(locales).values(rows.map((row) => ({ code: row.code, name: row.name })));
+}
+
+async function seedTypes(rows: readonly TypeSeed[]): Promise<SlugIdMap> {
+  if (rows.length === 0) return new Map();
+  const inserted = await db
+    .insert(types)
+    .values(rows.map((row) => ({ slug: row.slug })))
+    .returning({ id: types.id, slug: types.slug });
+  const map = new Map(inserted.map((row) => [row.slug, row.id]));
+  const nameValues = rows.flatMap((row) =>
+    row.names.map((entry) => ({
+      typeId: map.get(row.slug)!,
+      locale: entry.locale,
+      name: entry.name,
+    })),
+  );
+  if (nameValues.length > 0) {
+    await db.insert(typeNames).values(nameValues);
+  }
+  return map;
+}
+
+async function seedRegions(rows: readonly RegionSeed[]): Promise<SlugIdMap> {
+  if (rows.length === 0) return new Map();
+  const inserted = await db
+    .insert(regions)
+    .values(rows.map((row) => ({ slug: row.slug })))
+    .returning({ id: regions.id, slug: regions.slug });
+  const map = new Map(inserted.map((row) => [row.slug, row.id]));
+  const nameValues = rows.flatMap((row) =>
+    row.names.map((entry) => ({
+      regionId: map.get(row.slug)!,
+      locale: entry.locale,
+      name: entry.name,
+    })),
+  );
+  if (nameValues.length > 0) {
+    await db.insert(regionNames).values(nameValues);
+  }
+  return map;
+}
+
+async function seedSpecies(rows: readonly SpeciesSeed[]): Promise<{ speciesIds: SlugIdMap; chainIds: SlugIdMap }> {
+  if (rows.length === 0) return { speciesIds: new Map(), chainIds: new Map() };
+
+  const chainKeys = [...new Set(rows.flatMap((row) => (row.evolutionChainKey ? [row.evolutionChainKey] : [])))];
+  const chainIdByKey = new Map<string, number>();
+  if (chainKeys.length > 0) {
+    const insertedChains = await db
+      .insert(evolutionChains)
+      .values(chainKeys.map(() => ({})))
+      .returning({ id: evolutionChains.id });
+    chainKeys.forEach((key, index) => {
+      chainIdByKey.set(key, insertedChains[index]!.id);
+    });
+  }
+
+  const inserted = await db
+    .insert(species)
+    .values(
+      rows.map((row) => ({
+        slug: row.slug,
+        nationalDexNumber: row.nationalDexNumber,
+        evolutionChainId: row.evolutionChainKey ? chainIdByKey.get(row.evolutionChainKey) : null,
+      })),
+    )
+    .returning({ id: species.id, slug: species.slug });
+  const speciesIds = new Map(inserted.map((row) => [row.slug, row.id]));
+
+  const nameValues = rows.flatMap((row) =>
+    row.names.map((entry) => ({
+      speciesId: speciesIds.get(row.slug)!,
+      locale: entry.locale,
+      name: entry.name,
+    })),
+  );
+  if (nameValues.length > 0) {
+    await db.insert(speciesNames).values(nameValues);
+  }
+
+  const evolutionValues = rows.flatMap((row) =>
+    (row.evolutions ?? []).map((evolution) => {
+      const fromId = speciesIds.get(row.slug);
+      const toId = speciesIds.get(evolution.toSpeciesSlug);
+      if (fromId === undefined || toId === undefined) {
+        throw new Error(
+          `[seed] species_evolutions: unknown species slug (from=${row.slug}, to=${evolution.toSpeciesSlug})`,
+        );
+      }
+      return { fromSpeciesId: fromId, toSpeciesId: toId };
+    }),
+  );
+  if (evolutionValues.length > 0) {
+    await db.insert(speciesEvolutions).values(evolutionValues);
+  }
+
+  return { speciesIds, chainIds: chainIdByKey };
+}
+
+async function seedForms(rows: readonly FormSeed[], speciesIds: SlugIdMap, typeIds: SlugIdMap): Promise<SlugIdMap> {
+  if (rows.length === 0) return new Map();
+
+  const inserted = await db
+    .insert(forms)
+    .values(
+      rows.map((row) => {
+        const speciesId = speciesIds.get(row.speciesSlug);
+        if (speciesId === undefined) {
+          throw new Error(`[seed] forms: unknown species slug '${row.speciesSlug}'`);
+        }
+        return {
+          speciesId,
+          slug: row.slug,
+          category: row.category,
+        };
+      }),
+    )
+    .returning({ id: forms.id, slug: forms.slug });
+  const formIds = new Map(inserted.map((row) => [row.slug, row.id]));
+
+  const nameValues = rows.flatMap((row) =>
+    row.names.map((entry) => ({
+      formId: formIds.get(row.slug)!,
+      locale: entry.locale,
+      name: entry.name,
+    })),
+  );
+  if (nameValues.length > 0) {
+    await db.insert(formNames).values(nameValues);
+  }
+
+  const typeValues = rows.flatMap((row) =>
+    row.types.map((entry) => {
+      const typeId = typeIds.get(entry.typeSlug);
+      if (typeId === undefined) {
+        throw new Error(`[seed] form_types: unknown type slug '${entry.typeSlug}' for form '${row.slug}'`);
+      }
+      return { formId: formIds.get(row.slug)!, slot: entry.slot, typeId };
+    }),
+  );
+  if (typeValues.length > 0) {
+    await db.insert(formTypes).values(typeValues);
+  }
+
+  const spriteValues = rows.flatMap((row) =>
+    row.sprites.map((entry) => ({
+      formId: formIds.get(row.slug)!,
+      gender: entry.gender,
+      kind: entry.kind,
+      url: entry.url,
+    })),
+  );
+  if (spriteValues.length > 0) {
+    await db.insert(formSprites).values(spriteValues);
+  }
+
+  return formIds;
+}
+
+async function seedPokedexes(
+  rows: readonly PokedexSeed[],
+  speciesIds: SlugIdMap,
+  formIds: SlugIdMap,
+  regionIds: SlugIdMap,
+): Promise<void> {
+  if (rows.length === 0) return;
+
+  const inserted = await db
+    .insert(pokedexes)
+    .values(
+      rows.map((row) => ({
+        slug: row.slug,
+        regionId: row.regionSlug ? (regionIds.get(row.regionSlug) ?? null) : null,
+      })),
+    )
+    .returning({ id: pokedexes.id, slug: pokedexes.slug });
+  const pokedexIds = new Map(inserted.map((row) => [row.slug, row.id]));
+
+  const nameValues = rows.flatMap((row) =>
+    row.names.map((entry) => ({
+      pokedexId: pokedexIds.get(row.slug)!,
+      locale: entry.locale,
+      name: entry.name,
+    })),
+  );
+  if (nameValues.length > 0) {
+    await db.insert(pokedexNames).values(nameValues);
+  }
+
+  const entryValues = rows.flatMap((row) =>
+    row.entries.map((entry) => {
+      const speciesId = speciesIds.get(entry.speciesSlug);
+      if (speciesId === undefined) {
+        throw new Error(`[seed] pokedex_entries: unknown species slug '${entry.speciesSlug}'`);
+      }
+      const formId = entry.formSlug ? (formIds.get(entry.formSlug) ?? null) : null;
+      if (entry.formSlug && formId === null) {
+        throw new Error(`[seed] pokedex_entries: unknown form slug '${entry.formSlug}'`);
+      }
+      return {
+        pokedexId: pokedexIds.get(row.slug)!,
+        speciesId,
+        pokedexNumber: entry.pokedexNumber,
+        formId,
+      };
+    }),
+  );
+  if (entryValues.length > 0) {
+    await db.insert(pokedexEntries).values(entryValues);
+  }
+}
+
+async function clearAll(): Promise<void> {
+  // 子テーブル → 親テーブル の順で削除する。FK で cascade されるテーブルもあるが、
+  // 明示削除で seed の冪等性を担保する。
+  await db.delete(pokedexEntries);
+  await db.delete(pokedexNames);
+  await db.delete(pokedexes);
+  await db.delete(formSprites);
+  await db.delete(formTypes);
+  await db.delete(formNames);
+  await db.delete(forms);
+  await db.delete(speciesEvolutions);
+  await db.delete(speciesNames);
+  await db.delete(species);
+  await db.delete(evolutionChains);
+  await db.delete(regionNames);
+  await db.delete(regions);
+  await db.delete(typeNames);
+  await db.delete(types);
+  await db.delete(locales);
+}
+
+export async function seed(): Promise<void> {
+  const [localesData, typesData, regionsData, pokedexesData, speciesData, formsData] = await Promise.all([
+    loadJson('locales.json', localesFileSchema),
+    loadJson('types.json', typesFileSchema),
+    loadJson('regions.json', regionsFileSchema),
+    loadJson('pokedexes.json', pokedexesFileSchema),
+    loadJson('species.json', speciesFileSchema),
+    loadJson('forms.json', formsFileSchema),
+  ]);
+
+  await clearAll();
+
+  await seedLocales(localesData);
+  const typeIds = await seedTypes(typesData);
+  const regionIds = await seedRegions(regionsData);
+  const { speciesIds } = await seedSpecies(speciesData);
+  const formIds = await seedForms(formsData, speciesIds, typeIds);
+  await seedPokedexes(pokedexesData, speciesIds, formIds, regionIds);
+
+  await runInvariants();
+}
+
+// 直接 CLI で呼ばれた場合は実行する (test ファイルからの import は実行しない)
+const isMain = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+if (isMain) {
+  seed()
+    .then(() => {
+      // eslint-disable-next-line no-console
+      console.log('[seed] completed successfully');
+      // postgres-js の接続が常駐するため、明示的に exit してプロセスを終わらせる。
+      process.exit(0);
+    })
+    .catch((error: unknown) => {
+      // eslint-disable-next-line no-console
+      console.error('[seed] failed:', error);
+      process.exit(1);
+    });
+}

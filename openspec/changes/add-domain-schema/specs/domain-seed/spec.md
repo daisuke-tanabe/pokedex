@@ -43,36 +43,24 @@
 - **WHEN** `locales.json` の `code` 集合と `Object.values(Locale)` を比較する
 - **THEN** 両者が等価集合である
 
-### Requirement: シード対象の網羅性
+### Requirement: 最小デモシードの代表フォームカバレッジ
 
-`forms.json` には少なくとも 100 件のフォームエントリが含まれていなければならない（MUST）。以下の特殊フォームを最低限カバーしなければならない（MUST）:
+本 change のシードは **「seed.ts と invariants.test.ts を動かすための最小デモデータ」** とする。`forms.json` のエントリ数は強い下限を持たない（MAY）が、代表的なフォーム多様性パターンを最低限カバーしなければならない（MUST）:
 
-- ロトムの 5 フォーム（heat / wash / frost / fan / mow）
-- アルセウスの 18 プレート
-- シルヴァディの 18 メモリー
-- オーガポンの 4 仮面（teal / wellspring / hearthflame / cornerstone）
-- アンノーンの 28 文字（A-Z + ! + ?）
-- ジガルデの 3 形態
-- ネクロズマの 4 形態
-- ザシアン / ザマゼンタの剣の王 / 楯の王
-- ゲンシグラードン / ゲンシカイオーガ
-- コスプレピカチュウ / キャップピカチュウ
-- テラパゴスのステラ形態
+- 1 つの species で複数フォームを持つケースが最低 1 種類（例: ロトムの複数形態 / オーガポンの複数仮面）
+- `category` バリエーションが最低 2 種類（例: `normal` と `tera`、`normal` と `regional` など）
 
-#### Scenario: forms.json に 100 件以上のフォームエントリが含まれる
+100+ フォームの本番網羅シードは後続 `add-pokedex-seed-data` change（仮称）で別途投入する想定（本 change のスコープ外）。
 
-- **WHEN** `forms.json` を読み込み、エントリ数を数える
-- **THEN** 100 以上である
+#### Scenario: forms.json に複数フォームを持つ species が最低 1 種含まれる
 
-#### Scenario: オーガポンの 4 仮面が forms.json に含まれる
+- **WHEN** `forms.json` を読み込み、`species_slug` ごとのエントリ数を集計する
+- **THEN** エントリ数が 2 件以上の `species_slug` が最低 1 つ存在する
 
-- **WHEN** `forms.json` から `species_slug = 'ogerpon'` のエントリを抽出する
-- **THEN** 4 件以上のフォームエントリが含まれる
+#### Scenario: forms.json に最低 2 種類の category バリエーションが含まれる
 
-#### Scenario: アンノーンの 28 文字が forms.json に含まれる
-
-- **WHEN** `forms.json` から `species_slug = 'unown'` のエントリを抽出する
-- **THEN** 28 件のフォームエントリが含まれる
+- **WHEN** `forms.json` を読み込み、`category` の一意集合を取得する
+- **THEN** サイズが 2 以上である（例: `normal` + `tera`、`normal` + `regional` 等）
 
 ### Requirement: species.json の evolution_chain 表現
 

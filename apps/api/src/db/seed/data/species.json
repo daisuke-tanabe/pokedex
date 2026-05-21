@@ -1,0 +1,81 @@
+[
+  {
+    "slug": "bulbasaur",
+    "nationalDexNumber": 1,
+    "evolutionChainKey": "bulbasaur-line",
+    "names": [{ "locale": "ja", "name": "フシギダネ" }, { "locale": "en", "name": "Bulbasaur" }],
+    "evolutions": [{ "toSpeciesSlug": "ivysaur" }]
+  },
+  {
+    "slug": "ivysaur",
+    "nationalDexNumber": 2,
+    "evolutionChainKey": "bulbasaur-line",
+    "names": [{ "locale": "ja", "name": "フシギソウ" }, { "locale": "en", "name": "Ivysaur" }],
+    "evolutions": [{ "toSpeciesSlug": "venusaur" }]
+  },
+  {
+    "slug": "venusaur",
+    "nationalDexNumber": 3,
+    "evolutionChainKey": "bulbasaur-line",
+    "names": [{ "locale": "ja", "name": "フシギバナ" }, { "locale": "en", "name": "Venusaur" }]
+  },
+  {
+    "slug": "charmander",
+    "nationalDexNumber": 4,
+    "evolutionChainKey": "charmander-line",
+    "names": [{ "locale": "ja", "name": "ヒトカゲ" }, { "locale": "en", "name": "Charmander" }],
+    "evolutions": [{ "toSpeciesSlug": "charmeleon" }]
+  },
+  {
+    "slug": "charmeleon",
+    "nationalDexNumber": 5,
+    "evolutionChainKey": "charmander-line",
+    "names": [{ "locale": "ja", "name": "リザード" }, { "locale": "en", "name": "Charmeleon" }],
+    "evolutions": [{ "toSpeciesSlug": "charizard" }]
+  },
+  {
+    "slug": "charizard",
+    "nationalDexNumber": 6,
+    "evolutionChainKey": "charmander-line",
+    "names": [{ "locale": "ja", "name": "リザードン" }, { "locale": "en", "name": "Charizard" }]
+  },
+  {
+    "slug": "pikachu",
+    "nationalDexNumber": 25,
+    "evolutionChainKey": "pichu-line",
+    "names": [{ "locale": "ja", "name": "ピカチュウ" }, { "locale": "en", "name": "Pikachu" }],
+    "evolutions": [{ "toSpeciesSlug": "raichu" }]
+  },
+  {
+    "slug": "raichu",
+    "nationalDexNumber": 26,
+    "evolutionChainKey": "pichu-line",
+    "names": [{ "locale": "ja", "name": "ライチュウ" }, { "locale": "en", "name": "Raichu" }]
+  },
+  {
+    "slug": "muk",
+    "nationalDexNumber": 89,
+    "evolutionChainKey": "grimer-line",
+    "names": [{ "locale": "ja", "name": "ベトベトン" }, { "locale": "en", "name": "Muk" }]
+  },
+  {
+    "slug": "mew",
+    "nationalDexNumber": 151,
+    "names": [{ "locale": "ja", "name": "ミュウ" }, { "locale": "en", "name": "Mew" }]
+  },
+  {
+    "slug": "rotom",
+    "nationalDexNumber": 479,
+    "names": [{ "locale": "ja", "name": "ロトム" }, { "locale": "en", "name": "Rotom" }]
+  },
+  {
+    "slug": "ogerpon",
+    "nationalDexNumber": 1017,
+    "names": [{ "locale": "ja", "name": "オーガポン" }, { "locale": "en", "name": "Ogerpon" }]
+  },
+  {
+    "slug": "terapagos",
+    "nationalDexNumber": 1024,
+    "names": [{ "locale": "ja", "name": "テラパゴス" }, { "locale": "en", "name": "Terapagos" }]
+  }
+]
