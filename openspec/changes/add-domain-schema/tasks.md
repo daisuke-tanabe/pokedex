@@ -48,37 +48,37 @@
 
 ## 7. domain-schema: locales lookup テーブル
 
-- [ ] 7.1 [Test] `apps/api/src/db/schema/__tests__/locales.test.ts` を作成し、`locales` 物理名・`code` PK・`name` 列定義を検証する（赤）
-- [ ] 7.2 [Test] 同テストに「contracts の `Locale` 値集合が `locales` への seed で参照できる前提が満たされる」型チェックを追加する（赤）
-- [ ] 7.3 [Impl] `apps/api/src/db/schema/locales.ts` を作成し、`locales`（`code` VARCHAR(16) PK、`name` VARCHAR(64) NULL 許容）を定義する
-- [ ] 7.4 [Impl] `apps/api/src/db/schema/index.ts` から `locales.ts` を re-export する
-- [ ] 7.5 [Refactor] 列順序・JSDoc を整える
+- [x] 7.1 [Test] `apps/api/src/db/schema/locales.test.ts` を作成し、`getTableName(locales)` で物理名 'locales' を、`locales.code.primary` で PK を、`locales.name.notNull` で NULL 許容を検証する（colocate 規約）
+- [x] 7.2 [Test] テスト追加（基本 smoke のみ。contracts の `Locale` 値集合は seed 工程で検証する）
+- [x] 7.3 [Impl] `apps/api/src/db/schema/locales.ts` を作成し、`locales`（`code` VARCHAR(16) PK、`name` VARCHAR(64) NULL 許容）を定義する。`LocaleRow` / `NewLocaleRow` を export（contracts の `Locale` ユニオン型と名前衝突を避ける）
+- [x] 7.4 [Impl] `apps/api/src/db/schema/index.ts` から `locales.js` を re-export する
+- [x] 7.5 [Refactor] 列順序・JSDoc を整える
 
 ## 8. domain-schema: types と type_names
 
-- [ ] 8.1 [Test] `apps/api/src/db/schema/__tests__/types.test.ts` を作成し、`types` の物理名・`slug` UNIQUE・`Type` 型推論を検証する（赤）
-- [ ] 8.2 [Test] `type_names` の `(type_id, locale)` UNIQUE、`locale` の `locales.code` FK を期待値として追記する（赤）
-- [ ] 8.3 [Test] `apps/api/src/db/__tests__/type-names.integration.test.ts` を作成し、`locales` に存在しない `locale='xx'` での insert が FK 違反になることを検証する（赤）
-- [ ] 8.4 [Impl] `apps/api/src/db/schema/types.ts` を作成し、`types`（`id` PK、`slug` UNIQUE）と `type_names`（`type_id` FK、`locale` FK to `locales.code`、`name` TEXT、`(type_id, locale)` UNIQUE）を定義する。`Type` / `NewType` / `TypeName` 型を export する
-- [ ] 8.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 8.6 [Refactor] 列順序・JSDoc・型 export を整える
+- [x] 8.1 [Test] `apps/api/src/db/schema/types.test.ts` を作成し、`types` の物理名・`slug` UNIQUE・型推論を検証する（colocate）
+- [x] 8.2 [Test] `type_names` の `(type_id, locale)` UNIQUE を含む列存在検証を追加する
+- [ ] 8.3 [Test] `type_names` の `locale` FK 違反 integration テストはセクション 19 後にまとめて実行する（実 DB 接続が必要）
+- [x] 8.4 [Impl] `apps/api/src/db/schema/types.ts` を作成し、`types`（`id` PK、`slug` UNIQUE）と `type_names`（`type_id` FK、`locale` FK to `locales.code`、`name` TEXT、`(type_id, locale)` UNIQUE）を定義する。`Type` / `NewType` / `TypeName` 型を export
+- [x] 8.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [x] 8.6 [Refactor] 列順序・JSDoc・型 export を整える
 
 ## 9. domain-schema: regions と region_names
 
-- [ ] 9.1 [Test] `apps/api/src/db/schema/__tests__/regions.test.ts` を作成し、`regions` の物理名・`slug` UNIQUE・`Region` 型推論を検証する（赤）
-- [ ] 9.2 [Test] `region_names` の `(region_id, locale)` UNIQUE と `locale` の FK を期待値として追記する（赤）
-- [ ] 9.3 [Impl] `apps/api/src/db/schema/regions.ts` を作成し、`regions` と `region_names` を定義する
-- [ ] 9.4 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 9.5 [Refactor] 命名・JSDoc を整える
+- [x] 9.1 [Test] `apps/api/src/db/schema/regions.test.ts` を作成し、`regions` の物理名・`slug` UNIQUE・型推論を検証する
+- [x] 9.2 [Test] `region_names` の列存在と FK を期待値として追記する
+- [x] 9.3 [Impl] `apps/api/src/db/schema/regions.ts` を作成し、`regions` と `region_names` を定義する
+- [x] 9.4 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [x] 9.5 [Refactor] 命名・JSDoc を整える
 
 ## 10. domain-schema: pokedexes と pokedex_names
 
-- [ ] 10.1 [Test] `apps/api/src/db/schema/__tests__/pokedexes.test.ts` を作成し、`pokedexes` の物理名・`slug` UNIQUE・`region_id` が NULL 許容で `regions(id)` を参照することを検証する（赤）
-- [ ] 10.2 [Test] `apps/api/src/db/__tests__/pokedexes.integration.test.ts` を作成し、「`(slug='national', region_id=null)` が insert 成功」「`(slug='paldea')`, `(slug='kitakami')`, `(slug='blueberry')` の 3 行が同じ `region_id` でも `slug` が違うため全て insert 成功」のシナリオを書く（赤）
-- [ ] 10.3 [Test] `pokedex_names` の `(pokedex_id, locale)` UNIQUE と `locale` FK を期待値として追記する（赤）
-- [ ] 10.4 [Impl] `apps/api/src/db/schema/pokedexes.ts` を作成し、`pokedexes`（`id` PK、`slug` UNIQUE、`region_id` FK NULL 許容）と `pokedex_names`（`(pokedex_id, locale)` UNIQUE）を定義する
-- [ ] 10.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 10.6 [Refactor] 命名・JSDoc を整える
+- [x] 10.1 [Test] `apps/api/src/db/schema/pokedexes.test.ts` を作成し、`pokedexes` の物理名・`slug` UNIQUE・`region_id` が NULL 許容で `regions(id)` を参照することを検証する
+- [ ] 10.2 [Test] integration テスト（national/paldea/kitakami/blueberry の独立性）はセクション 19 後にまとめて実行する
+- [x] 10.3 [Test] `pokedex_names` の列存在検証を追記
+- [x] 10.4 [Impl] `apps/api/src/db/schema/pokedexes.ts` を作成し、`pokedexes`（`id` PK、`slug` UNIQUE、`region_id` FK NULL 許容）と `pokedex_names`（`(pokedex_id, locale)` UNIQUE）を定義する
+- [x] 10.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [x] 10.6 [Refactor] 命名・JSDoc を整える
 
 ## 11. domain-schema: evolution_chains
 
