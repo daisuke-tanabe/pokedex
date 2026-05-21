@@ -3,65 +3,119 @@
     "speciesSlug": "bulbasaur",
     "slug": "bulbasaur",
     "category": "normal",
-    "types": [{ "slot": 1, "typeSlug": "grass" }, { "slot": 2, "typeSlug": "poison" }],
-    "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/bulbasaur/bulbasaur/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "フシギダネ" }, { "locale": "en", "name": "Bulbasaur" }]
+    "types": [
+      { "slot": 1, "typeSlug": "grass" },
+      { "slot": 2, "typeSlug": "poison" }
+    ],
+    "sprites": [
+      { "gender": "unknown", "kind": "default", "url": "placeholder/bulbasaur/bulbasaur/unknown/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "フシギダネ" },
+      { "locale": "en", "name": "Bulbasaur" }
+    ]
   },
   {
     "speciesSlug": "ivysaur",
     "slug": "ivysaur",
     "category": "normal",
-    "types": [{ "slot": 1, "typeSlug": "grass" }, { "slot": 2, "typeSlug": "poison" }],
+    "types": [
+      { "slot": 1, "typeSlug": "grass" },
+      { "slot": 2, "typeSlug": "poison" }
+    ],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/ivysaur/ivysaur/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "フシギソウ" }, { "locale": "en", "name": "Ivysaur" }]
+    "names": [
+      { "locale": "ja", "name": "フシギソウ" },
+      { "locale": "en", "name": "Ivysaur" }
+    ]
   },
   {
     "speciesSlug": "venusaur",
     "slug": "venusaur",
     "category": "normal",
-    "types": [{ "slot": 1, "typeSlug": "grass" }, { "slot": 2, "typeSlug": "poison" }],
+    "types": [
+      { "slot": 1, "typeSlug": "grass" },
+      { "slot": 2, "typeSlug": "poison" }
+    ],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/venusaur/venusaur/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "フシギバナ" }, { "locale": "en", "name": "Venusaur" }]
+    "names": [
+      { "locale": "ja", "name": "フシギバナ" },
+      { "locale": "en", "name": "Venusaur" }
+    ]
   },
   {
     "speciesSlug": "charmander",
     "slug": "charmander",
     "category": "normal",
     "types": [{ "slot": 1, "typeSlug": "fire" }],
-    "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/charmander/charmander/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "ヒトカゲ" }, { "locale": "en", "name": "Charmander" }]
+    "sprites": [
+      { "gender": "unknown", "kind": "default", "url": "placeholder/charmander/charmander/unknown/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "ヒトカゲ" },
+      { "locale": "en", "name": "Charmander" }
+    ]
   },
   {
     "speciesSlug": "charmeleon",
     "slug": "charmeleon",
     "category": "normal",
     "types": [{ "slot": 1, "typeSlug": "fire" }],
-    "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/charmeleon/charmeleon/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "リザード" }, { "locale": "en", "name": "Charmeleon" }]
+    "sprites": [
+      { "gender": "unknown", "kind": "default", "url": "placeholder/charmeleon/charmeleon/unknown/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "リザード" },
+      { "locale": "en", "name": "Charmeleon" }
+    ]
   },
   {
     "speciesSlug": "charizard",
     "slug": "charizard",
     "category": "normal",
-    "types": [{ "slot": 1, "typeSlug": "fire" }, { "slot": 2, "typeSlug": "flying" }],
-    "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/charizard/charizard/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "リザードン" }, { "locale": "en", "name": "Charizard" }]
+    "types": [
+      { "slot": 1, "typeSlug": "fire" },
+      { "slot": 2, "typeSlug": "flying" }
+    ],
+    "sprites": [
+      { "gender": "unknown", "kind": "default", "url": "placeholder/charizard/charizard/unknown/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "リザードン" },
+      { "locale": "en", "name": "Charizard" }
+    ]
   },
   {
     "speciesSlug": "charizard",
     "slug": "charizard-mega-x",
     "category": "mega-x",
-    "types": [{ "slot": 1, "typeSlug": "fire" }, { "slot": 2, "typeSlug": "dragon" }],
-    "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/charizard/charizard-mega-x/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "メガリザードンX" }, { "locale": "en", "name": "Mega Charizard X" }]
+    "types": [
+      { "slot": 1, "typeSlug": "fire" },
+      { "slot": 2, "typeSlug": "dragon" }
+    ],
+    "sprites": [
+      { "gender": "unknown", "kind": "default", "url": "placeholder/charizard/charizard-mega-x/unknown/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "メガリザードンX" },
+      { "locale": "en", "name": "Mega Charizard X" }
+    ]
   },
   {
     "speciesSlug": "charizard",
     "slug": "charizard-mega-y",
     "category": "mega-y",
-    "types": [{ "slot": 1, "typeSlug": "fire" }, { "slot": 2, "typeSlug": "flying" }],
-    "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/charizard/charizard-mega-y/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "メガリザードンY" }, { "locale": "en", "name": "Mega Charizard Y" }]
+    "types": [
+      { "slot": 1, "typeSlug": "fire" },
+      { "slot": 2, "typeSlug": "flying" }
+    ],
+    "sprites": [
+      { "gender": "unknown", "kind": "default", "url": "placeholder/charizard/charizard-mega-y/unknown/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "メガリザードンY" },
+      { "locale": "en", "name": "Mega Charizard Y" }
+    ]
   },
   {
     "speciesSlug": "pikachu",
@@ -73,15 +127,23 @@
       { "gender": "female", "kind": "default", "url": "placeholder/pikachu/pikachu/female/default.png" },
       { "gender": "male", "kind": "shiny", "url": "placeholder/pikachu/pikachu/male/shiny.png" }
     ],
-    "names": [{ "locale": "ja", "name": "ピカチュウ" }, { "locale": "en", "name": "Pikachu" }]
+    "names": [
+      { "locale": "ja", "name": "ピカチュウ" },
+      { "locale": "en", "name": "Pikachu" }
+    ]
   },
   {
     "speciesSlug": "pikachu",
     "slug": "pikachu-cosplay",
     "category": "other",
     "types": [{ "slot": 1, "typeSlug": "electric" }],
-    "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/pikachu/pikachu-cosplay/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "コスプレピカチュウ" }, { "locale": "en", "name": "Cosplay Pikachu" }]
+    "sprites": [
+      { "gender": "unknown", "kind": "default", "url": "placeholder/pikachu/pikachu-cosplay/unknown/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "コスプレピカチュウ" },
+      { "locale": "en", "name": "Cosplay Pikachu" }
+    ]
   },
   {
     "speciesSlug": "raichu",
@@ -89,15 +151,26 @@
     "category": "normal",
     "types": [{ "slot": 1, "typeSlug": "electric" }],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/raichu/raichu/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "ライチュウ" }, { "locale": "en", "name": "Raichu" }]
+    "names": [
+      { "locale": "ja", "name": "ライチュウ" },
+      { "locale": "en", "name": "Raichu" }
+    ]
   },
   {
     "speciesSlug": "raichu",
     "slug": "raichu-alola",
     "category": "regional",
-    "types": [{ "slot": 1, "typeSlug": "electric" }, { "slot": 2, "typeSlug": "psychic" }],
-    "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/raichu/raichu-alola/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "アローライチュウ" }, { "locale": "en", "name": "Alolan Raichu" }]
+    "types": [
+      { "slot": 1, "typeSlug": "electric" },
+      { "slot": 2, "typeSlug": "psychic" }
+    ],
+    "sprites": [
+      { "gender": "unknown", "kind": "default", "url": "placeholder/raichu/raichu-alola/unknown/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "アローライチュウ" },
+      { "locale": "en", "name": "Alolan Raichu" }
+    ]
   },
   {
     "speciesSlug": "muk",
@@ -105,15 +178,24 @@
     "category": "normal",
     "types": [{ "slot": 1, "typeSlug": "poison" }],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/muk/muk/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "ベトベトン" }, { "locale": "en", "name": "Muk" }]
+    "names": [
+      { "locale": "ja", "name": "ベトベトン" },
+      { "locale": "en", "name": "Muk" }
+    ]
   },
   {
     "speciesSlug": "muk",
     "slug": "muk-alola",
     "category": "regional",
-    "types": [{ "slot": 1, "typeSlug": "poison" }, { "slot": 2, "typeSlug": "dark" }],
+    "types": [
+      { "slot": 1, "typeSlug": "poison" },
+      { "slot": 2, "typeSlug": "dark" }
+    ],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/muk/muk-alola/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "アローラベトベトン" }, { "locale": "en", "name": "Alolan Muk" }]
+    "names": [
+      { "locale": "ja", "name": "アローラベトベトン" },
+      { "locale": "en", "name": "Alolan Muk" }
+    ]
   },
   {
     "speciesSlug": "mew",
@@ -121,102 +203,180 @@
     "category": "normal",
     "types": [{ "slot": 1, "typeSlug": "psychic" }],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/mew/mew/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "ミュウ" }, { "locale": "en", "name": "Mew" }]
+    "names": [
+      { "locale": "ja", "name": "ミュウ" },
+      { "locale": "en", "name": "Mew" }
+    ]
   },
   {
     "speciesSlug": "rotom",
     "slug": "rotom",
     "category": "normal",
-    "types": [{ "slot": 1, "typeSlug": "electric" }, { "slot": 2, "typeSlug": "ghost" }],
+    "types": [
+      { "slot": 1, "typeSlug": "electric" },
+      { "slot": 2, "typeSlug": "ghost" }
+    ],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/rotom/rotom/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "ロトム" }, { "locale": "en", "name": "Rotom" }]
+    "names": [
+      { "locale": "ja", "name": "ロトム" },
+      { "locale": "en", "name": "Rotom" }
+    ]
   },
   {
     "speciesSlug": "rotom",
     "slug": "rotom-heat",
     "category": "other",
-    "types": [{ "slot": 1, "typeSlug": "electric" }, { "slot": 2, "typeSlug": "fire" }],
+    "types": [
+      { "slot": 1, "typeSlug": "electric" },
+      { "slot": 2, "typeSlug": "fire" }
+    ],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/rotom/rotom-heat/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "ヒートロトム" }, { "locale": "en", "name": "Heat Rotom" }]
+    "names": [
+      { "locale": "ja", "name": "ヒートロトム" },
+      { "locale": "en", "name": "Heat Rotom" }
+    ]
   },
   {
     "speciesSlug": "rotom",
     "slug": "rotom-wash",
     "category": "other",
-    "types": [{ "slot": 1, "typeSlug": "electric" }, { "slot": 2, "typeSlug": "water" }],
+    "types": [
+      { "slot": 1, "typeSlug": "electric" },
+      { "slot": 2, "typeSlug": "water" }
+    ],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/rotom/rotom-wash/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "ウォッシュロトム" }, { "locale": "en", "name": "Wash Rotom" }]
+    "names": [
+      { "locale": "ja", "name": "ウォッシュロトム" },
+      { "locale": "en", "name": "Wash Rotom" }
+    ]
   },
   {
     "speciesSlug": "rotom",
     "slug": "rotom-frost",
     "category": "other",
-    "types": [{ "slot": 1, "typeSlug": "electric" }, { "slot": 2, "typeSlug": "ice" }],
+    "types": [
+      { "slot": 1, "typeSlug": "electric" },
+      { "slot": 2, "typeSlug": "ice" }
+    ],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/rotom/rotom-frost/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "フロストロトム" }, { "locale": "en", "name": "Frost Rotom" }]
+    "names": [
+      { "locale": "ja", "name": "フロストロトム" },
+      { "locale": "en", "name": "Frost Rotom" }
+    ]
   },
   {
     "speciesSlug": "rotom",
     "slug": "rotom-fan",
     "category": "other",
-    "types": [{ "slot": 1, "typeSlug": "electric" }, { "slot": 2, "typeSlug": "flying" }],
+    "types": [
+      { "slot": 1, "typeSlug": "electric" },
+      { "slot": 2, "typeSlug": "flying" }
+    ],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/rotom/rotom-fan/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "スピンロトム" }, { "locale": "en", "name": "Fan Rotom" }]
+    "names": [
+      { "locale": "ja", "name": "スピンロトム" },
+      { "locale": "en", "name": "Fan Rotom" }
+    ]
   },
   {
     "speciesSlug": "rotom",
     "slug": "rotom-mow",
     "category": "other",
-    "types": [{ "slot": 1, "typeSlug": "electric" }, { "slot": 2, "typeSlug": "grass" }],
+    "types": [
+      { "slot": 1, "typeSlug": "electric" },
+      { "slot": 2, "typeSlug": "grass" }
+    ],
     "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/rotom/rotom-mow/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "カットロトム" }, { "locale": "en", "name": "Mow Rotom" }]
+    "names": [
+      { "locale": "ja", "name": "カットロトム" },
+      { "locale": "en", "name": "Mow Rotom" }
+    ]
   },
   {
     "speciesSlug": "ogerpon",
     "slug": "ogerpon-teal",
     "category": "normal",
     "types": [{ "slot": 1, "typeSlug": "grass" }],
-    "sprites": [{ "gender": "female", "kind": "default", "url": "placeholder/ogerpon/ogerpon-teal/female/default.png" }],
-    "names": [{ "locale": "ja", "name": "オーガポン (みどりのめん)" }, { "locale": "en", "name": "Ogerpon (Teal Mask)" }]
+    "sprites": [
+      { "gender": "female", "kind": "default", "url": "placeholder/ogerpon/ogerpon-teal/female/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "オーガポン (みどりのめん)" },
+      { "locale": "en", "name": "Ogerpon (Teal Mask)" }
+    ]
   },
   {
     "speciesSlug": "ogerpon",
     "slug": "ogerpon-wellspring",
     "category": "tera",
-    "types": [{ "slot": 1, "typeSlug": "grass" }, { "slot": 2, "typeSlug": "water" }],
-    "sprites": [{ "gender": "female", "kind": "default", "url": "placeholder/ogerpon/ogerpon-wellspring/female/default.png" }],
-    "names": [{ "locale": "ja", "name": "オーガポン (いどのめん)" }, { "locale": "en", "name": "Ogerpon (Wellspring Mask)" }]
+    "types": [
+      { "slot": 1, "typeSlug": "grass" },
+      { "slot": 2, "typeSlug": "water" }
+    ],
+    "sprites": [
+      { "gender": "female", "kind": "default", "url": "placeholder/ogerpon/ogerpon-wellspring/female/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "オーガポン (いどのめん)" },
+      { "locale": "en", "name": "Ogerpon (Wellspring Mask)" }
+    ]
   },
   {
     "speciesSlug": "ogerpon",
     "slug": "ogerpon-hearthflame",
     "category": "tera",
-    "types": [{ "slot": 1, "typeSlug": "grass" }, { "slot": 2, "typeSlug": "fire" }],
-    "sprites": [{ "gender": "female", "kind": "default", "url": "placeholder/ogerpon/ogerpon-hearthflame/female/default.png" }],
-    "names": [{ "locale": "ja", "name": "オーガポン (かまどのめん)" }, { "locale": "en", "name": "Ogerpon (Hearthflame Mask)" }]
+    "types": [
+      { "slot": 1, "typeSlug": "grass" },
+      { "slot": 2, "typeSlug": "fire" }
+    ],
+    "sprites": [
+      { "gender": "female", "kind": "default", "url": "placeholder/ogerpon/ogerpon-hearthflame/female/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "オーガポン (かまどのめん)" },
+      { "locale": "en", "name": "Ogerpon (Hearthflame Mask)" }
+    ]
   },
   {
     "speciesSlug": "ogerpon",
     "slug": "ogerpon-cornerstone",
     "category": "tera",
-    "types": [{ "slot": 1, "typeSlug": "grass" }, { "slot": 2, "typeSlug": "rock" }],
-    "sprites": [{ "gender": "female", "kind": "default", "url": "placeholder/ogerpon/ogerpon-cornerstone/female/default.png" }],
-    "names": [{ "locale": "ja", "name": "オーガポン (いしずえのめん)" }, { "locale": "en", "name": "Ogerpon (Cornerstone Mask)" }]
+    "types": [
+      { "slot": 1, "typeSlug": "grass" },
+      { "slot": 2, "typeSlug": "rock" }
+    ],
+    "sprites": [
+      { "gender": "female", "kind": "default", "url": "placeholder/ogerpon/ogerpon-cornerstone/female/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "オーガポン (いしずえのめん)" },
+      { "locale": "en", "name": "Ogerpon (Cornerstone Mask)" }
+    ]
   },
   {
     "speciesSlug": "terapagos",
     "slug": "terapagos-normal",
     "category": "normal",
     "types": [{ "slot": 1, "typeSlug": "normal" }],
-    "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/terapagos/terapagos-normal/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "テラパゴス (ノーマルフォルム)" }, { "locale": "en", "name": "Terapagos (Normal Form)" }]
+    "sprites": [
+      { "gender": "unknown", "kind": "default", "url": "placeholder/terapagos/terapagos-normal/unknown/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "テラパゴス (ノーマルフォルム)" },
+      { "locale": "en", "name": "Terapagos (Normal Form)" }
+    ]
   },
   {
     "speciesSlug": "terapagos",
     "slug": "terapagos-stellar",
     "category": "tera",
     "types": [{ "slot": 1, "typeSlug": "normal" }],
-    "sprites": [{ "gender": "unknown", "kind": "default", "url": "placeholder/terapagos/terapagos-stellar/unknown/default.png" }],
-    "names": [{ "locale": "ja", "name": "テラパゴス (ステラフォルム)" }, { "locale": "en", "name": "Terapagos (Stellar Form)" }]
+    "sprites": [
+      { "gender": "unknown", "kind": "default", "url": "placeholder/terapagos/terapagos-stellar/unknown/default.png" }
+    ],
+    "names": [
+      { "locale": "ja", "name": "テラパゴス (ステラフォルム)" },
+      { "locale": "en", "name": "Terapagos (Stellar Form)" }
+    ]
   }
 ]

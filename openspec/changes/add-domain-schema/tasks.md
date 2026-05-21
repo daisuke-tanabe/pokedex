@@ -205,10 +205,10 @@
 
 ## 26. 最終動作確認とドキュメント
 
-- [ ] 26.1 `pnpm typecheck` を全 workspace で実行し、型エラーがゼロであることを確認する
-- [ ] 26.2 `pnpm lint` / `pnpm format:check` を全 workspace で実行し、違反ゼロであることを確認する
-- [ ] 26.3 `pnpm test` を全 workspace で実行し、本 change で追加した全テストが成功することを確認する
-- [ ] 26.4 `pnpm --filter @pokedex/api db:reset` を実行し、マイグレーション + シード + Invariant Tests が一連で成功することを確認する
-- [ ] 26.5 README または `docs/setup.md` に「ローカル開発で DB を再構築する手順」と「シード JSON の追加方法」「新言語追加の手順（contracts の `Locale` + `locales.json` + 各 `*_names.json`）」を追記する
-- [ ] 26.6 セルフレビュー: `typescript-reviewer` Agent を起動して `.ts` 変更分をレビューし、Critical/Major 指摘があれば修正する
-- [ ] 26.7 セルフレビュー: 設計判断（命名規約・複合 PK・evolution_chain 二段構え・locales lookup）が design.md と齟齬なく実装されているか確認する
+- [x] 26.1 `pnpm typecheck` 全 workspace 緑 (4 packages cache hit)
+- [x] 26.2 `pnpm format:check` JSON ファイルを自動整形して全 workspace クリーン、`pnpm lint` も 0 warnings / 0 errors
+- [x] 26.3 `pnpm test` 全 workspace 緑 (api 82 + contracts 35 + その他)
+- [x] 26.4 `pnpm --filter @pokedex/api db:reset` で migration → seed → invariants が exit 0 で完了することを実機検証済み
+- [x] 26.5 README.md に「DB マイグレーションとシード」セクションを追加 (db:reset 手順 + 新言語追加手順)
+- [x] 26.6 セルフレビュー: 各テーブル / seed / invariants の節目で `typescript-reviewer` Agent を実行、Critical/Major は適宜修正済み (index.ts の named export 化など)
+- [x] 26.7 セルフレビュー: 命名規約 (species/forms)、複合 PK (form_types)、evolution_chain 二段構え (NULL 許容 + 自動生成)、locales lookup、pokedex_entries.form_id NULL 許容 等の主要設計判断が design.md と整合していることを確認済み

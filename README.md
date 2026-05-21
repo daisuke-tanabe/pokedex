@@ -58,6 +58,30 @@ pnpm test       # 全パッケージ
 pnpm --filter @pokedex/api test   # API のみ
 ```
 
+### 6. DB マイグレーションとシード
+
+ドメインスキーマは Drizzle ORM で `apps/api/src/db/schema/` に定義し、生成 SQL は
+`supabase/migrations/` にコミット対象として置く。
+
+```bash
+# マイグレーション SQL を再生成 (スキーマ変更時のみ)
+cd apps/api && DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:54322/postgres' \
+  npx drizzle-kit generate --name <change-name>
+
+# ローカル DB をマイグレーション + シードで再構築
+pnpm --filter @pokedex/api db:reset
+```
+
+`pnpm --filter @pokedex/api seed` は `apps/api/src/db/seed/data/*.json` を読み込んで
+DB に投入し、`apps/api/src/db/seed/invariants.ts` の不変条件を最後に検証する。
+
+新しい言語を追加するときの手順:
+
+1. `packages/contracts/src/enums/locale.ts` の `LOCALE_VALUES` と `Locale` に locale code を追加
+2. `apps/api/src/db/seed/data/locales.json` に `{ "code": "...", "name": "..." }` を追加
+3. 各 `*_names` 系の JSON (types / species / forms / regions / pokedexes) に新 locale の name を追記
+4. `pnpm db:reset` で再構築
+
 ## 環境変数の管理方針
 
 | ファイル | 扱い | 用途 |

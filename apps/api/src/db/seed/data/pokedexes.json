@@ -2,7 +2,10 @@
   {
     "slug": "national",
     "regionSlug": null,
-    "names": [{ "locale": "ja", "name": "全国図鑑" }, { "locale": "en", "name": "National Pokédex" }],
+    "names": [
+      { "locale": "ja", "name": "全国図鑑" },
+      { "locale": "en", "name": "National Pokédex" }
+    ],
     "entries": [
       { "speciesSlug": "bulbasaur", "pokedexNumber": 1 },
       { "speciesSlug": "ivysaur", "pokedexNumber": 2 },
@@ -22,7 +25,10 @@
   {
     "slug": "paldea",
     "regionSlug": "paldea",
-    "names": [{ "locale": "ja", "name": "パルデア図鑑" }, { "locale": "en", "name": "Paldea Pokédex" }],
+    "names": [
+      { "locale": "ja", "name": "パルデア図鑑" },
+      { "locale": "en", "name": "Paldea Pokédex" }
+    ],
     "entries": [
       { "speciesSlug": "pikachu", "pokedexNumber": 74 },
       { "speciesSlug": "ogerpon", "pokedexNumber": 400, "formSlug": "ogerpon-teal" }
