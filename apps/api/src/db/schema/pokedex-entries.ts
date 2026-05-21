@@ -23,7 +23,7 @@ export const pokedexEntries = pgTable(
       .notNull()
       .references(() => species.id, { onDelete: 'cascade' }),
     pokedexNumber: integer('pokedex_number').notNull(),
-    formId: integer('form_id').references(() => forms.id),
+    formId: integer('form_id').references(() => forms.id, { onDelete: 'set null' }),
   },
   (table) => [
     unique('pokedex_entries_pokedex_id_pokedex_number_unique').on(table.pokedexId, table.pokedexNumber),

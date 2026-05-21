@@ -340,7 +340,7 @@ Drizzle の `relations()` ヘルパーで関係を明示し、後続 change の 
 - **[トレードオフ] 多言語シードを `ja` / `en` のみに絞っていることが将来の負債になる**: 後で他言語を追加する際にデータソースを新たに調達する必要がある → Mitigation: 多言語テーブル構造は変えないので、`locales` への INSERT + 各 `*_names` テーブルへの追加で済む
 - **[リスク] FK 列にインデックスが未定義**: PostgreSQL は FK 列に自動でインデックスを作らないため、`forms.species_id` / `species_evolutions.from_species_id` / `to_species_id` / `pokedex_entries.pokedex_id` / `species_id` / `form_id` / `form_names.form_id` / `form_sprites.form_id` などの JOIN・WHERE がフルスキャンになる → Mitigation: 本 change は **テーブル定義のみ** (実クエリは出ない) のため許容。後続 `add-search-api` で実 SQL を組む直前に必要なインデックスを追加する。本 change で全 FK にインデックスを張ると過剰最適化になり、実クエリの分布を見てから決める方が安全
 - **[リスク] `species_evolutions` の A→B→A サイクル検出**: `from <> to` CHECK で自己ループ (`from = to`) は防げるが、A→B→A や A→B→C→A のような長いサイクルは DB 制約では検出できない → Mitigation: アプリ層 (`add-search-api` または検索画面の表示ロジック) でサイクル検出を行う設計。本 change のスコープ外
-- **[運用上の注意] `pokedex_entries.form_id` の `ON DELETE NO ACTION`**: 図鑑エントリが指している form を削除しようとすると FK 違反になる → Mitigation: フォームを差し替えるシードの再投入は、`pokedex_entries` を先に削除する `clearAll` の順序で対処済み (実装の `clearAll` で `pokedex_entries` → `forms` の順)。手動 SQL でフォームを削除する場合は事前に `pokedex_entries.form_id` を NULL 化するか該当エントリを削除する
+- **[設計判断] `pokedex_entries.form_id` の `ON DELETE SET NULL`**: `form_id` は NULL 許容で「NULL の場合は UI 側で `category='normal'` をデフォルト表示するフォールバック」という意味論を持つ。これと整合させるため、form 削除時には `pokedex_entries.form_id` を NULL に書き換える `SET NULL` を採用する。図鑑エントリ自体は残り、UI は自動的にデフォルトフォーム表示に切り替わる。`NO ACTION` で FK 違反ブロックする選択肢もあるが、運用時に手動で entry 側を先に削除する手間が生じ、設計意図 (NULL = fallback) と不整合になるため却下
 
 ## Migration Plan
 

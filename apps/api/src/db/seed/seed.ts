@@ -273,7 +273,9 @@ async function seedPokedexes(
     .values(
       rows.map((row) => ({
         slug: row.slug,
-        regionId: row.regionSlug ? (regionIds.get(row.regionSlug) ?? null) : null,
+        regionId: row.regionSlug
+          ? required(regionIds.get(row.regionSlug), `pokedexes: unknown region slug '${row.regionSlug}'`)
+          : null,
       })),
     )
     .returning({ id: pokedexes.id, slug: pokedexes.slug });

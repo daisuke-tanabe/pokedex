@@ -44,7 +44,7 @@ const pokedexRowSchema = v.object({
   entries: v.array(
     v.object({
       speciesSlug: v.pipe(v.string(), v.nonEmpty()),
-      pokedexNumber: v.pipe(v.number(), v.integer(), v.minValue(0)),
+      pokedexNumber: v.pipe(v.number(), v.integer(), v.minValue(1)),
       formSlug: v.optional(v.nullable(v.pipe(v.string(), v.nonEmpty()))),
     }),
   ),

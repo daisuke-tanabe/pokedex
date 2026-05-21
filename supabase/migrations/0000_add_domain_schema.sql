@@ -130,7 +130,7 @@ ALTER TABLE "form_types" ADD CONSTRAINT "form_types_type_id_types_id_fk" FOREIGN
 ALTER TABLE "forms" ADD CONSTRAINT "forms_species_id_species_id_fk" FOREIGN KEY ("species_id") REFERENCES "public"."species"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pokedex_entries" ADD CONSTRAINT "pokedex_entries_pokedex_id_pokedexes_id_fk" FOREIGN KEY ("pokedex_id") REFERENCES "public"."pokedexes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pokedex_entries" ADD CONSTRAINT "pokedex_entries_species_id_species_id_fk" FOREIGN KEY ("species_id") REFERENCES "public"."species"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "pokedex_entries" ADD CONSTRAINT "pokedex_entries_form_id_forms_id_fk" FOREIGN KEY ("form_id") REFERENCES "public"."forms"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "pokedex_entries" ADD CONSTRAINT "pokedex_entries_form_id_forms_id_fk" FOREIGN KEY ("form_id") REFERENCES "public"."forms"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pokedex_names" ADD CONSTRAINT "pokedex_names_pokedex_id_pokedexes_id_fk" FOREIGN KEY ("pokedex_id") REFERENCES "public"."pokedexes"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pokedex_names" ADD CONSTRAINT "pokedex_names_locale_locales_code_fk" FOREIGN KEY ("locale") REFERENCES "public"."locales"("code") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pokedexes" ADD CONSTRAINT "pokedexes_region_id_regions_id_fk" FOREIGN KEY ("region_id") REFERENCES "public"."regions"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

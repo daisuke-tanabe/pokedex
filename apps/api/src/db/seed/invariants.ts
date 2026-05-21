@@ -1,10 +1,11 @@
+import { Locale } from '@pokedex/contracts';
 import { and, eq, isNotNull, isNull, ne, sql } from 'drizzle-orm';
 
 import { type DB, db } from '../client.js';
 import { formNames, formSprites, formTypes, forms, pokedexEntries, pokedexes, species } from '../schema/index.js';
 
 const NATIONAL_POKEDEX_SLUG = 'national';
-const JA_LOCALE = 'ja';
+const JA_LOCALE = Locale.JA;
 
 /**
  * `db.transaction()` のコールバック引数型。`db` と互換のインターフェースを持ち、
