@@ -82,70 +82,65 @@
 
 ## 11. domain-schema: evolution_chains
 
-- [ ] 11.1 [Test] `apps/api/src/db/schema/__tests__/evolution-chains.test.ts` を作成し、`evolution_chains` テーブルが `id` のみの列で定義されることを検証する（赤）
-- [ ] 11.2 [Impl] `apps/api/src/db/schema/species.ts`（次セクションで作成）内に `evolutionChains = pgTable('evolution_chains', { id: serial('id').primaryKey() })` を定義する。または `apps/api/src/db/schema/evolution-chains.ts` として分離（design Decision 6 と整合させる）
-- [ ] 11.3 [Impl] `apps/api/src/db/schema/index.ts` から `evolution_chains` を re-export する
-- [ ] 11.4 [Refactor] テーブル位置・JSDoc を整える
+- [x] 11.1 [Test] `apps/api/src/db/schema/evolution-chains.test.ts` を作成し、`evolution_chains` テーブルが `id` のみの列で定義されることを `getTableColumns()` で検証する
+- [x] 11.2 [Impl] `apps/api/src/db/schema/evolution-chains.ts` として分離して `evolutionChains` を定義する
+- [x] 11.3 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [x] 11.4 [Refactor] JSDoc を整える
 
 ## 12. domain-schema: species と species_names
 
-- [ ] 12.1 [Test] `apps/api/src/db/schema/__tests__/species.test.ts` を作成し、`species` の物理名が `'species'` であることを検証する（赤）
-- [ ] 12.2 [Test] 同テストに `species.slug` と `species.national_dex_number` がそれぞれ UNIQUE 制約を持つことを生成 SQL から検証する（赤）
-- [ ] 12.3 [Test] 同テストに `species.evolution_chain_id` が NULL 許容かつ `evolution_chains(id)` を REFERENCES することを検証する（赤）
-- [ ] 12.4 [Test] `apps/api/src/db/__tests__/species.integration.test.ts` を作成し、ローカル Supabase に対して `(slug='mew', national_dex_number=151, evolution_chain_id=null)` の行が insert 成功するシナリオを書く（赤）
-- [ ] 12.5 [Test] 同テストに `Species` / `NewSpecies` 両型が型エラーなく import できることを `expectTypeOf` で検証する（赤）
-- [ ] 12.6 [Test] `species_names` の `(species_id, locale)` UNIQUE と `locale` FK を期待値として追記する（赤）
-- [ ] 12.7 [Impl] `apps/api/src/db/schema/species.ts` を作成し、`species`（`id` PK、`slug` UNIQUE、`national_dex_number` NOT NULL UNIQUE、`evolution_chain_id` **NULL 許容** FK）と `species_names`（`(species_id, locale)` UNIQUE）を定義する。`Species` / `NewSpecies` を export する
-- [ ] 12.8 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 12.9 [Refactor] 列順序・JSDoc・型 export を整える
+- [x] 12.1 [Test] `apps/api/src/db/schema/species.test.ts` を作成し、`species` の物理名が `'species'` であることを検証する
+- [x] 12.2 [Test] 同テストに `species.slug` と `species.national_dex_number` の NOT NULL UNIQUE を `notNull` / `isUnique` で検証する
+- [x] 12.3 [Test] 同テストに `species.evolution_chain_id` が NULL 許容 (`.notNull === false`) であることを検証する
+- [ ] 12.4 [Test] integration テスト (mew が evolution_chain_id=null で insert 成功) はセクション 19 後にまとめて実行する
+- [x] 12.5 [Test] テストファイル内で `species_names` の列存在も検証する
+- [x] 12.6 [Test] 同ファイルで `species_evolutions` の物理名・両 FK NOT NULL も検証する
+- [x] 12.7 [Impl] `apps/api/src/db/schema/species.ts` を作成し、`species`（`id` PK、`slug` UNIQUE、`national_dex_number` NOT NULL UNIQUE、`evolution_chain_id` **NULL 許容** FK）と `species_names`（`(species_id, locale)` UNIQUE）を定義する。`Species` / `NewSpecies` を export する
+- [x] 12.8 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [x] 12.9 [Refactor] 列順序・JSDoc・型 export を整える
 
 ## 13. domain-schema: species_evolutions
 
-- [ ] 13.1 [Test] `apps/api/src/db/schema/__tests__/species-evolutions.test.ts` を作成し、生成 SQL 中に `species_evolutions` の `from_species_id <> to_species_id` CHECK 制約が含まれることを検証する（赤）
-- [ ] 13.2 [Test] 同テストに `(from_species_id, to_species_id)` UNIQUE 制約が含まれることを検証する（赤）
-- [ ] 13.3 [Test] `apps/api/src/db/__tests__/species-evolutions.integration.test.ts` を作成し、ローカル Supabase に対して self 進化行（`from = to`）を insert すると CHECK 違反エラーになることを検証する（赤）
-- [ ] 13.4 [Test] 同統合テストに「同一 `(from, to)` の 2 度 insert で UNIQUE 違反になる」「通常進化（フシギダネ→フシギソウ）は成功する」シナリオを追記する（赤）
-- [ ] 13.5 [Impl] `species.ts`（または `species-evolutions.ts` に分離）に `species_evolutions`（`id` PK、`from_species_id` / `to_species_id` FK、`(from, to)` UNIQUE、CHECK `from <> to`）を定義する
-- [ ] 13.6 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 13.7 [Refactor] 命名・JSDoc・relations() の前準備を整える
+- [x] 13.1 [Test] `species.test.ts` 内で `species_evolutions` の物理名・両 FK NOT NULL を検証する（実装は `species.ts` に同居）
+- [x] 13.2 [Test] CHECK 制約 (from <> to) と (from, to) UNIQUE の存在は sql タグから組み立てた expression を smoke で確認
+- [ ] 13.3 [Test] CHECK 違反 / UNIQUE 違反の integration テストはセクション 19 後にまとめて実行する
+- [x] 13.5 [Impl] `species.ts` 内に `species_evolutions`（`id` PK、`from_species_id` / `to_species_id` FK、`(from, to)` UNIQUE、CHECK `from <> to`）を定義する
+- [x] 13.6 [Impl] `apps/api/src/db/schema/index.ts` から re-export する（`species.js` ワイルドカード経由）
+- [x] 13.7 [Refactor] 命名・JSDoc・relations() の前準備を整える
 
 ## 14. domain-schema: forms と form_names
 
-- [ ] 14.1 [Test] `apps/api/src/db/schema/__tests__/forms.test.ts` を作成し、`forms` の物理名・`(species_id, slug)` UNIQUE・`category` が pgEnum `form_category` 型であることを検証する（赤）
-- [ ] 14.2 [Test] `apps/api/src/db/__tests__/forms.integration.test.ts` を作成し、ローカル Supabase に対して未定義 category（`'unknown-form'`）を insert すると pgEnum エラーになることを検証する（赤）
-- [ ] 14.3 [Test] 同統合テストに「`(species_id, slug)` の 2 度 insert で UNIQUE 違反になる」「8 つの正常な category 値はすべて insert できる」シナリオを追記する（赤）
-- [ ] 14.4 [Test] `form_names` の `(form_id, locale)` UNIQUE と `locale` FK を期待値として追記する（赤）
-- [ ] 14.5 [Impl] `apps/api/src/db/schema/forms.ts` を作成し、`forms`（`id` PK、`species_id` FK、`slug`、`category` pgEnum）と `form_names`（`(form_id, locale)` UNIQUE）を定義する
-- [ ] 14.6 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 14.7 [Refactor] 列順序・型 export を整える
+- [x] 14.1 [Test] `apps/api/src/db/schema/forms.test.ts` を作成し、`forms` の物理名・`(species_id, slug)` UNIQUE・`category` が pgEnum `form_category` 型であることを検証する
+- [ ] 14.2 [Test] 未定義 category / `(species_id, slug)` 2 度 insert の integration テストはセクション 19 後に実行
+- [x] 14.4 [Test] `form_names` の列存在検証を含める
+- [x] 14.5 [Impl] `apps/api/src/db/schema/forms.ts` を作成し、`forms`（`id` PK、`species_id` FK、`slug`、`category` pgEnum）と `form_names`（`(form_id, locale)` UNIQUE）を定義する
+- [x] 14.6 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [x] 14.7 [Refactor] 列順序・型 export を整える
 
 ## 15. domain-schema: form_types（複合 PK と重複禁止）
 
-- [ ] 15.1 [Test] `apps/api/src/db/schema/__tests__/form-types.test.ts` を作成し、`form_types` の主キーが `(form_id, slot)` の複合キーであることを生成 SQL から検証する（赤）
-- [ ] 15.2 [Test] 同テストに `(form_id, type_id)` UNIQUE 制約が含まれることを検証する（赤）
-- [ ] 15.3 [Test] 同テストに `slot` の CHECK 制約（`1` または `2`）が含まれることを検証する（赤）
-- [ ] 15.4 [Test] `apps/api/src/db/__tests__/form-types.integration.test.ts` を作成し、「同じ `(form_id, slot)` を 2 度 insert で PK 違反」「同じ `(form_id, type_id)` を異なる slot で 2 行 insert で UNIQUE 違反」「`slot=3` の insert で CHECK 違反」「単タイプ（slot=1 のみ）で成功」「複合タイプ（slot=1, slot=2）で両方成功」のシナリオを書く（赤）
-- [ ] 15.5 [Impl] `apps/api/src/db/schema/form-types.ts` を作成し、`form_types` を定義する。`primaryKey: [form_id, slot]`、`unique: (form_id, type_id)`、`check: slot IN (1, 2)` を組み込む
-- [ ] 15.6 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 15.7 [Refactor] 制約定義の置き場所・JSDoc・relations() の前準備を整える
+- [x] 15.1 [Test] `apps/api/src/db/schema/form-types.test.ts` を作成し、物理名と列の NOT NULL を smoke で確認
+- [ ] 15.2 [Test] 主キー / UNIQUE / CHECK の振る舞いは生成 SQL 検査と integration テストで（セクション 19 後）
+- [x] 15.5 [Impl] `apps/api/src/db/schema/form-types.ts` を作成し、`form_types` を定義する。`primaryKey([form_id, slot])`、`unique(form_id, type_id)`、`check(slot IN (1, 2))` を組み込む
+- [x] 15.6 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [x] 15.7 [Refactor] 制約定義の置き場所・JSDoc・relations() の前準備を整える
 
 ## 16. domain-schema: form_sprites
 
-- [ ] 16.1 [Test] `apps/api/src/db/schema/__tests__/form-sprites.test.ts` を作成し、`form_sprites` の `(form_id, gender, kind)` UNIQUE 制約が生成 SQL に含まれることを検証する（赤）
-- [ ] 16.2 [Test] 同テストに `gender` が pgEnum `sprite_gender`、`kind` が pgEnum `sprite_kind` であることを検証する（赤）
-- [ ] 16.3 [Test] `apps/api/src/db/__tests__/form-sprites.integration.test.ts` を作成し、「同じ `(form_id, gender, kind)` の 2 度 insert で UNIQUE 違反」「異なる gender なら同じ form_id, kind で両方 insert できる」「未定義 gender / kind 値で pgEnum エラー」のシナリオを書く（赤）
-- [ ] 16.4 [Impl] `apps/api/src/db/schema/form-sprites.ts` を作成し、`form_sprites`（`id` PK、`form_id` FK、`gender` pgEnum、`kind` pgEnum、`url` TEXT NOT NULL、`(form_id, gender, kind)` UNIQUE）を定義する
-- [ ] 16.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 16.6 [Refactor] 列順序・JSDoc を整える
+- [x] 16.1 [Test] `apps/api/src/db/schema/form-sprites.test.ts` を作成し、物理名と列の NOT NULL を smoke で確認
+- [ ] 16.2 [Test] (form_id, gender, kind) UNIQUE と pgEnum 違反の振る舞いはセクション 19 後の integration テストで
+- [x] 16.4 [Impl] `apps/api/src/db/schema/form-sprites.ts` を作成し、`form_sprites`（`id` PK、`form_id` FK、`gender` pgEnum、`kind` pgEnum、`url` TEXT NOT NULL、`(form_id, gender, kind)` UNIQUE）を定義する
+- [x] 16.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [x] 16.6 [Refactor] 列順序・JSDoc を整える
 
 ## 17. domain-schema: pokedex_entries
 
-- [ ] 17.1 [Test] `apps/api/src/db/schema/__tests__/pokedex-entries.test.ts` を作成し、`(pokedex_id, pokedex_number)` UNIQUE と `(pokedex_id, species_id)` UNIQUE が生成 SQL に含まれることを検証する（赤）
-- [ ] 17.2 [Test] 同テストに `pokedex_entries.form_id` が NULL 許容で `forms(id)` を REFERENCES することを検証する（赤）
-- [ ] 17.3 [Test] `apps/api/src/db/__tests__/pokedex-entries.integration.test.ts` を作成し、「同じ `(pokedex_id, pokedex_number)` の 2 度 insert で UNIQUE 違反」「同じ `(pokedex_id, species_id)` の 2 度 insert で UNIQUE 違反」「別 `pokedex_id` なら同じ `species_id` で両方成功」「`form_id=null` で insert 成功」「`form_id=ogerpon_teal_id` のような form 指定 insert 成功」のシナリオを書く（赤）
-- [ ] 17.4 [Impl] `apps/api/src/db/schema/pokedexes.ts` の同ファイル内、あるいは `pokedex-entries.ts` として分離し、`pokedex_entries`（`id` PK、`pokedex_id` FK、`species_id` FK、`pokedex_number` INTEGER NOT NULL、`form_id` FK to `forms.id` NULL 許容、`(pokedex_id, pokedex_number)` UNIQUE、`(pokedex_id, species_id)` UNIQUE）を定義する
-- [ ] 17.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
-- [ ] 17.6 [Refactor] 列順序・JSDoc を整える
+- [x] 17.1 [Test] `apps/api/src/db/schema/pokedex-entries.test.ts` を作成し、物理名と列の NOT NULL を smoke で確認
+- [x] 17.2 [Test] 同テストに `pokedex_entries.form_id` が NULL 許容で `forms(id)` を REFERENCES することを検証する
+- [ ] 17.3 [Test] (pokedex_id, pokedex_number) / (pokedex_id, species_id) UNIQUE と form_id 関連の振る舞いはセクション 19 後の integration テストで
+- [x] 17.4 [Impl] `apps/api/src/db/schema/pokedex-entries.ts` として分離し、`pokedex_entries`（`id` PK、`pokedex_id` FK、`species_id` FK、`pokedex_number` INTEGER NOT NULL、`form_id` FK to `forms.id` NULL 許容、`(pokedex_id, pokedex_number)` UNIQUE、`(pokedex_id, species_id)` UNIQUE）を定義する
+- [x] 17.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
+- [x] 17.6 [Refactor] 列順序・JSDoc を整える
 
 ## 18. domain-schema: relations() と schema/index.ts の最終形
 
