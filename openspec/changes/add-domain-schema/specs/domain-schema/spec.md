@@ -275,12 +275,12 @@
 
 ### Requirement: マイグレーション SQL の生成
 
-`pnpm --filter @pokedex/api drizzle-kit generate` を実行したとき、`supabase/migrations/` 配下に Supabase CLI が認識する `<timestamp>_<name>.sql` 形式のファイルが少なくとも 1 つ生成されなければならない（MUST）。生成された SQL は本 change で定義した全テーブル・全制約を含まなければならない（MUST）。
+`pnpm --filter @pokedex/api drizzle-kit generate` を実行したとき、`supabase/migrations/` 配下に Drizzle Kit デフォルトの `<NNNN>_<name>.sql` 連番形式 (例: `0000_add_domain_schema.sql`) のファイルが少なくとも 1 つ生成されなければならない（MUST）。Supabase CLI は連番形式とタイムスタンプ形式の両方を認識して順序通りに適用する。生成された SQL は本 change で定義した全テーブル・全制約を含まなければならない（MUST）。
 
-#### Scenario: マイグレーションファイルがタイムスタンプ命名で生成される
+#### Scenario: マイグレーションファイルが連番命名で生成される
 
 - **WHEN** `pnpm --filter @pokedex/api drizzle-kit generate` を実行する
-- **THEN** `supabase/migrations/` 配下に `YYYYMMDDHHMMSS_*.sql` パターンのファイルが少なくとも 1 つ存在する
+- **THEN** `supabase/migrations/` 配下に `<NNNN>_<name>.sql` パターン (Drizzle Kit デフォルトの連番形式、例: `0000_add_domain_schema.sql`) のファイルが少なくとも 1 つ存在する
 
 #### Scenario: 生成 SQL に form_types の複合 PK 定義が含まれる
 

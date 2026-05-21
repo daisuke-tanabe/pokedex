@@ -89,11 +89,16 @@ const checkEvolutionsBothChained = async (runner: Runner): Promise<readonly stri
 };
 
 const checkEvolutionsSameChain = async (runner: Runner): Promise<readonly string[]> => {
+  // SQL の 3 値論理では `NULL <> X` が NULL (FALSE 扱い) になるため、片方の chain_id が
+  // NULL のケースを取り逃がす。`checkEvolutionsBothChained` が先に NULL を検出する想定だが、
+  // 本 invariant 単独でも論理的に正しく動くよう IS NOT NULL を明示する。
   const rows = await runner.execute<{ count: number }>(sql`
     SELECT COUNT(*)::int AS count FROM species_evolutions e
       JOIN species fs ON e.from_species_id = fs.id
       JOIN species ts ON e.to_species_id = ts.id
-      WHERE fs.evolution_chain_id <> ts.evolution_chain_id
+      WHERE fs.evolution_chain_id IS NOT NULL
+        AND ts.evolution_chain_id IS NOT NULL
+        AND fs.evolution_chain_id <> ts.evolution_chain_id
   `);
   const count = rows[0]?.count ?? 0;
   return count > 0 ? [`species_evolutions の from / to で evolution_chain_id が異なる行が ${count} 件存在する`] : [];

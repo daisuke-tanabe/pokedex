@@ -15,7 +15,12 @@ export const species = pgTable('species', {
   id: serial('id').primaryKey(),
   slug: varchar('slug', { length: 64 }).notNull().unique(),
   nationalDexNumber: integer('national_dex_number').notNull().unique(),
-  evolutionChainId: integer('evolution_chain_id').references(() => evolutionChains.id),
+  // ON DELETE SET NULL: evolution_chain が削除されても species 行は残し、UI 側で
+  // 「同系統表示なし」のフォールバック挙動に切り替える。pokedex_entries.form_id と
+  // 同じ「NULL = fallback」設計に揃える。
+  evolutionChainId: integer('evolution_chain_id').references(() => evolutionChains.id, {
+    onDelete: 'set null',
+  }),
 });
 
 export type Species = typeof species.$inferSelect;

@@ -19,7 +19,7 @@
 - 命名規約として **物理名は snake_case + 複数形、TS シンボルは camelCase、TS 型は PascalCase + 単数形** を全テーブルで徹底する
 - ドメイン名の選択は「種族 = `species`」「フォーム = `forms`」とし、API レイヤで pokemon という語彙を使うときはレスポンス組み立て層でマップする
 - 中間テーブルは **属性が 1 つでも乗るならドメイン名で命名** する規約（`pokedex_entries`、`form_types`、`form_sprites`、`species_evolutions`、`*_names`）を採用し、design.md に明文化する
-- `drizzle-kit generate` を初めて走らせ、`supabase/migrations/` に SQL マイグレーションを 1 ファイル生成する。命名は Supabase CLI が認識するタイムスタンプ + name 形式に揃える
+- `drizzle-kit generate` を初めて走らせ、`supabase/migrations/` に SQL マイグレーションを 1 ファイル生成する。命名は Drizzle Kit デフォルトの連番形式 (`<NNNN>_<name>.sql`) を採用する。Supabase CLI は連番形式・タイムスタンプ形式どちらも認識して順序通りに適用する
 - `supabase db reset` でローカル DB がマイグレーション + シードまで一通り構築できる状態にする
 - 最小シードデータ（JSON ファイル）と、JSON を読み込んで DB にインサートする `pnpm --filter @pokedex/api seed` スクリプトを追加する
   - 本 change は **「seed.ts と invariants が動く最小デモデータ」** に絞る（数十件規模）。フォーム多様性の代表パターン（多形態種・複数カテゴリ）を含めることで設計の妥当性を実証する
