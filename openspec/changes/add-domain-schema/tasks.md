@@ -151,11 +151,11 @@
 
 ## 19. domain-schema: マイグレーション SQL の生成と検証
 
-- [ ] 19.1 [Test] `apps/api/src/db/__tests__/migrations.test.ts` を作成し、`supabase/migrations/` 配下に `YYYYMMDDHHMMSS_*.sql` パターンの SQL ファイルが少なくとも 1 つ存在することを検証する（赤、まだ実行前）
-- [ ] 19.2 [Test] 同テストに「生成 SQL に `form_types` の主キーが `(form_id, slot)` の複合キーで定義されている」「`from_species_id <> to_species_id` の CHECK 制約が含まれる」「`species.evolution_chain_id` が NULL 許容 FK である」「`pokedex_entries.form_id` が NULL 許容 FK である」シナリオを追記する（赤）
-- [ ] 19.3 [Impl] `pnpm --filter @pokedex/api drizzle-kit generate --name add_domain_schema` を実行し、生成 SQL を目視レビューする
-- [ ] 19.4 [Impl] 生成された SQL をコミット対象に追加する（手書き修正は最小限、Drizzle Kit 出力を尊重）
-- [ ] 19.5 [Refactor] ファイル名・タイムスタンプが Supabase CLI の期待形式と一致するか `supabase db reset` で確認する
+- [x] 19.1 [Test] `apps/api/src/db/__tests__/migrations.test.ts` を作成し、`supabase/migrations/` 配下に SQL ファイルが少なくとも 1 つ存在することを検証する
+- [x] 19.2 [Test] 同テストに「生成 SQL に `form_types` の `(form_id, slot)` 複合 PK」「`from_species_id <> to_species_id` CHECK」「`slot IN (1, 2)` CHECK」「`species.evolution_chain_id` が NULL 許容 FK」「`pokedex_entries.form_id` が NULL 許容 FK」「pgEnum form_category / sprite_gender / sprite_kind」のシナリオを追記する
+- [x] 19.3 [Impl] `DATABASE_URL=...` 付きで `npx drizzle-kit generate --name add_domain_schema` を実行し、生成 SQL を目視レビューする（16 テーブル / 144 行、意図通り）
+- [x] 19.4 [Impl] 生成された `supabase/migrations/0000_add_domain_schema.sql` をコミット対象に追加する（Drizzle Kit 出力を尊重、手書き修正なし）
+- [x] 19.5 [Refactor] `supabase db reset` で 16 テーブル全部が適用されることを確認した（Supabase CLI の命名形式と一致）
 
 ## 20. domain-seed: locales / types / regions / pokedexes JSON
 

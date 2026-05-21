@@ -1,0 +1,1029 @@
+{
+  "id": "d5e4eef6-a8b1-41ba-88e7-b5a850659e0e",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.evolution_chains": {
+      "name": "evolution_chains",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.form_names": {
+      "name": "form_names",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "form_id": {
+          "name": "form_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locale": {
+          "name": "locale",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "form_names_form_id_forms_id_fk": {
+          "name": "form_names_form_id_forms_id_fk",
+          "tableFrom": "form_names",
+          "tableTo": "forms",
+          "columnsFrom": [
+            "form_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "form_names_locale_locales_code_fk": {
+          "name": "form_names_locale_locales_code_fk",
+          "tableFrom": "form_names",
+          "tableTo": "locales",
+          "columnsFrom": [
+            "locale"
+          ],
+          "columnsTo": [
+            "code"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "form_names_form_id_locale_unique": {
+          "name": "form_names_form_id_locale_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "form_id",
+            "locale"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.form_sprites": {
+      "name": "form_sprites",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "form_id": {
+          "name": "form_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gender": {
+          "name": "gender",
+          "type": "sprite_gender",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "sprite_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "form_sprites_form_id_forms_id_fk": {
+          "name": "form_sprites_form_id_forms_id_fk",
+          "tableFrom": "form_sprites",
+          "tableTo": "forms",
+          "columnsFrom": [
+            "form_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "form_sprites_form_id_gender_kind_unique": {
+          "name": "form_sprites_form_id_gender_kind_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "form_id",
+            "gender",
+            "kind"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.form_types": {
+      "name": "form_types",
+      "schema": "",
+      "columns": {
+        "form_id": {
+          "name": "form_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slot": {
+          "name": "slot",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type_id": {
+          "name": "type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "form_types_form_id_forms_id_fk": {
+          "name": "form_types_form_id_forms_id_fk",
+          "tableFrom": "form_types",
+          "tableTo": "forms",
+          "columnsFrom": [
+            "form_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "form_types_type_id_types_id_fk": {
+          "name": "form_types_type_id_types_id_fk",
+          "tableFrom": "form_types",
+          "tableTo": "types",
+          "columnsFrom": [
+            "type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "form_types_pk": {
+          "name": "form_types_pk",
+          "columns": [
+            "form_id",
+            "slot"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "form_types_form_id_type_id_unique": {
+          "name": "form_types_form_id_type_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "form_id",
+            "type_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "form_types_slot_range": {
+          "name": "form_types_slot_range",
+          "value": "\"form_types\".\"slot\" IN (1, 2)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.forms": {
+      "name": "forms",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "species_id": {
+          "name": "species_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "form_category",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "forms_species_id_species_id_fk": {
+          "name": "forms_species_id_species_id_fk",
+          "tableFrom": "forms",
+          "tableTo": "species",
+          "columnsFrom": [
+            "species_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "forms_species_id_slug_unique": {
+          "name": "forms_species_id_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "species_id",
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.locales": {
+      "name": "locales",
+      "schema": "",
+      "columns": {
+        "code": {
+          "name": "code",
+          "type": "varchar(16)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pokedex_entries": {
+      "name": "pokedex_entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "pokedex_id": {
+          "name": "pokedex_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "species_id": {
+          "name": "species_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pokedex_number": {
+          "name": "pokedex_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "form_id": {
+          "name": "form_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pokedex_entries_pokedex_id_pokedexes_id_fk": {
+          "name": "pokedex_entries_pokedex_id_pokedexes_id_fk",
+          "tableFrom": "pokedex_entries",
+          "tableTo": "pokedexes",
+          "columnsFrom": [
+            "pokedex_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pokedex_entries_species_id_species_id_fk": {
+          "name": "pokedex_entries_species_id_species_id_fk",
+          "tableFrom": "pokedex_entries",
+          "tableTo": "species",
+          "columnsFrom": [
+            "species_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pokedex_entries_form_id_forms_id_fk": {
+          "name": "pokedex_entries_form_id_forms_id_fk",
+          "tableFrom": "pokedex_entries",
+          "tableTo": "forms",
+          "columnsFrom": [
+            "form_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "pokedex_entries_pokedex_id_pokedex_number_unique": {
+          "name": "pokedex_entries_pokedex_id_pokedex_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "pokedex_id",
+            "pokedex_number"
+          ]
+        },
+        "pokedex_entries_pokedex_id_species_id_unique": {
+          "name": "pokedex_entries_pokedex_id_species_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "pokedex_id",
+            "species_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pokedex_names": {
+      "name": "pokedex_names",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "pokedex_id": {
+          "name": "pokedex_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locale": {
+          "name": "locale",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pokedex_names_pokedex_id_pokedexes_id_fk": {
+          "name": "pokedex_names_pokedex_id_pokedexes_id_fk",
+          "tableFrom": "pokedex_names",
+          "tableTo": "pokedexes",
+          "columnsFrom": [
+            "pokedex_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pokedex_names_locale_locales_code_fk": {
+          "name": "pokedex_names_locale_locales_code_fk",
+          "tableFrom": "pokedex_names",
+          "tableTo": "locales",
+          "columnsFrom": [
+            "locale"
+          ],
+          "columnsTo": [
+            "code"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "pokedex_names_pokedex_id_locale_unique": {
+          "name": "pokedex_names_pokedex_id_locale_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "pokedex_id",
+            "locale"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pokedexes": {
+      "name": "pokedexes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "region_id": {
+          "name": "region_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pokedexes_region_id_regions_id_fk": {
+          "name": "pokedexes_region_id_regions_id_fk",
+          "tableFrom": "pokedexes",
+          "tableTo": "regions",
+          "columnsFrom": [
+            "region_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "pokedexes_slug_unique": {
+          "name": "pokedexes_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.region_names": {
+      "name": "region_names",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "region_id": {
+          "name": "region_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locale": {
+          "name": "locale",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "region_names_region_id_regions_id_fk": {
+          "name": "region_names_region_id_regions_id_fk",
+          "tableFrom": "region_names",
+          "tableTo": "regions",
+          "columnsFrom": [
+            "region_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "region_names_locale_locales_code_fk": {
+          "name": "region_names_locale_locales_code_fk",
+          "tableFrom": "region_names",
+          "tableTo": "locales",
+          "columnsFrom": [
+            "locale"
+          ],
+          "columnsTo": [
+            "code"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "region_names_region_id_locale_unique": {
+          "name": "region_names_region_id_locale_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "region_id",
+            "locale"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.regions": {
+      "name": "regions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "regions_slug_unique": {
+          "name": "regions_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.species": {
+      "name": "species",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "national_dex_number": {
+          "name": "national_dex_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evolution_chain_id": {
+          "name": "evolution_chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "species_evolution_chain_id_evolution_chains_id_fk": {
+          "name": "species_evolution_chain_id_evolution_chains_id_fk",
+          "tableFrom": "species",
+          "tableTo": "evolution_chains",
+          "columnsFrom": [
+            "evolution_chain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "species_slug_unique": {
+          "name": "species_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        },
+        "species_national_dex_number_unique": {
+          "name": "species_national_dex_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "national_dex_number"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.species_evolutions": {
+      "name": "species_evolutions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "from_species_id": {
+          "name": "from_species_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_species_id": {
+          "name": "to_species_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "species_evolutions_from_species_id_species_id_fk": {
+          "name": "species_evolutions_from_species_id_species_id_fk",
+          "tableFrom": "species_evolutions",
+          "tableTo": "species",
+          "columnsFrom": [
+            "from_species_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "species_evolutions_to_species_id_species_id_fk": {
+          "name": "species_evolutions_to_species_id_species_id_fk",
+          "tableFrom": "species_evolutions",
+          "tableTo": "species",
+          "columnsFrom": [
+            "to_species_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "species_evolutions_from_to_unique": {
+          "name": "species_evolutions_from_to_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "from_species_id",
+            "to_species_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "species_evolutions_from_to_distinct": {
+          "name": "species_evolutions_from_to_distinct",
+          "value": "\"species_evolutions\".\"from_species_id\" <> \"species_evolutions\".\"to_species_id\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.species_names": {
+      "name": "species_names",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "species_id": {
+          "name": "species_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locale": {
+          "name": "locale",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "species_names_species_id_species_id_fk": {
+          "name": "species_names_species_id_species_id_fk",
+          "tableFrom": "species_names",
+          "tableTo": "species",
+          "columnsFrom": [
+            "species_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "species_names_locale_locales_code_fk": {
+          "name": "species_names_locale_locales_code_fk",
+          "tableFrom": "species_names",
+          "tableTo": "locales",
+          "columnsFrom": [
+            "locale"
+          ],
+          "columnsTo": [
+            "code"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "species_names_species_id_locale_unique": {
+          "name": "species_names_species_id_locale_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "species_id",
+            "locale"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.type_names": {
+      "name": "type_names",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "type_id": {
+          "name": "type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locale": {
+          "name": "locale",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "type_names_type_id_types_id_fk": {
+          "name": "type_names_type_id_types_id_fk",
+          "tableFrom": "type_names",
+          "tableTo": "types",
+          "columnsFrom": [
+            "type_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "type_names_locale_locales_code_fk": {
+          "name": "type_names_locale_locales_code_fk",
+          "tableFrom": "type_names",
+          "tableTo": "locales",
+          "columnsFrom": [
+            "locale"
+          ],
+          "columnsTo": [
+            "code"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "type_names_type_id_locale_unique": {
+          "name": "type_names_type_id_locale_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "type_id",
+            "locale"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.types": {
+      "name": "types",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "types_slug_unique": {
+          "name": "types_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.form_category": {
+      "name": "form_category",
+      "schema": "public",
+      "values": [
+        "normal",
+        "regional",
+        "mega",
+        "mega-x",
+        "mega-y",
+        "gigantamax",
+        "tera",
+        "other"
+      ]
+    },
+    "public.sprite_gender": {
+      "name": "sprite_gender",
+      "schema": "public",
+      "values": [
+        "male",
+        "female",
+        "unknown"
+      ]
+    },
+    "public.sprite_kind": {
+      "name": "sprite_kind",
+      "schema": "public",
+      "values": [
+        "default",
+        "shiny",
+        "back",
+        "back_shiny"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
