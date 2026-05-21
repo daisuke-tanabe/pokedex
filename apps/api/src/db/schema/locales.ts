@@ -9,7 +9,7 @@ import { pgTable, varchar } from 'drizzle-orm/pg-core';
  */
 export const locales = pgTable('locales', {
   code: varchar('code', { length: 16 }).primaryKey(),
-  name: varchar('name', { length: 64 }),
+  name: varchar('name', { length: 64 }).notNull(),
 });
 
 export type LocaleRow = typeof locales.$inferSelect;

@@ -88,13 +88,14 @@
 
 ### Requirement: シードスクリプトのコマンド
 
-`pnpm --filter @pokedex/api seed` で `apps/api/src/db/seed/seed.ts` が起動できなければならない（MUST）。スクリプトは `DATABASE_URL` を参照し、対象 DB に対して以下を順に実行しなければならない（MUST）:
+`pnpm --filter @pokedex/api seed` で `apps/api/src/db/seed/seed.ts` が起動できなければならない（MUST）。スクリプトは `DATABASE_URL` を参照し、対象 DB に対して以下を **単一トランザクション内** で順に実行しなければならない（MUST）:
 
-1. 親テーブル（`locales` / `types` / `regions` / `pokedexes` / `evolution_chains` / `species`）を insert
-2. 子テーブル（`species_names` / `species_evolutions` / `forms` / `form_names` / `form_types` / `form_sprites` / `pokedex_entries` / `type_names` / `region_names` / `pokedex_names`）を insert
-3. Invariant Tests（下記 Requirement）を実行
+1. 既存データを全削除する `clearAll`
+2. 親テーブル（`locales` / `types` / `regions` / `pokedexes` / `evolution_chains` / `species`）を insert
+3. 子テーブル（`species_names` / `species_evolutions` / `forms` / `form_names` / `form_types` / `form_sprites` / `pokedex_entries` / `type_names` / `region_names` / `pokedex_names`）を insert
+4. Invariant Tests（下記 Requirement）を実行
 
-失敗時はプロセス終了コード `1` で終了しなければならない（MUST）。
+トランザクション内で例外が発生した場合は **全体がロールバックされ**、DB は seed 開始前の状態（直前の `clearAll` も含めて巻き戻る）か、本セッション開始時点の整合性ある状態のままでなければならない（MUST）。失敗時はプロセス終了コード `1` で終了しなければならない（MUST）。
 
 #### Scenario: seed コマンドが pnpm スクリプトとして登録されている
 
@@ -110,6 +111,11 @@
 
 - **WHEN** `forms.json` の 1 エントリから `category` キーを削除して `pnpm --filter @pokedex/api seed` を実行する
 - **THEN** valibot パースエラーをログに出した上で、プロセスが終了コード `1` で終わる
+
+#### Scenario: 途中で挿入が失敗するとトランザクション全体がロールバックされる
+
+- **WHEN** seed 処理の途中（例: `forms` 挿入後、`pokedex_entries` 挿入時）で意図的に例外を発生させる
+- **THEN** トランザクションがロールバックされ、`forms` テーブルに 1 行も残らない（=「成功した insert」も全部巻き戻る）
 
 ### Requirement: form_sprites.url は placeholder で投入できる
 

@@ -41,7 +41,7 @@ CREATE TABLE "forms" (
 --> statement-breakpoint
 CREATE TABLE "locales" (
 	"code" varchar(16) PRIMARY KEY NOT NULL,
-	"name" varchar(64)
+	"name" varchar(64) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "pokedex_entries" (

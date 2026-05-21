@@ -17,7 +17,7 @@ describe('locales table', () => {
     expect(locales.code.primary).toBe(true);
   });
 
-  it('name 列は NULL 許容として宣言されている', () => {
-    expect(locales.name.notNull).toBe(false);
+  it('name 列は NOT NULL として宣言されている', () => {
+    expect(locales.name.notNull).toBe(true);
   });
 });

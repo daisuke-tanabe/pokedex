@@ -1,4 +1,4 @@
-import { getTableName, sql } from 'drizzle-orm';
+import { getTableName } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 
 import { species, speciesEvolutions, speciesNames } from './species.js';
@@ -43,9 +43,6 @@ describe('species_evolutions table', () => {
     expect(speciesEvolutions.toSpeciesId.notNull).toBe(true);
   });
 
-  it('自己進化禁止の CHECK 制約識別子に from_species_id と to_species_id が含まれる', () => {
-    // CHECK 制約の式表現を sql タグから生成して文字列に変換し、両 FK が含まれることを確認する
-    const guard = sql`${speciesEvolutions.fromSpeciesId} <> ${speciesEvolutions.toSpeciesId}`;
-    expect(guard).toBeDefined();
-  });
+  // 自己進化禁止 CHECK 制約 / (from, to) UNIQUE 制約の存在は migrations.test.ts で
+  // 生成 SQL を文字列検査して担保している (DRY のため本ファイルでは smoke 確認に留める)
 });

@@ -16,7 +16,7 @@
 
 ### Requirement: locales lookup テーブル
 
-`locales` テーブルは `code`（VARCHAR(16)、主キー）と `name`（VARCHAR(64)、NULL 許容）の 2 列を持たなければならない（MUST）。`*_names` 系テーブルの `locale` 列はすべて `locales.code` を FK 参照しなければならない（MUST）。
+`locales` テーブルは `code`（VARCHAR(16)、主キー）と `name`（VARCHAR(64)、**NOT NULL**）の 2 列を持たなければならない（MUST）。`*_names` 系テーブルの `locale` 列はすべて `locales.code` を FK 参照しなければならない（MUST）。`name` を NOT NULL とすることで、seed JSON 側のバリデーション (`v.nonEmpty()`) と DB 側の型整合性を一致させる。
 
 #### Scenario: locales テーブルが物理名 'locales' で定義される
 
@@ -27,6 +27,11 @@
 
 - **WHEN** 生成されたマイグレーション SQL を読む
 - **THEN** `locales` テーブルで `code` が PRIMARY KEY として定義されている
+
+#### Scenario: locales.name が NOT NULL である
+
+- **WHEN** `locales.name` 列の `notNull` を検査する
+- **THEN** `true` である
 
 #### Scenario: 未定義 locale を *_names に insert すると FK 違反になる
 
