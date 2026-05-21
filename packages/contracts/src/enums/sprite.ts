@@ -1,4 +1,9 @@
 /**
+ * スプライト性別差の非空タプル。pgEnum などに渡す。
+ */
+export const SPRITE_GENDER_VALUES = ['male', 'female', 'unknown'] as const;
+
+/**
  * スプライトの性別差。
  *
  * 性別による見た目の差異（メノスピンクのリボン色など）を画像で表現するためのキー。
@@ -8,9 +13,14 @@ export const SpriteGender = {
   MALE: 'male',
   FEMALE: 'female',
   UNKNOWN: 'unknown',
-} as const;
+} as const satisfies Readonly<Record<string, (typeof SPRITE_GENDER_VALUES)[number]>>;
 
-export type SpriteGender = (typeof SpriteGender)[keyof typeof SpriteGender];
+export type SpriteGender = (typeof SPRITE_GENDER_VALUES)[number];
+
+/**
+ * スプライト種別の非空タプル。pgEnum などに渡す。
+ */
+export const SPRITE_KIND_VALUES = ['default', 'shiny', 'back', 'back_shiny'] as const;
 
 /**
  * スプライトの種別。
@@ -25,6 +35,6 @@ export const SpriteKind = {
   SHINY: 'shiny',
   BACK: 'back',
   BACK_SHINY: 'back_shiny',
-} as const;
+} as const satisfies Readonly<Record<string, (typeof SPRITE_KIND_VALUES)[number]>>;
 
-export type SpriteKind = (typeof SpriteKind)[keyof typeof SpriteKind];
+export type SpriteKind = (typeof SPRITE_KIND_VALUES)[number];

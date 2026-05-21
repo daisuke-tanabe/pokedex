@@ -40,11 +40,11 @@
 
 ## 6. domain-schema: pgEnum 定義
 
-- [ ] 6.1 [Test] `apps/api/src/db/schema/__tests__/enums.test.ts` を作成し、Drizzle の `pgEnum` から生成される `form_category` の値配列が contracts の `FormCategory` 値配列と等価になることを検証する（赤、`satisfies` でコンパイル時にも検証）
-- [ ] 6.2 [Test] 同テストに `sprite_gender` / `sprite_kind` の値配列も contracts と整合することを検証する（赤）
-- [ ] 6.3 [Impl] `apps/api/src/db/schema/enums.ts` を作成し、`formCategoryEnum`、`spriteGenderEnum`、`spriteKindEnum` の 3 pgEnum を contracts の値配列から定義して export する
-- [ ] 6.4 [Impl] `apps/api/src/db/schema/index.ts` を新規作成し、`enums.ts` を re-export する（schema フォルダ初回のエントリポイント。空ファイルではなく実 export を含む形で生成して `unicorn/no-empty-file` を回避する）
-- [ ] 6.5 [Refactor] pgEnum 名と TS シンボル名の対応を整え、JSDoc を追記する
+- [x] 6.1 [Test] `apps/api/src/db/schema/enums.test.ts` を作成し、`formCategoryEnum.enumValues` が contracts の `FormCategory` と一致することを検証する（colocate 規約に従い `__tests__/` ではなく同階層）
+- [x] 6.2 [Test] 同テストに `spriteGenderEnum` / `spriteKindEnum` の値配列も contracts と整合することを検証する
+- [x] 6.3 [Impl] `apps/api/src/db/schema/enums.ts` を作成し、`formCategoryEnum` / `spriteGenderEnum` / `spriteKindEnum` の 3 pgEnum を contracts の `FORM_CATEGORY_VALUES` / `SPRITE_GENDER_VALUES` / `SPRITE_KIND_VALUES` 非空タプルから定義して export する。contracts 側に値配列 export を追加して `no-unsafe-type-assertion` 違反を避ける
+- [x] 6.4 [Impl] `apps/api/src/db/schema/index.ts` を新規作成し、`enums.js` を re-export する（schema フォルダ初回のエントリポイント。`unicorn/no-empty-file` を回避するため実 export を含む形で生成）
+- [x] 6.5 [Refactor] pgEnum 名と TS シンボル名の対応を整え、JSDoc を追記する
 
 ## 7. domain-schema: locales lookup テーブル
 

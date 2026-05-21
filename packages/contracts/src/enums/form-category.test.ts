@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { FormCategory } from './form-category.js';
+import { FORM_CATEGORY_VALUES, FormCategory } from './form-category.js';
 
 describe('FormCategory', () => {
   it('8 つのカテゴリ値をすべて保持する', () => {
@@ -27,5 +27,9 @@ describe('FormCategory', () => {
     // @ts-expect-error 未知の文字列リテラルは FormCategory 型に代入できない
     const invalid: FormCategory = 'unknown-category';
     expect(invalid).toBe('unknown-category');
+  });
+
+  it('FORM_CATEGORY_VALUES と FormCategory は同じ値集合を持つ', () => {
+    expect([...FORM_CATEGORY_VALUES].toSorted()).toEqual(Object.values(FormCategory).toSorted());
   });
 });

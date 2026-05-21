@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { SpriteGender, SpriteKind } from './sprite.js';
+import { SPRITE_GENDER_VALUES, SPRITE_KIND_VALUES, SpriteGender, SpriteKind } from './sprite.js';
 
 describe('SpriteGender', () => {
   it('male / female / unknown の 3 値を保持する', () => {
@@ -20,6 +20,10 @@ describe('SpriteGender', () => {
     // @ts-expect-error 未知の文字列は SpriteGender 型に代入できない
     const invalid: SpriteGender = 'other';
     expect(invalid).toBe('other');
+  });
+
+  it('SPRITE_GENDER_VALUES と SpriteGender は同じ値集合を持つ', () => {
+    expect([...SPRITE_GENDER_VALUES].toSorted()).toEqual(Object.values(SpriteGender).toSorted());
   });
 });
 
@@ -45,5 +49,9 @@ describe('SpriteKind', () => {
     // @ts-expect-error 未知の文字列は SpriteKind 型に代入できない
     const invalid: SpriteKind = 'thumbnail';
     expect(invalid).toBe('thumbnail');
+  });
+
+  it('SPRITE_KIND_VALUES と SpriteKind は同じ値集合を持つ', () => {
+    expect([...SPRITE_KIND_VALUES].toSorted()).toEqual(Object.values(SpriteKind).toSorted());
   });
 });

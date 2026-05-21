@@ -1,4 +1,21 @@
 /**
+ * ポケモンフォームの分類値リスト (非空タプル)。
+ *
+ * pgEnum など non-empty readonly tuple を要求する API に渡すため、配列形式の
+ * export も用意する。`FormCategory` オブジェクトとの同期は `satisfies` で型保証する。
+ */
+export const FORM_CATEGORY_VALUES = [
+  'normal',
+  'regional',
+  'mega',
+  'mega-x',
+  'mega-y',
+  'gigantamax',
+  'tera',
+  'other',
+] as const;
+
+/**
  * ポケモンフォームの分類。
  *
  * - normal: 通常フォーム
@@ -18,9 +35,9 @@ export const FormCategory = {
   GIGANTAMAX: 'gigantamax',
   TERA: 'tera',
   OTHER: 'other',
-} as const;
+} as const satisfies Readonly<Record<string, (typeof FORM_CATEGORY_VALUES)[number]>>;
 
 /**
  * `FormCategory` の値のリテラルユニオン型。
  */
-export type FormCategory = (typeof FormCategory)[keyof typeof FormCategory];
+export type FormCategory = (typeof FORM_CATEGORY_VALUES)[number];

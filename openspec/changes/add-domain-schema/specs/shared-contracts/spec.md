@@ -57,6 +57,25 @@
 - **WHEN** TS で `const k: SpriteKind = 'thumbnail'` のように代入を試みる
 - **THEN** TypeScript の型エラーが発生する
 
+### Requirement: 分類値の非空タプル export
+
+`@pokedex/contracts` は各分類値の **非空 readonly タプル** を `FORM_CATEGORY_VALUES` / `LOCALE_VALUES` / `SPRITE_GENDER_VALUES` / `SPRITE_KIND_VALUES` として export しなければならない（MUST）。これらは drizzle-orm の `pgEnum` などが要求する non-empty readonly tuple 型を満たし、`no-unsafe-type-assertion` 違反なしに値配列を渡せる用途に使う。同名のオブジェクト export (`FormCategory` 等) との値集合は `satisfies` で型保証される（MUST）。
+
+#### Scenario: FORM_CATEGORY_VALUES が FormCategory と同じ値集合を持つ
+
+- **WHEN** `import { FORM_CATEGORY_VALUES, FormCategory } from '@pokedex/contracts'` し、両者の値集合を比較する
+- **THEN** `[...FORM_CATEGORY_VALUES].sort()` と `Object.values(FormCategory).sort()` が等価
+
+#### Scenario: FORM_CATEGORY_VALUES の型が readonly tuple として推論される
+
+- **WHEN** TS で `typeof FORM_CATEGORY_VALUES` を取得する
+- **THEN** `readonly ['normal', 'regional', ...]` のような non-empty readonly tuple 型として推論される
+
+#### Scenario: LOCALE_VALUES / SPRITE_GENDER_VALUES / SPRITE_KIND_VALUES も同様に export される
+
+- **WHEN** `import { LOCALE_VALUES, SPRITE_GENDER_VALUES, SPRITE_KIND_VALUES } from '@pokedex/contracts'`
+- **THEN** いずれも型エラーなく解決され、対応するオブジェクト export と値集合が一致する
+
 ### Requirement: 単一エントリポイントからの追加 export
 
 ドメイン分類値（`FormCategory` / `Locale` / `SpriteGender` / `SpriteKind`）はすべて `@pokedex/contracts` の単一エントリポイントから import 可能でなければならない（MUST）。サブパス import は提供してはならない（MUST NOT）。

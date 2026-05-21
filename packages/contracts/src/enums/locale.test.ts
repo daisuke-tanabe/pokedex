@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { Locale } from './locale.js';
+import { LOCALE_VALUES, Locale } from './locale.js';
 
 describe('Locale', () => {
   it('ja と en の 2 値を最低限保持する', () => {
@@ -23,5 +23,9 @@ describe('Locale', () => {
     // @ts-expect-error 未知の言語コードは Locale 型に代入できない
     const invalid: Locale = 'xx';
     expect(invalid).toBe('xx');
+  });
+
+  it('LOCALE_VALUES と Locale は同じ値集合を持つ', () => {
+    expect([...LOCALE_VALUES].toSorted()).toEqual(Object.values(Locale).toSorted());
   });
 });
