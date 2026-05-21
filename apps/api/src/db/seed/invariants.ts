@@ -1,5 +1,5 @@
 import { Locale } from '@pokedex/contracts';
-import { and, eq, isNotNull, isNull, ne, sql } from 'drizzle-orm';
+import { and, eq, isNull, ne, sql } from 'drizzle-orm';
 
 import { type DB, db } from '../client.js';
 import { formNames, formSprites, formTypes, forms, pokedexEntries, pokedexes, species } from '../schema/index.js';
@@ -94,8 +94,9 @@ const checkPokedexEntryFormBelongsToSpecies = async (runner: Runner): Promise<re
   const [row] = await runner
     .select({ count: sql<number>`COUNT(*)::int` })
     .from(pokedexEntries)
+    // innerJoin が form_id IS NULL の行を自動的に除外するため、isNotNull の追加チェックは不要
     .innerJoin(forms, eq(forms.id, pokedexEntries.formId))
-    .where(and(isNotNull(pokedexEntries.formId), ne(pokedexEntries.speciesId, forms.speciesId)));
+    .where(ne(pokedexEntries.speciesId, forms.speciesId));
   const mismatch = countRows(row);
   return mismatch > 0
     ? [

@@ -121,6 +121,10 @@ async function seedSpecies(tx: Tx, rows: readonly SpeciesSeed[]): Promise<SlugId
   const chainKeys = [...new Set(rows.flatMap((row) => (row.evolutionChainKey ? [row.evolutionChainKey] : [])))];
   const chainIdByKey = new Map<string, number>();
   if (chainKeys.length > 0) {
+    // 単一 INSERT VALUES 文の RETURNING は PostgreSQL 実装で挿入順に返るため、
+    // chainKeys と insertedChains を同一インデックスで対応づけている。将来
+    // evolution_chains にカラムが追加されて INSERT 文の組み立てが変わるときは、
+    // RETURNING に自然キーを追加するか別経路での照合に切り替える必要がある。
     const insertedChains = await tx
       .insert(evolutionChains)
       .values(chainKeys.map(() => ({})))
@@ -163,16 +167,13 @@ async function seedSpecies(tx: Tx, rows: readonly SpeciesSeed[]): Promise<SlugId
   }
 
   const evolutionValues = rows.flatMap((row) =>
-    (row.evolutions ?? []).map((evolution) => {
-      const fromId = speciesIds.get(row.slug);
-      const toId = speciesIds.get(evolution.toSpeciesSlug);
-      if (fromId === undefined || toId === undefined) {
-        throw new Error(
-          `[seed] species_evolutions: unknown species slug (from=${row.slug}, to=${evolution.toSpeciesSlug})`,
-        );
-      }
-      return { fromSpeciesId: fromId, toSpeciesId: toId };
-    }),
+    (row.evolutions ?? []).map((evolution) => ({
+      fromSpeciesId: required(speciesIds.get(row.slug), `species_evolutions: unknown from slug '${row.slug}'`),
+      toSpeciesId: required(
+        speciesIds.get(evolution.toSpeciesSlug),
+        `species_evolutions: unknown to slug '${evolution.toSpeciesSlug}'`,
+      ),
+    })),
   );
   if (evolutionValues.length > 0) {
     await tx.insert(speciesEvolutions).values(evolutionValues);
