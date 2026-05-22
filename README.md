@@ -135,10 +135,10 @@ Renovate が作成した依存更新 PR は、`deps-reviewer` agent (Claude) が
 
 1. **Renovate** が依存更新 PR を作成 (`.github/renovate.json`)。Renovate 側の `automerge` /
    `platformAutomerge` は意図的に `false` (マージ判断を Claude に集約するため)。
-2. **`validate`** ジョブ (typecheck / lint / format) が全 PR で走る。`main` ブランチ
-   ruleset の **唯一の必須ステータスチェック**。
-3. `renovate[bot]` の PR で `validate` が成功すると **`deps-review`** ジョブが走る
-   (`needs: validate` + `actor == 'renovate[bot]'`)。3 ステップ構成:
+2. **`verify`** ジョブ (`verify.yml`: typecheck / lint / format) が全 PR で走る。生成される
+   `verify / static-checks` チェックが `main` ブランチ ruleset の **唯一の必須ステータスチェック**。
+3. `renovate[bot]` の PR で `verify` が成功すると **`deps-review`** ジョブ (`deps-review.yml`)
+   が走る (`needs: verify` + `actor == 'renovate[bot]'`)。3 ステップ構成:
    - **Run deps-reviewer**: `deps-reviewer` agent が依存差分を監査し、**安全 (Merge /
      Verify) と判断した場合のみ** `gh pr review --approve` を実行 (`claude` bot 名義の
      approve として登録)。Investigate / Hold ならコメントで指摘し approve しない。
@@ -167,12 +167,12 @@ Renovate が作成した依存更新 PR は、`deps-reviewer` agent (Claude) が
 
 `main` ブランチには GitHub ruleset (enforcement: active) が設定されている:
 
-- 必須ステータスチェック: **`validate` のみ** (`deps-review` は必須ではない)
+- 必須ステータスチェック: **`verify / static-checks` のみ** (`deps-review` は必須ではない)
 - ブランチ削除禁止 / non-fast-forward (force push) 禁止
 
 `deps-review` は必須チェックではないため、その失敗自体はマージをブロックしない。誤判定
 (Investigate / Hold) や認証不可の workflow 変更 PR は、**人間が内容を確認のうえ手動で
-マージ**できる (必須の `validate` さえ通っていればよい)。「自動マージされない = 人手判断を
+マージ**できる (必須の `verify / static-checks` さえ通っていればよい)。「自動マージされない = 人手判断を
 強制するゲート」という位置づけで、CI を強制 pass させる override 経路は持たない。
 
 ### 責務分担
@@ -180,10 +180,10 @@ Renovate が作成した依存更新 PR は、`deps-reviewer` agent (Claude) が
 | 役割 | 担当 | 設定ファイル |
 |---|---|---|
 | PR 作成 | Renovate | `.github/renovate.json` |
-| 安全性判定 + approve | `deps-reviewer` agent (Claude) / `deps-review` ジョブ | `.claude/agents/deps-reviewer.md`, `.github/workflows/ci.yml` |
+| 安全性判定 + approve | `deps-reviewer` agent (Claude) / `deps-review` ジョブ | `.claude/agents/deps-reviewer.md`, `.github/workflows/deps-review.yml` |
 | 自動マージ | `auto-merge.yml` (`claude[bot]` approve 起点) | `.github/workflows/auto-merge.yml` |
-| 認証不可 PR の通知 | `Notify review unavailable` ステップ | `.github/workflows/ci.yml` |
-| 必須ゲート | GitHub ruleset (`validate` 必須 / 削除・force push 禁止) | (GitHub ruleset / repo 設定) |
+| 認証不可 PR の通知 | `Notify review unavailable` ステップ | `.github/workflows/deps-review.yml` |
+| 必須ゲート | GitHub ruleset (`verify / static-checks` 必須 / 削除・force push 禁止) | (GitHub ruleset / repo 設定) |
 | 誤判定・認証不可時の対処 | 人手レビュー & 手動マージ | (手動操作) |
 
 Renovate 側の `automerge` 設定は意図的に持たない (Claude マージと役割重複になるため)。
