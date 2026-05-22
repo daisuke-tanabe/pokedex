@@ -4,8 +4,8 @@ on:
   workflow_call:
 
 jobs:
-  validate:
-    name: validate
+  verify:
+    name: verify
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
