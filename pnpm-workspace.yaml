@@ -13,3 +13,9 @@ allowBuilds:
   # vitest が依存する esbuild は postinstall でネイティブバイナリを取得する
   # 必要があるため明示的に許可する。
   esbuild: true
+# サプライチェーン対策: 公開から 4320 分 (3 日) 未満のバージョンはインストールを拒否する。
+# renovate.json の minimumReleaseAge と値を揃え、ローカル / CI / Renovate のすべてで
+# 一貫してゲートを効かせる。strict は minimumReleaseAge の明示設定により自動有効になるが、
+# 意図を明示するため併記する。
+minimumReleaseAge: 4320
+minimumReleaseAgeStrict: true
