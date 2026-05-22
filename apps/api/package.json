@@ -10,7 +10,9 @@
     "lint": "oxlint --type-aware .",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed": "tsx --env-file=../../.env.development --env-file-if-exists=../../.env.local ./src/db/seed/seed.ts",
+    "db:reset": "supabase db reset && pnpm seed"
   },
   "dependencies": {
     "@hono/node-server": "2.0.3",

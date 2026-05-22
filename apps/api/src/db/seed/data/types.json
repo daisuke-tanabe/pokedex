@@ -1,0 +1,128 @@
+[
+  {
+    "slug": "normal",
+    "names": [
+      { "locale": "ja", "name": "ノーマル" },
+      { "locale": "en", "name": "Normal" }
+    ]
+  },
+  {
+    "slug": "fire",
+    "names": [
+      { "locale": "ja", "name": "ほのお" },
+      { "locale": "en", "name": "Fire" }
+    ]
+  },
+  {
+    "slug": "water",
+    "names": [
+      { "locale": "ja", "name": "みず" },
+      { "locale": "en", "name": "Water" }
+    ]
+  },
+  {
+    "slug": "electric",
+    "names": [
+      { "locale": "ja", "name": "でんき" },
+      { "locale": "en", "name": "Electric" }
+    ]
+  },
+  {
+    "slug": "grass",
+    "names": [
+      { "locale": "ja", "name": "くさ" },
+      { "locale": "en", "name": "Grass" }
+    ]
+  },
+  {
+    "slug": "ice",
+    "names": [
+      { "locale": "ja", "name": "こおり" },
+      { "locale": "en", "name": "Ice" }
+    ]
+  },
+  {
+    "slug": "fighting",
+    "names": [
+      { "locale": "ja", "name": "かくとう" },
+      { "locale": "en", "name": "Fighting" }
+    ]
+  },
+  {
+    "slug": "poison",
+    "names": [
+      { "locale": "ja", "name": "どく" },
+      { "locale": "en", "name": "Poison" }
+    ]
+  },
+  {
+    "slug": "ground",
+    "names": [
+      { "locale": "ja", "name": "じめん" },
+      { "locale": "en", "name": "Ground" }
+    ]
+  },
+  {
+    "slug": "flying",
+    "names": [
+      { "locale": "ja", "name": "ひこう" },
+      { "locale": "en", "name": "Flying" }
+    ]
+  },
+  {
+    "slug": "psychic",
+    "names": [
+      { "locale": "ja", "name": "エスパー" },
+      { "locale": "en", "name": "Psychic" }
+    ]
+  },
+  {
+    "slug": "bug",
+    "names": [
+      { "locale": "ja", "name": "むし" },
+      { "locale": "en", "name": "Bug" }
+    ]
+  },
+  {
+    "slug": "rock",
+    "names": [
+      { "locale": "ja", "name": "いわ" },
+      { "locale": "en", "name": "Rock" }
+    ]
+  },
+  {
+    "slug": "ghost",
+    "names": [
+      { "locale": "ja", "name": "ゴースト" },
+      { "locale": "en", "name": "Ghost" }
+    ]
+  },
+  {
+    "slug": "dragon",
+    "names": [
+      { "locale": "ja", "name": "ドラゴン" },
+      { "locale": "en", "name": "Dragon" }
+    ]
+  },
+  {
+    "slug": "dark",
+    "names": [
+      { "locale": "ja", "name": "あく" },
+      { "locale": "en", "name": "Dark" }
+    ]
+  },
+  {
+    "slug": "steel",
+    "names": [
+      { "locale": "ja", "name": "はがね" },
+      { "locale": "en", "name": "Steel" }
+    ]
+  },
+  {
+    "slug": "fairy",
+    "names": [
+      { "locale": "ja", "name": "フェアリー" },
+      { "locale": "en", "name": "Fairy" }
+    ]
+  }
+]
