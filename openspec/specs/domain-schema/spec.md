@@ -40,7 +40,7 @@
 
 #### Scenario: 未定義 locale を *_names に insert すると FK 違反になる
 
-- **WHEN** `locales` に存在しない `'xx'` を `pokemon_names.locale` 等に insert する
+- **WHEN** `locales` に存在しない `'xx'` を `species_names.locale` 等に insert する
 - **THEN** FK 制約違反エラーになる
 
 ### Requirement: types テーブルと type_names
