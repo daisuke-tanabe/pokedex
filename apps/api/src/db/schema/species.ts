@@ -80,6 +80,11 @@ export const speciesRelations = relations(species, ({ many, one }) => ({
   }),
   forms: many(forms),
   names: many(speciesNames),
+  // speciesEvolutions の `from` / `to` (relationName 'speciesEvolutionFrom' / 'speciesEvolutionTo')
+  // への back-reference。drizzle relational API は two-way 定義が前提のため、片側だけだと
+  // `db.query.species.findMany({ with: { fromEvolutions: true } })` が runtime エラーになる。
+  fromEvolutions: many(speciesEvolutions, { relationName: 'speciesEvolutionFrom' }),
+  toEvolutions: many(speciesEvolutions, { relationName: 'speciesEvolutionTo' }),
 }));
 
 export const speciesEvolutionsRelations = relations(speciesEvolutions, ({ one }) => ({
