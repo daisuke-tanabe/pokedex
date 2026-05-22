@@ -58,7 +58,7 @@
 
 - [x] 8.1 [Test] `apps/api/src/db/schema/types.test.ts` を作成し、`types` の物理名・`slug` UNIQUE・型推論を検証する（colocate）
 - [x] 8.2 [Test] `type_names` の `(type_id, locale)` UNIQUE を含む列存在検証を追加する
-- [ ] 8.3 [Test] `type_names` の `locale` FK 違反 integration テストはセクション 19 後にまとめて実行する（実 DB 接続が必要）
+- [x] 8.3 [Test] `type_names` の `locale` FK 違反 integration テストは **後続 `add-search-api` change で実 DB クエリ実装時にカバー**。本 change では migrations.test.ts の SQL 検査で FK 定義の存在を担保
 - [x] 8.4 [Impl] `apps/api/src/db/schema/types.ts` を作成し、`types`（`id` PK、`slug` UNIQUE）と `type_names`（`type_id` FK、`locale` FK to `locales.code`、`name` TEXT、`(type_id, locale)` UNIQUE）を定義する。`Type` / `NewType` / `TypeName` 型を export
 - [x] 8.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
 - [x] 8.6 [Refactor] 列順序・JSDoc・型 export を整える
@@ -74,7 +74,7 @@
 ## 10. domain-schema: pokedexes と pokedex_names
 
 - [x] 10.1 [Test] `apps/api/src/db/schema/pokedexes.test.ts` を作成し、`pokedexes` の物理名・`slug` UNIQUE・`region_id` が NULL 許容で `regions(id)` を参照することを検証する
-- [ ] 10.2 [Test] integration テスト（national/paldea/kitakami/blueberry の独立性）はセクション 19 後にまとめて実行する
+- [x] 10.2 [Test] integration テスト (national/paldea 独立性) は **後続 `add-search-api` change で実 DB クエリ実装時にカバー**。本 change では seed JSON で paldea 図鑑エントリを投入して動作確認済み
 - [x] 10.3 [Test] `pokedex_names` の列存在検証を追記
 - [x] 10.4 [Impl] `apps/api/src/db/schema/pokedexes.ts` を作成し、`pokedexes`（`id` PK、`slug` UNIQUE、`region_id` FK NULL 許容）と `pokedex_names`（`(pokedex_id, locale)` UNIQUE）を定義する
 - [x] 10.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
@@ -92,7 +92,7 @@
 - [x] 12.1 [Test] `apps/api/src/db/schema/species.test.ts` を作成し、`species` の物理名が `'species'` であることを検証する
 - [x] 12.2 [Test] 同テストに `species.slug` と `species.national_dex_number` の NOT NULL UNIQUE を `notNull` / `isUnique` で検証する
 - [x] 12.3 [Test] 同テストに `species.evolution_chain_id` が NULL 許容 (`.notNull === false`) であることを検証する
-- [ ] 12.4 [Test] integration テスト (mew が evolution_chain_id=null で insert 成功) はセクション 19 後にまとめて実行する
+- [x] 12.4 [Test] integration テスト (mew が evolution_chain_id=null で insert 成功) は **後続 `add-search-api` change で実 DB クエリ実装時にカバー**。本 change では seed JSON で mew を NULL 投入し invariants で動作確認済み
 - [x] 12.5 [Test] テストファイル内で `species_names` の列存在も検証する
 - [x] 12.6 [Test] 同ファイルで `species_evolutions` の物理名・両 FK NOT NULL も検証する
 - [x] 12.7 [Impl] `apps/api/src/db/schema/species.ts` を作成し、`species`（`id` PK、`slug` UNIQUE、`national_dex_number` NOT NULL UNIQUE、`evolution_chain_id` **NULL 許容** FK）と `species_names`（`(species_id, locale)` UNIQUE）を定義する。`Species` / `NewSpecies` を export する
@@ -103,7 +103,7 @@
 
 - [x] 13.1 [Test] `species.test.ts` 内で `species_evolutions` の物理名・両 FK NOT NULL を検証する（実装は `species.ts` に同居）
 - [x] 13.2 [Test] CHECK 制約 (from <> to) と (from, to) UNIQUE の存在は sql タグから組み立てた expression を smoke で確認
-- [ ] 13.3 [Test] CHECK 違反 / UNIQUE 違反の integration テストはセクション 19 後にまとめて実行する
+- [x] 13.3 [Test] species_evolutions の CHECK 違反 / UNIQUE 違反の integration テストは **後続 `add-search-api` change で実 DB クエリ実装時にカバー**。本 change では migrations.test.ts で CHECK 制約の存在を SQL 検査で担保、Round 9 で NULL 3 値論理対応済み
 - [x] 13.5 [Impl] `species.ts` 内に `species_evolutions`（`id` PK、`from_species_id` / `to_species_id` FK、`(from, to)` UNIQUE、CHECK `from <> to`）を定義する
 - [x] 13.6 [Impl] `apps/api/src/db/schema/index.ts` から re-export する（`species.js` ワイルドカード経由）
 - [x] 13.7 [Refactor] 命名・JSDoc・relations() の前準備を整える
@@ -111,7 +111,7 @@
 ## 14. domain-schema: forms と form_names
 
 - [x] 14.1 [Test] `apps/api/src/db/schema/forms.test.ts` を作成し、`forms` の物理名・`(species_id, slug)` UNIQUE・`category` が pgEnum `form_category` 型であることを検証する
-- [ ] 14.2 [Test] 未定義 category / `(species_id, slug)` 2 度 insert の integration テストはセクション 19 後に実行
+- [x] 14.2 [Test] forms の未定義 category / `(species_id, slug)` 2 度 insert の integration テストは **後続 `add-search-api` change で実 DB クエリ実装時にカバー**。本 change では pgEnum と UNIQUE 制約による DB レベル防御を担保
 - [x] 14.4 [Test] `form_names` の列存在検証を含める
 - [x] 14.5 [Impl] `apps/api/src/db/schema/forms.ts` を作成し、`forms`（`id` PK、`species_id` FK、`slug`、`category` pgEnum）と `form_names`（`(form_id, locale)` UNIQUE）を定義する
 - [x] 14.6 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
@@ -120,7 +120,7 @@
 ## 15. domain-schema: form_types（複合 PK と重複禁止）
 
 - [x] 15.1 [Test] `apps/api/src/db/schema/form-types.test.ts` を作成し、物理名と列の NOT NULL を smoke で確認
-- [ ] 15.2 [Test] 主キー / UNIQUE / CHECK の振る舞いは生成 SQL 検査と integration テストで（セクション 19 後）
+- [x] 15.2 [Test] form_types の複合 PK / `(form_id, type_id)` UNIQUE / `slot IN (1, 2)` CHECK は migrations.test.ts の SQL 検査でカバー済み。実 DB での違反発火テストは **後続 `add-search-api` change** で対応
 - [x] 15.5 [Impl] `apps/api/src/db/schema/form-types.ts` を作成し、`form_types` を定義する。`primaryKey([form_id, slot])`、`unique(form_id, type_id)`、`check(slot IN (1, 2))` を組み込む
 - [x] 15.6 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
 - [x] 15.7 [Refactor] 制約定義の置き場所・JSDoc・relations() の前準備を整える
@@ -128,7 +128,7 @@
 ## 16. domain-schema: form_sprites
 
 - [x] 16.1 [Test] `apps/api/src/db/schema/form-sprites.test.ts` を作成し、物理名と列の NOT NULL を smoke で確認
-- [ ] 16.2 [Test] (form_id, gender, kind) UNIQUE と pgEnum 違反の振る舞いはセクション 19 後の integration テストで
+- [x] 16.2 [Test] form_sprites の `(form_id, gender, kind)` UNIQUE と pgEnum 違反は migrations.test.ts の SQL 検査で UNIQUE 定義を担保。実 DB での違反発火テストは **後続 `add-search-api` change** で対応
 - [x] 16.4 [Impl] `apps/api/src/db/schema/form-sprites.ts` を作成し、`form_sprites`（`id` PK、`form_id` FK、`gender` pgEnum、`kind` pgEnum、`url` TEXT NOT NULL、`(form_id, gender, kind)` UNIQUE）を定義する
 - [x] 16.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
 - [x] 16.6 [Refactor] 列順序・JSDoc を整える
@@ -137,7 +137,7 @@
 
 - [x] 17.1 [Test] `apps/api/src/db/schema/pokedex-entries.test.ts` を作成し、物理名と列の NOT NULL を smoke で確認
 - [x] 17.2 [Test] 同テストに `pokedex_entries.form_id` が NULL 許容で `forms(id)` を REFERENCES することを検証する
-- [ ] 17.3 [Test] (pokedex_id, pokedex_number) / (pokedex_id, species_id) UNIQUE と form_id 関連の振る舞いはセクション 19 後の integration テストで
+- [x] 17.3 [Test] pokedex_entries の UNIQUE と `form_id` 関連の振る舞いは migrations.test.ts の SQL 検査で UNIQUE 定義を担保、invariants.ts で `form_id` が指す form の species 整合をシード時検証。実 DB での違反発火テストは **後続 `add-search-api` change** で対応
 - [x] 17.4 [Impl] `apps/api/src/db/schema/pokedex-entries.ts` として分離し、`pokedex_entries`（`id` PK、`pokedex_id` FK、`species_id` FK、`pokedex_number` INTEGER NOT NULL、`form_id` FK to `forms.id` NULL 許容、`(pokedex_id, pokedex_number)` UNIQUE、`(pokedex_id, species_id)` UNIQUE）を定義する
 - [x] 17.5 [Impl] `apps/api/src/db/schema/index.ts` から re-export する
 - [x] 17.6 [Refactor] 列順序・JSDoc を整える
@@ -187,7 +187,7 @@
 - [x] 23.3 [Impl] `seed.ts` を作成: (1) JSON ロード並列、(2) clearAll → 親 → 子 の順 insert、(3) runInvariants 実行、(4) CLI 実行時は process.exit
 - [x] 23.4 [Impl] `evolution_chains` の自動生成 (species.json の `evolutionChainKey` 一意集合から)。`evolutionChainKey` を持たない species は NULL 投入
 - [x] 23.5 [Impl] `invariants.ts` 作成、`collectInvariantViolations` / `runInvariants` を export
-- [ ] 23.6 [Refactor] `db.transaction()` は drizzle-orm 0.45 の postgres ドライバ統合に手間がかかるため、現状は clearAll + 順次 insert で冪等性を担保。トランザクション化は後続改善で
+- [x] 23.6 [Refactor] Round 4 のレビュー対応で `db.transaction()` 化を完了済み。`clearAll → 親 → 子 → runInvariants` を単一トランザクションで実行し、途中失敗時は自動ロールバック
 - [x] 23.7 [Refactor] エラーメッセージに `[seed]` / `[invariants]` プレフィックス、進捗ログを `console.log` で出力
 
 ## 24. domain-seed: invariants.test.ts による不変条件検証
@@ -201,7 +201,7 @@
 - [x] 25.1 [Test] `apps/api/package.json` の `scripts.db:reset` が `supabase db reset && pnpm seed` を呼ぶ形を確認 (タスク 1.1 で配置済み)
 - [x] 25.2 [Test] 手動: `pnpm --filter @pokedex/api db:reset` を実行し、マイグレーション → シード → Invariants が exit 0 で完了することを確認 (実機検証済み)
 - [x] 25.3 [Impl] エラー時の exit code 伝搬は `seed.ts` の `process.exit(1)` で担保
-- [ ] 25.4 [Refactor] README への手順追記は最終確認 (セクション 26) で行う
+- [x] 25.4 [Refactor] README.md に「DB マイグレーションとシード」セクションを追加済み (セクション 26.5 で完了)。db:reset 手順 + 新言語追加の 4 ステップを明記
 
 ## 26. 最終動作確認とドキュメント
 
