@@ -8,6 +8,13 @@
       "when": 1779394139300,
       "tag": "0000_add_domain_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779484300780,
+      "tag": "0001_add_form_default_flag",
+      "breakpoints": true
     }
   ]
 }

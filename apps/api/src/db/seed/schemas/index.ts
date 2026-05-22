@@ -97,6 +97,9 @@ const formRowSchema = v.object({
   speciesSlug: slugLongSchema,
   slug: slugLongSchema,
   category: v.picklist(FORM_CATEGORY_VALUES),
+  // is_default は API / UI のデフォルト表示対象。各 species につき exactly 1 件が
+  // true である必要 (Invariant Test で担保、DB 部分 UNIQUE で「最大 1 件」を保証)。
+  isDefault: v.boolean(),
   types: v.pipe(v.array(typeSlotSchema), v.minLength(1)),
   sprites: v.pipe(v.array(spriteEntrySchema), v.minLength(1)),
   names: v.pipe(v.array(nameEntrySchema), v.minLength(1)),

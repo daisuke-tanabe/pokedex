@@ -120,6 +120,29 @@ const checkPokedexEntryFormBelongsToSpecies = async (runner: Runner): Promise<re
 };
 
 /**
+ * 全 species に対し is_default = true の form が exactly 1 件存在することを検証する。
+ *
+ * DB の部分 UNIQUE インデックス (forms_species_id_default_unique) が「最大 1 件」を
+ * 保証するので、ここでは「最低 1 件」を確認する (= "exactly 1 件" の補完)。
+ * 違反する species があった場合は species.slug を列挙したエラーを返す。
+ */
+const checkAllSpeciesHaveDefaultForm = async (runner: Runner): Promise<readonly string[]> => {
+  const rows = await runner
+    .select({ slug: species.slug })
+    .from(species)
+    .leftJoin(forms, and(eq(forms.speciesId, species.id), eq(forms.isDefault, true)))
+    .where(isNull(forms.id));
+  return rows.length > 0
+    ? [
+        `is_default=true の form が存在しない species が ${rows.length} 件存在する (例: ${rows
+          .slice(0, 3)
+          .map((r) => r.slug)
+          .join(', ')})`,
+      ]
+    : [];
+};
+
+/**
  * シード適用後の DB に対して、design Decision 5 で定義した不変条件を一括検証する。
  * 違反があれば配列で返す。空配列なら全 OK。
  *
@@ -134,6 +157,7 @@ export async function collectInvariantViolations(runner: Runner = db): Promise<r
     checkEvolutionsBothChained(runner),
     checkEvolutionsSameChain(runner),
     checkPokedexEntryFormBelongsToSpecies(runner),
+    checkAllSpeciesHaveDefaultForm(runner),
   ]);
   return checks.flat();
 }

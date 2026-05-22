@@ -31,7 +31,7 @@
     ],
     "entries": [
       { "speciesSlug": "pikachu", "pokedexNumber": 74 },
-      { "speciesSlug": "ogerpon", "pokedexNumber": 400, "formSlug": "ogerpon-teal" }
+      { "speciesSlug": "ogerpon", "pokedexNumber": 400, "formSlug": "teal" }
     ]
   }
 ]

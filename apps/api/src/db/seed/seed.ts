@@ -207,6 +207,7 @@ async function seedForms(
         speciesId: required(speciesIds.get(row.speciesSlug), `forms: unknown species slug '${row.speciesSlug}'`),
         slug: row.slug,
         category: row.category,
+        isDefault: row.isDefault,
       })),
     )
     .returning({ id: forms.id, slug: forms.slug, speciesId: forms.speciesId });

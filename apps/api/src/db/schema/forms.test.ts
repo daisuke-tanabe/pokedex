@@ -14,6 +14,12 @@ describe('forms table', () => {
     expect(forms.slug.notNull).toBe(true);
     expect(forms.category.notNull).toBe(true);
   });
+
+  it('is_default は NOT NULL かつ default false の boolean 列である', () => {
+    expect(forms.isDefault.notNull).toBe(true);
+    expect(forms.isDefault.default).toBe(false);
+    expect(forms.isDefault.dataType).toBe('boolean');
+  });
 });
 
 describe('form_names table', () => {
