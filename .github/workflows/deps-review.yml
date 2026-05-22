@@ -4,8 +4,8 @@ on:
   workflow_call:
 
 jobs:
-  deps-review:
-    name: deps-review
+  audit:
+    name: audit
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -4,8 +4,8 @@ on:
   workflow_call:
 
 jobs:
-  verify:
-    name: verify
+  static-checks:
+    name: static-checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -4,8 +4,8 @@ on:
   workflow_call:
 
 jobs:
-  review:
-    name: review
+  claude:
+    name: claude
     runs-on: ubuntu-latest
     permissions:
       contents: read
