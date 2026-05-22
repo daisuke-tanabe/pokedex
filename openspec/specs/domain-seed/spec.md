@@ -1,7 +1,9 @@
 # domain-seed Specification
 
 ## Purpose
-TBD - created by archiving change add-domain-schema. Update Purpose after archive.
+
+ドメイン初期データ (JSON ファイル) と JSON → DB へのシード投入スクリプト (`pnpm --filter @pokedex/api seed`)、不変条件を検証するテスト (`invariants.test.ts`) を規定する。`supabase db reset` でローカル DB が migration → seed → invariants 検証まで一連で動く状態を保証する。本 change のシードは「seed.ts と invariants が動く最小デモデータ」(数十件規模) に絞り、100+ フォーム本番網羅は後続 `add-pokedex-seed-data` change で投入する想定。
+
 ## Requirements
 ### Requirement: シード JSON ファイルの配置
 

@@ -1,7 +1,9 @@
 # api-foundation Specification
 
 ## Purpose
-TBD - created by archiving change add-monorepo-foundation. Update Purpose after archive.
+
+API サーバ (`apps/api`) としての最小起動・DB 接続・エンベロープレスポンスを提供する能力を規定する。`GET /health` が成功エンベロープ形式で 200 を返すこと、Drizzle ORM + postgres ドライバの DB クライアントがプロセス内 singleton として export されること、`AppType` 型が後続 change の Web/Mobile から型のみ参照できる形で export されることを含む。
+
 ## Requirements
 ### Requirement: API サーバの起動
 

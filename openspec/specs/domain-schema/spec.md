@@ -1,7 +1,9 @@
 # domain-schema Specification
 
 ## Purpose
-TBD - created by archiving change add-domain-schema. Update Purpose after archive.
+
+ポケモン図鑑ドメインのテーブル定義・Drizzle スキーマ・マイグレーション SQL・命名規約・主キー / 外部キー制約・ドメイン不変条件を規定する。種族 (`species`) と種族のフォーム (`forms`) を中心とした二段構造で、進化チェーン (`evolution_chains` + `species_evolutions`)、図鑑エントリ (`pokedexes` + `pokedex_entries`)、タイプ・スプライト・多言語名を表現する。`form_types` の三重防御 ((form_id, slot) 複合 PK + (form_id, type_id) UNIQUE + slot CHECK)、`species_evolutions` の自己進化禁止 CHECK、`locales` lookup テーブル化などのドメイン制約を含む。
+
 ## Requirements
 ### Requirement: テーブル定義のファイル分割とエントリポイント
 

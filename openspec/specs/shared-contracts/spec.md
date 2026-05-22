@@ -1,7 +1,9 @@
 # shared-contracts Specification
 
 ## Purpose
-TBD - created by archiving change add-monorepo-foundation. Update Purpose after archive.
+
+全アプリ (`apps/api` / `apps/web` / `apps/mobile`) が共有する契約を 1 つの workspace パッケージ (`@pokedex/contracts`) に集約する能力を規定する。レスポンスエンベロープの Valibot スキーマ、ドメイン定数 (`PAGE_SIZE` / `MAX_TYPES` / `DEFAULT_POKEDEX_SLUG`)、エラーコード (`ErrorCode`)、ドメイン分類値 enum (`FormCategory` / `Locale` / `SpriteGender` / `SpriteKind`) と対応する非空タプル (`*_VALUES`) を、単一エントリポイントから提供する。
+
 ## Requirements
 ### Requirement: パッケージとしての公開
 

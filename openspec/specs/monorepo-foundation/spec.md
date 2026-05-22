@@ -1,7 +1,9 @@
 # monorepo-foundation Specification
 
 ## Purpose
-TBD - created by archiving change add-monorepo-foundation. Update Purpose after archive.
+
+pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages/contracts` を束ねる開発基盤を規定する。`dev` / `build` / `test` / `typecheck` / `lint` / `format` の各タスクが workspace ごとに実行できる状態、`.env.development` / `.env.local` の環境変数管理方針、Supabase ローカルスタックの起動手順 (asdf 経由の Supabase CLI を含む) を含む。
+
 ## Requirements
 ### Requirement: pnpm workspace に packages/* が含まれる
 
