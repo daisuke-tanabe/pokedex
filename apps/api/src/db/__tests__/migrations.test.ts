@@ -66,4 +66,16 @@ describe('migration SQL', () => {
     expect(sql).toContain('CREATE TYPE "public"."sprite_gender"');
     expect(sql).toContain('CREATE TYPE "public"."sprite_kind"');
   });
+
+  it('生成 SQL に forms.is_default の boolean NOT NULL DEFAULT false が含まれる', () => {
+    const sql = readGeneratedSql();
+    expect(sql).toMatch(/"is_default" boolean DEFAULT false NOT NULL/);
+  });
+
+  it('生成 SQL に forms の部分 UNIQUE インデックス (species_id WHERE is_default = true) が含まれる', () => {
+    const sql = readGeneratedSql();
+    expect(sql).toMatch(
+      /CREATE UNIQUE INDEX "forms_species_id_default_unique" ON "forms".*\("species_id"\) WHERE "forms"\."is_default" = true/,
+    );
+  });
 });

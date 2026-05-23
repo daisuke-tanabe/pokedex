@@ -1,0 +1,2 @@
+ALTER TABLE "forms" ADD COLUMN "is_default" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX "forms_species_id_default_unique" ON "forms" USING btree ("species_id") WHERE "forms"."is_default" = true;
