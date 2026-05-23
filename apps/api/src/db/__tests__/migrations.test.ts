@@ -78,4 +78,34 @@ describe('migration SQL', () => {
       /CREATE UNIQUE INDEX "forms_species_id_default_unique" ON "forms".*\("species_id"\) WHERE "forms"\."is_default" = true/,
     );
   });
+
+  it('生成 SQL に pokedex_entries(pokedex_id) 単独列インデックスが含まれる', () => {
+    const sql = readGeneratedSql();
+    expect(sql).toMatch(/CREATE INDEX "pokedex_entries_pokedex_id_idx" ON "pokedex_entries".*\("pokedex_id"\)/);
+  });
+
+  it('生成 SQL に pokedex_entries(form_id) 単独列インデックスが含まれる', () => {
+    const sql = readGeneratedSql();
+    expect(sql).toMatch(/CREATE INDEX "pokedex_entries_form_id_idx" ON "pokedex_entries".*\("form_id"\)/);
+  });
+
+  it('生成 SQL に form_types(form_id) 単独列インデックスが含まれる', () => {
+    const sql = readGeneratedSql();
+    expect(sql).toMatch(/CREATE INDEX "form_types_form_id_idx" ON "form_types".*\("form_id"\)/);
+  });
+
+  it('生成 SQL に form_types(type_id) 単独列インデックスが含まれる', () => {
+    const sql = readGeneratedSql();
+    expect(sql).toMatch(/CREATE INDEX "form_types_type_id_idx" ON "form_types".*\("type_id"\)/);
+  });
+
+  it('生成 SQL に form_sprites(form_id) 単独列インデックスが含まれる', () => {
+    const sql = readGeneratedSql();
+    expect(sql).toMatch(/CREATE INDEX "form_sprites_form_id_idx" ON "form_sprites".*\("form_id"\)/);
+  });
+
+  it('生成 SQL に form_names(form_id) 単独列インデックスが含まれる', () => {
+    const sql = readGeneratedSql();
+    expect(sql).toMatch(/CREATE INDEX "form_names_form_id_idx" ON "form_names".*\("form_id"\)/);
+  });
 });

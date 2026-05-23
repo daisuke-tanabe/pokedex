@@ -10,6 +10,10 @@ import {
   SpriteGender,
   SpriteKind,
   envelopeSchema,
+  pokemonDetailSchema,
+  pokemonListItemSchema,
+  pokemonListMetaSchema,
+  pokemonListQuerySchema,
 } from './index.js';
 
 describe('@pokedex/contracts entry point', () => {
@@ -18,7 +22,15 @@ describe('@pokedex/contracts entry point', () => {
     expect(MAX_TYPES).toBe(2);
     expect(DEFAULT_POKEDEX_SLUG).toBe('national');
     expect(ErrorCode.POKEDEX_NOT_FOUND).toBe('POKEDEX_NOT_FOUND');
+    expect(ErrorCode.POKEMON_NOT_FOUND).toBe('POKEMON_NOT_FOUND');
     expect(typeof envelopeSchema).toBe('function');
+  });
+
+  it('ポケモン API 用 schema が単一エントリポイントから取得できる', () => {
+    expect(pokemonListQuerySchema).toBeDefined();
+    expect(pokemonListItemSchema).toBeDefined();
+    expect(pokemonListMetaSchema).toBeDefined();
+    expect(pokemonDetailSchema).toBeDefined();
   });
 
   it('ドメイン分類値 enum がすべて単一エントリポイントから取得できる', () => {

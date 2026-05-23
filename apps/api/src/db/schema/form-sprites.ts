@@ -1,4 +1,4 @@
-import { integer, pgTable, serial, text, unique } from 'drizzle-orm/pg-core';
+import { index, integer, pgTable, serial, text, unique } from 'drizzle-orm/pg-core';
 
 import { spriteGenderEnum, spriteKindEnum } from './enums.js';
 import { forms } from './forms.js';
@@ -21,7 +21,11 @@ export const formSprites = pgTable(
     kind: spriteKindEnum('kind').notNull(),
     url: text('url').notNull(),
   },
-  (table) => [unique('form_sprites_form_id_gender_kind_unique').on(table.formId, table.gender, table.kind)],
+  (table) => [
+    unique('form_sprites_form_id_gender_kind_unique').on(table.formId, table.gender, table.kind),
+    // 検索ホットパス: 一覧で各 form の sprites をバッチ取得する経路 (`add-search-api`)。
+    index('form_sprites_form_id_idx').on(table.formId),
+  ],
 );
 
 export type FormSprite = typeof formSprites.$inferSelect;

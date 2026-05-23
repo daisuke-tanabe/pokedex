@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { boolean, integer, pgTable, serial, text, unique, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
+import { boolean, index, integer, pgTable, serial, text, unique, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
 
 import { formCategoryEnum } from './enums.js';
 import { formSprites } from './form-sprites.js';
@@ -55,7 +55,11 @@ export const formNames = pgTable(
       .references(() => locales.code),
     name: text('name').notNull(),
   },
-  (table) => [unique('form_names_form_id_locale_unique').on(table.formId, table.locale)],
+  (table) => [
+    unique('form_names_form_id_locale_unique').on(table.formId, table.locale),
+    // 検索ホットパス: 一覧で各 form の多言語名をバッチ取得する経路 (`add-search-api`)。
+    index('form_names_form_id_idx').on(table.formId),
+  ],
 );
 
 export type FormName = typeof formNames.$inferSelect;
