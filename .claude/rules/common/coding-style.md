@@ -30,12 +30,8 @@
 
 ## 命名規則
 
-- 変数・関数: `camelCase` で説明的な名前
 - 真偽値: `is` / `has` / `should` / `can` のいずれかをプレフィックスとする
 - 真偽値の名前に否定形 (`not`) を含めない (例: `isNotActive` ではなく `isInactive`)
-- インターフェース・型・コンポーネント: `PascalCase`
-- 定数: `UPPER_SNAKE_CASE`
-- カスタムフック: `use` プレフィックス + `camelCase`
 
 ## ファイル構成
 
