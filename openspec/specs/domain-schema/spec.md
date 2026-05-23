@@ -275,7 +275,7 @@
 
 ### Requirement: pokedex_entries テーブル（図鑑番号と species の一意性、表示フォーム指定）
 
-`pokedex_entries` テーブルは `id`、`pokedex_id`（`pokedexes.id` を参照）、`species_id`（`species.id` を参照）、`pokedex_number`（INTEGER、NOT NULL）、`form_id`（`forms.id` を参照、**NULL 許容**）を持たなければならない（MUST）。`(pokedex_id, pokedex_number)` は UNIQUE でなければならない（MUST）。`(pokedex_id, species_id)` は UNIQUE でなければならない（MUST、同一図鑑に同一 species が二重登録されることを防ぐ）。`form_id` はその図鑑エントリで表示するフォームを指定する。NULL の場合は UI 側で `category='normal'` の form をデフォルト表示する（MAY）。
+`pokedex_entries` テーブルは `id`、`pokedex_id`（`pokedexes.id` を参照）、`species_id`（`species.id` を参照）、`pokedex_number`（INTEGER、NOT NULL）、`form_id`（`forms.id` を参照、**NULL 許容**）を持たなければならない（MUST）。`(pokedex_id, pokedex_number)` は UNIQUE でなければならない（MUST）。`(pokedex_id, species_id)` は UNIQUE でなければならない（MUST、同一図鑑に同一 species が二重登録されることを防ぐ）。`form_id` はその図鑑エントリで表示するフォームを指定する。NULL の場合は UI / API 側で当該 species の `forms.is_default = true` の form をデフォルト表示しなければならない（MUST）。
 
 #### Scenario: 同じ図鑑で同じ番号を 2 回登録できない
 
@@ -304,8 +304,13 @@
 
 #### Scenario: form_id にパルデア用のオーガポン形態を指定して登録できる
 
-- **WHEN** `(pokedex_id=paldea_id, species_id=ogerpon_id, pokedex_number=400, form_id=ogerpon_teal_id)` を insert する
-- **THEN** 成功する（FK 解決済みの form_id を持つ）
+- **WHEN** Paldea 図鑑の Ogerpon エントリで `form_id=ogerpon_teal_form_id` を指定して insert する
+- **THEN** 成功し、当該エントリの form_id が teal 形態を指している
+
+#### Scenario: form_id が NULL の entry は is_default form をデフォルト表示する
+
+- **WHEN** API / UI が `pokedex_entries.form_id` が NULL の entry を表示する
+- **THEN** 当該 species の `forms.is_default = true` の form 情報を取得して表示に使う
 
 ### Requirement: マイグレーション SQL の生成
 
