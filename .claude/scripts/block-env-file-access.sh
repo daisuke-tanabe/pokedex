@@ -16,13 +16,19 @@
 #   jq で tool_input.command を取り出してコマンド文字列を得る。
 #
 # 【ブロック対象】
-#   コマンド文字列に ".env" が含まれる場合はブロック（exit 2）。
+#   コマンドを区切り文字（空白 / `;` / `|` / `&` / リダイレクト / 括弧 等）で
+#   分割した各トークンに対し、basename が `.env` で始まる、または `.env` を含む
+#   ファイル名（例: .env / .env.local / path/.env.production / .envrc）を
+#   含む場合にブロック（exit 2）。
 #
 # 【許可する例外】
-#   .env.example / .env.sample / .env.template は安全なサンプルファイルなので許可。
-#   例: cat .env.example → OK
-#       cat .env         → ブロック
-#       cat .env.local   → ブロック
+#   basename が .env.example / .env.sample / .env.template に厳密一致する
+#   トークンは安全なサンプルファイルなので許可。
+#   例: cat .env.example         → OK
+#       cat .env                 → ブロック
+#       cat .env.local           → ブロック
+#       cat .env.example.bak     → ブロック (厳密一致ではない)
+#       cat .env.example .env    → ブロック (.env が混在)
 #
 # 【exit コードの意味】
 #   exit 2 : Claude Code がコマンド実行をブロックし、エラーとして扱う
@@ -33,13 +39,37 @@
 #   意図的な回避（変数経由でパスを組み立てるなど）には対応しない。
 # =============================================================================
 
+set -euo pipefail
+
 # stdin の JSON からコマンド文字列を取り出す
 CMD=$(cat | jq -r '.tool_input.command // empty')
 
-# .env を含むが、許可サフィックス（example/sample/template）ではない場合にブロック
-if [[ "$CMD" =~ \.env ]] && [[ ! "$CMD" =~ \.env\.(example|sample|template) ]]; then
-  echo "Blocked: .env access is not allowed: $CMD" >&2
-  exit 2
-fi
+# コマンドをシェル区切り文字でトークン化（厳密ではないが実用上十分）
+tokens=$(tr '[:space:];&|<>(){}`' '\n' <<< "$CMD")
+
+while IFS= read -r token; do
+  # 前後のクォートを 1 段剥がす
+  token="${token#\'}"; token="${token%\'}"
+  token="${token#\"}"; token="${token%\"}"
+
+  # .env を含まないトークンはスキップ
+  [[ "$token" == *.env* ]] || continue
+
+  # basename を取り出して判定（path/.env.example の path 部分のマッチを避ける）
+  filename="${token##*/}"
+
+  # 安全なサンプル名は厳密一致でのみ許可
+  case "$filename" in
+    .env.example|.env.sample|.env.template)
+      continue
+      ;;
+  esac
+
+  # basename に .env を含むなら漏洩リスクとしてブロック
+  if [[ "$filename" == *.env* ]]; then
+    echo "Blocked: .env access is not allowed: $token (in: $CMD)" >&2
+    exit 2
+  fi
+done <<< "$tokens"
 
 exit 0
