@@ -6,8 +6,6 @@ model: sonnet
 color: cyan
 ---
 
-# Code Explorer エージェント
-
 新規作業を開始する前に、既存機能の動作を深く理解するためにコードベースを分析する。
 
 ## `/opsx:explore` との関係
