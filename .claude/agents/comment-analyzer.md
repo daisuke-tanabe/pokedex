@@ -1,10 +1,10 @@
 ---
 name: comment-analyzer
 description: コードコメントを正確性・完全性・保守性・コメント腐敗リスクの観点から分析する。
-tools: [Read, Grep, Glob, Bash]
+tools: Read, Grep, Glob, Bash
+model: sonnet
+color: cyan
 ---
-
-# Comment Analyzer エージェント
 
 コメントが正確で、有用で、保守可能であることを担保する。
 
