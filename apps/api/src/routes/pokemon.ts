@@ -30,13 +30,10 @@ export const createPokemonRoutes = (repo: PokemonRepository) =>
     })
     .get(
       '/pokemon',
-      vValidator('query', pokemonListQuerySchema, (result, c): Response | undefined => {
+      vValidator('query', pokemonListQuerySchema, (result, c): Response | void => {
         if (!result.success) {
           return c.json(errorEnvelope(ErrorCode.INVALID_QUERY, buildValidationMessage(result.issues)), 400);
         }
-        // oxlint-disable-next-line unicorn/no-useless-undefined -- `noImplicitReturns`
-        // と `consistent-return` の両方を満たすために明示的に `undefined` を返す。
-        return undefined;
       }),
       async (c) => {
         const { pokedex, types, cursor: cursorToken, limit } = c.req.valid('query');
@@ -64,12 +61,10 @@ export const createPokemonRoutes = (repo: PokemonRepository) =>
     )
     .get(
       '/pokemon/:slug',
-      vValidator('param', pokemonDetailParamSchema, (result, c): Response | undefined => {
+      vValidator('param', pokemonDetailParamSchema, (result, c): Response | void => {
         if (!result.success) {
           return c.json(errorEnvelope(ErrorCode.INVALID_QUERY, buildValidationMessage(result.issues)), 400);
         }
-        // oxlint-disable-next-line unicorn/no-useless-undefined -- query 側と同じ理由
-        return undefined;
       }),
       async (c) => {
         const { slug } = c.req.valid('param');
