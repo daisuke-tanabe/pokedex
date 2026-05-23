@@ -5,16 +5,11 @@ import type { Envelope, ErrorCode } from '@pokedex/contracts';
  *
  * `meta` を省略した場合は data のみを持つエンベロープを返す
  * (`exactOptionalPropertyTypes: true` への配慮)。
+ * `meta` の型は呼び出し側で自由に決められる (cursor pagination / page meta どちらにも対応)。
  */
 export function successEnvelope<TData>(data: TData): Envelope<TData>;
-export function successEnvelope<TData>(
-  data: TData,
-  meta: { total: number; page: number; limit: number },
-): Envelope<TData>;
-export function successEnvelope<TData>(
-  data: TData,
-  meta?: { total: number; page: number; limit: number },
-): Envelope<TData> {
+export function successEnvelope<TData, TMeta>(data: TData, meta: TMeta): Envelope<TData, TMeta>;
+export function successEnvelope<TData, TMeta>(data: TData, meta?: TMeta): Envelope<TData, TMeta> {
   if (meta === undefined) {
     return { success: true, data };
   }

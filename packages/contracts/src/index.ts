@@ -11,3 +11,6 @@ export * from './enums/locale.js';
 export * from './enums/sprite.js';
 export * from './errors.js';
 export * from './schemas/envelope.js';
+export * from './schemas/pokemon-detail.js';
+export * from './schemas/pokemon-list.js';
+export * from './schemas/pokemon-query.js';

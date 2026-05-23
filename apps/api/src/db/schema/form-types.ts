@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { check, integer, pgTable, primaryKey, smallint, unique } from 'drizzle-orm/pg-core';
+import { check, index, integer, pgTable, primaryKey, smallint, unique } from 'drizzle-orm/pg-core';
 
 import { forms } from './forms.js';
 import { types } from './types.js';
@@ -26,6 +26,12 @@ export const formTypes = pgTable(
     primaryKey({ name: 'form_types_pk', columns: [table.formId, table.slot] }),
     unique('form_types_form_id_type_id_unique').on(table.formId, table.typeId),
     check('form_types_slot_range', sql`${table.slot} IN (1, 2)`),
+    // 検索ホットパス: 一覧で各 form の types をバッチ取得する経路 (`add-search-api`)。
+    // 複合 PK の先頭列であっても、Postgres は単独 form_id の seek に必ずしも PK index を
+    // 使わないため明示的に追加する。
+    index('form_types_form_id_idx').on(table.formId),
+    // 検索ホットパス: type slug で form を絞り込む AND 検索の subquery 用。
+    index('form_types_type_id_idx').on(table.typeId),
   ],
 );
 

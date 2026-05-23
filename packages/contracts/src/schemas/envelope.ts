@@ -11,22 +11,22 @@ import { ErrorCode } from '../errors.js';
  * 成功エンベロープのスキーマ生成。
  *
  * `data` の型は引数で受け取った Valibot スキーマで決定される。
- * `meta` はページネーションメタデータ用のオプショナル。
+ * `meta` は省略時 `unknown` を許容し、明示すると渡したスキーマで検証する。
  *
  * `strictObject` で余分なプロパティを許容しないため、`success: true` と `error`
  * が両立するような不正値は variant 経由でも弾かれる。
  */
-export const successEnvelopeSchema = <const TSchema extends v.GenericSchema>(dataSchema: TSchema) =>
+export const successEnvelopeSchema = <
+  const TSchema extends v.GenericSchema,
+  const TMetaSchema extends v.GenericSchema = v.UnknownSchema,
+>(
+  dataSchema: TSchema,
+  metaSchema?: TMetaSchema,
+) =>
   v.strictObject({
     success: v.literal(true),
     data: dataSchema,
-    meta: v.optional(
-      v.object({
-        total: v.number(),
-        page: v.number(),
-        limit: v.number(),
-      }),
-    ),
+    meta: v.optional(metaSchema ?? v.unknown()),
   });
 
 /**
@@ -46,19 +46,27 @@ export const errorEnvelopeSchema = v.strictObject({
  * エンベロープスキーマ生成関数。
  *
  * `success` フィールドを判別子とする variant (判別可能ユニオン) として、
- * 成功型と失敗型のいずれか一方を表現する。
+ * 成功型と失敗型のいずれか一方を表現する。`metaSchema` を省略した場合は
+ * `meta?: unknown` として扱い、明示した場合はそのスキーマで `meta` を検証する。
  */
-export const envelopeSchema = <const TSchema extends v.GenericSchema>(dataSchema: TSchema) =>
-  v.variant('success', [successEnvelopeSchema(dataSchema), errorEnvelopeSchema]);
+export const envelopeSchema = <
+  const TSchema extends v.GenericSchema,
+  const TMetaSchema extends v.GenericSchema = v.UnknownSchema,
+>(
+  dataSchema: TSchema,
+  metaSchema?: TMetaSchema,
+) => v.variant('success', [successEnvelopeSchema(dataSchema, metaSchema), errorEnvelopeSchema]);
 
 /**
  * エンベロープ型のヘルパ。`v.InferOutput<ReturnType<typeof envelopeSchema>>` の代替。
+ *
+ * `TMeta` を省略した場合は `unknown` として扱い、メタの構造を呼び出し側に強制しない。
  */
-export type Envelope<TData> =
+export type Envelope<TData, TMeta = unknown> =
   | {
       success: true;
       data: TData;
-      meta?: { total: number; page: number; limit: number };
+      meta?: TMeta;
     }
   | {
       success: false;

@@ -1,4 +1,4 @@
-import { integer, pgTable, serial, unique } from 'drizzle-orm/pg-core';
+import { index, integer, pgTable, serial, unique } from 'drizzle-orm/pg-core';
 
 import { forms } from './forms.js';
 import { pokedexes } from './pokedexes.js';
@@ -28,6 +28,11 @@ export const pokedexEntries = pgTable(
   (table) => [
     unique('pokedex_entries_pokedex_id_pokedex_number_unique').on(table.pokedexId, table.pokedexNumber),
     unique('pokedex_entries_pokedex_id_species_id_unique').on(table.pokedexId, table.speciesId),
+    // 検索ホットパス: 図鑑スラッグ → entries の絞り込み。PostgreSQL は FK 列に
+    // 自動で index を張らないため、明示的に追加する (`add-search-api`)。
+    index('pokedex_entries_pokedex_id_idx').on(table.pokedexId),
+    // 検索ホットパス: form_id 経由で entries を逆引きする詳細クエリ用。
+    index('pokedex_entries_form_id_idx').on(table.formId),
   ],
 );
 
