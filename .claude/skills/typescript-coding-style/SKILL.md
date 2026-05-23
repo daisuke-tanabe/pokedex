@@ -83,8 +83,8 @@ paths:
 
 ## このスキルが扱わないこと
 
-- React / Next.js / Hono など特定フレームワーク固有のパターン (別 skill / rules に切り出される予定)
-- テストの書き方 (`.claude/rules/testing/` 側)
-- アクセシビリティ・SEO・セキュリティ等の横断的観点 (専門 agent / skill 側)
+- React / Next.js / Hono など特定フレームワーク固有のパターン
+- テストの書き方
+- アクセシビリティ・SEO・セキュリティ等の横断的観点
 
 これらは TypeScript の規約とは独立して評価し、衝突する場合は文脈に応じて判断する。
