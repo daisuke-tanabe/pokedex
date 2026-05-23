@@ -55,3 +55,17 @@ export const pokemonDetailSchema = v.object({
 });
 
 export type PokemonDetail = v.InferOutput<typeof pokemonDetailSchema>;
+
+/**
+ * `GET /api/pokemon/:slug` のパスパラメータ。
+ *
+ * 上限 64 は `species.slug` / `forms.slug` の varchar(64) と整合させる。
+ * Hono のルーティング仕様上 `:slug` は最低 1 文字必須だが、`minLength(1)` を
+ * 明示することで「異常に長い slug を弾く」guard としても機能させる
+ * (DB ラウンドトリップ抑制)。
+ */
+export const pokemonDetailParamSchema = v.object({
+  slug: v.pipe(v.string(), v.minLength(1), v.maxLength(64)),
+});
+
+export type PokemonDetailParam = v.InferOutput<typeof pokemonDetailParamSchema>;

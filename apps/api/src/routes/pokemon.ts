@@ -1,5 +1,5 @@
 import { vValidator } from '@hono/valibot-validator';
-import { ErrorCode, pokemonListQuerySchema } from '@pokedex/contracts';
+import { ErrorCode, pokemonDetailParamSchema, pokemonListQuerySchema } from '@pokedex/contracts';
 import { Hono } from 'hono';
 import type * as v from 'valibot';
 
@@ -62,11 +62,21 @@ export const createPokemonRoutes = (repo: PokemonRepository) =>
         return c.json(successEnvelope(items, { nextCursor: encodedNext }));
       },
     )
-    .get('/pokemon/:slug', async (c) => {
-      const slug = c.req.param('slug');
-      const detail = await repo.findDetailBySlug(slug);
-      if (detail === null) {
-        return c.json(errorEnvelope(ErrorCode.POKEMON_NOT_FOUND, `pokemon not found: ${slug}`), 404);
-      }
-      return c.json(successEnvelope(detail));
-    });
+    .get(
+      '/pokemon/:slug',
+      vValidator('param', pokemonDetailParamSchema, (result, c): Response | undefined => {
+        if (!result.success) {
+          return c.json(errorEnvelope(ErrorCode.INVALID_QUERY, buildValidationMessage(result.issues)), 400);
+        }
+        // oxlint-disable-next-line unicorn/no-useless-undefined -- query 側と同じ理由
+        return undefined;
+      }),
+      async (c) => {
+        const { slug } = c.req.valid('param');
+        const detail = await repo.findDetailBySlug(slug);
+        if (detail === null) {
+          return c.json(errorEnvelope(ErrorCode.POKEMON_NOT_FOUND, `pokemon not found: ${slug}`), 404);
+        }
+        return c.json(successEnvelope(detail));
+      },
+    );

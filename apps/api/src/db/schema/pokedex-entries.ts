@@ -10,7 +10,9 @@ import { species } from './species.js';
  * - (pokedex_id, pokedex_number) UNIQUE: 同一図鑑で番号重複を防ぐ
  * - (pokedex_id, species_id) UNIQUE: 同一図鑑で同一 species の二重登録を防ぐ
  * - form_id (NULL 許容): その図鑑で表示するフォームを指定する。NULL の場合は
- *   UI 側で category='normal' のフォームをデフォルト表示するフォールバック前提。
+ *   当該 species の `forms.is_default = true` の form をデフォルト表示する
+ *   (API は `searchByList` の `COALESCE(specifiedForm, defaultForm)` で担保、
+ *   不変条件は invariants.ts の「全 species に default form が exactly 1 件」で担保)。
  */
 export const pokedexEntries = pgTable(
   'pokedex_entries',

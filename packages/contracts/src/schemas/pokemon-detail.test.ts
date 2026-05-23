@@ -1,7 +1,7 @@
 import * as v from 'valibot';
 import { describe, expect, it } from 'vitest';
 
-import { pokemonDetailSchema } from './pokemon-detail.js';
+import { pokemonDetailParamSchema, pokemonDetailSchema } from './pokemon-detail.js';
 
 const validDetail = {
   species: {
@@ -65,5 +65,28 @@ describe('pokemonDetailSchema', () => {
         names: [{ locale: 'fr', name: 'Pikachu' }],
       }),
     ).toThrow();
+  });
+});
+
+describe('pokemonDetailParamSchema', () => {
+  it('1 文字以上 64 文字以下の slug を通す', () => {
+    // Arrange / Act
+    const result = v.parse(pokemonDetailParamSchema, { slug: 'pikachu' });
+
+    // Assert
+    expect(result.slug).toBe('pikachu');
+  });
+
+  it('境界値: 64 文字を通す', () => {
+    const at64 = 'a'.repeat(64);
+    expect(v.parse(pokemonDetailParamSchema, { slug: at64 })).toEqual({ slug: at64 });
+  });
+
+  it('空文字列を弾く', () => {
+    expect(() => v.parse(pokemonDetailParamSchema, { slug: '' })).toThrow();
+  });
+
+  it('65 文字以上を弾く', () => {
+    expect(() => v.parse(pokemonDetailParamSchema, { slug: 'a'.repeat(65) })).toThrow();
   });
 });

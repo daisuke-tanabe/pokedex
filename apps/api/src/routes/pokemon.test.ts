@@ -194,6 +194,40 @@ describe('GET /pokemon (一覧)', () => {
     if (body.success) throw new Error('expected failure');
     expect(body.error.code).toBe('INVALID_QUERY');
   });
+
+  it('pokedex_entries.form_id が非 default form を指す entry でも、その form の slug を formSlug として返す', async () => {
+    // Arrange: Paldea Ogerpon を模した fixture。指定 form (`wellspring`) は species の
+    // default form (`teal`) と異なる。real 実装の COALESCE(specifiedForm.slug, defaultForm.slug)
+    // が正しく specifiedForm を優先することの contract 上の挙動を検証する。
+    const mockData: MockPokemonData = {
+      pokedexes: [{ id: 2, slug: 'paldea' }],
+      types: [],
+      entries: [
+        {
+          pokedexId: 2,
+          pokedexNumber: 400,
+          formId: 999, // 非 default form の id
+          typeIds: [],
+          listItem: buildItem({
+            speciesSlug: 'ogerpon',
+            formSlug: 'wellspring', // ← default の 'teal' ではなく指定 form の slug
+            pokedexNumber: 400,
+          }),
+        },
+      ],
+      details: new Map(),
+    };
+    const localApp = createPokemonRoutes(createMockPokemonRepository(mockData));
+
+    // Act
+    const res = await localApp.request('/pokemon?pokedex=paldea');
+
+    // Assert
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as ListEnvelope;
+    if (!body.success) throw new Error('expected success');
+    expect(body.data[0]?.formSlug).toBe('wellspring');
+  });
 });
 
 describe('GET /pokemon/:slug (詳細)', () => {
@@ -225,6 +259,20 @@ describe('GET /pokemon/:slug (詳細)', () => {
     const body = (await res.json()) as Envelope<unknown>;
     if (body.success) throw new Error('expected failure');
     expect(body.error.code).toBe('POKEMON_NOT_FOUND');
+  });
+
+  it('上限超過の slug (64 文字超) は 400 + INVALID_QUERY を返す', async () => {
+    // Arrange: 65 文字の slug。schema は maxLength(64) なので弾かれる。
+    const overflowSlug = 'a'.repeat(65);
+
+    // Act
+    const res = await app.request(`/pokemon/${overflowSlug}`);
+
+    // Assert
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as Envelope<unknown>;
+    if (body.success) throw new Error('expected failure');
+    expect(body.error.code).toBe('INVALID_QUERY');
   });
 });
 

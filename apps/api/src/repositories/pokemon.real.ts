@@ -1,5 +1,6 @@
 import { LOCALE_VALUES, Locale } from '@pokedex/contracts';
 import { and, asc, eq, inArray, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 
 import type { DB } from '../db/client.js';
 import {
@@ -68,8 +69,16 @@ export const createRealPokemonRepository = (db: DB): PokemonRepository => ({
 
   searchByList: async ({ pokedexId, typeIds, cursor, limit }: SearchInput): Promise<SearchResult> => {
     const typeCount = typeIds.length;
-    // form_id NULL の entry は is_default form で代替する。
-    const effectiveFormId = sql<number>`COALESCE(${pokedexEntries.formId}, ${forms.id})`;
+
+    // `pokedex_entries.form_id` を 2 way で resolve する:
+    //   - 非 NULL: LEFT JOIN した specified form (具体的に指定された form)
+    //   - NULL:    INNER JOIN した default form (species ごとに必ず 1 件存在する不変条件あり)
+    // どちらを採用するかは COALESCE で id / slug を解決する。
+    // `forms` テーブルに対する 2 alias で表現する (drizzle の alias()).
+    const specifiedForm = alias(forms, 'specified_form');
+    const defaultForm = alias(forms, 'default_form');
+    const effectiveFormId = sql<number>`COALESCE(${specifiedForm.id}, ${defaultForm.id})`.as('form_id');
+    const effectiveFormSlug = sql<string>`COALESCE(${specifiedForm.slug}, ${defaultForm.slug})`.as('form_slug');
 
     const conditions = [eq(pokedexEntries.pokedexId, pokedexId)];
 
@@ -91,18 +100,21 @@ export const createRealPokemonRepository = (db: DB): PokemonRepository => ({
 
     const rows = await db
       .select({
-        formId: sql<number>`${effectiveFormId}`.as('form_id'),
+        formId: effectiveFormId,
         pokedexNumber: pokedexEntries.pokedexNumber,
         speciesId: pokedexEntries.speciesId,
         speciesSlug: species.slug,
-        formSlug: forms.slug,
+        formSlug: effectiveFormSlug,
       })
       .from(pokedexEntries)
       .innerJoin(species, eq(species.id, pokedexEntries.speciesId))
-      // pokedex_entries.form_id が NULL の場合は default form を JOIN 対象にする。
-      .innerJoin(forms, and(eq(forms.speciesId, pokedexEntries.speciesId), eq(forms.isDefault, true)))
+      // 明示指定された form (`pokedex_entries.form_id` 非 NULL) を LEFT JOIN で拾う。
+      .leftJoin(specifiedForm, eq(specifiedForm.id, pokedexEntries.formId))
+      // species の default form (`is_default = true` 1 件) を INNER JOIN で必ず確保する。
+      // 不変条件「全 species に default form が exactly 1 件」(invariants.ts) で担保。
+      .innerJoin(defaultForm, and(eq(defaultForm.speciesId, pokedexEntries.speciesId), eq(defaultForm.isDefault, true)))
       .where(and(...conditions))
-      .orderBy(asc(pokedexEntries.pokedexNumber), asc(sql.raw('form_id')))
+      .orderBy(asc(pokedexEntries.pokedexNumber), asc(effectiveFormId))
       .limit(limit + 1);
 
     const slice = rows as SearchRow[];
