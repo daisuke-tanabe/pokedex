@@ -18,10 +18,9 @@ color: cyan
 ## 検出コマンド
 
 ```bash
-npx knip                                    # 未使用ファイル、エクスポート、依存関係
-npx depcheck                                # 未使用のnpm依存関係
-npx ts-prune                                # 未使用のTypeScriptエクスポート
-npx eslint . --report-unused-disable-directives  # 未使用のeslintディレクティブ
+pnpm dlx knip                               # 未使用ファイル、エクスポート、依存関係
+pnpm dlx depcheck                           # 未使用の依存関係
+pnpm dlx ts-prune                           # 未使用のTypeScriptエクスポート
 ```
 
 ## ワークフロー
