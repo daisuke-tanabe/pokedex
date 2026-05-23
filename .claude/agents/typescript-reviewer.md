@@ -5,6 +5,7 @@ tools: Read, Grep, Glob, Bash, Skill
 model: sonnet
 color: cyan
 skills:
+  - coding-style
   - typescript-coding-style
 ---
 
@@ -22,7 +23,6 @@ skills:
 
 | レイヤー | 内容 | 参照タイミング |
 |---|---|---|
-| `.claude/rules/common/coding-style.md` | 言語非依存の原則 (命名、深いネスト、マジックナンバー、関数サイズ、リファクタリング原則等) | **必ず** Read |
 | `.claude/rules/common/patterns.md` | スタートポロジー、リポジトリパターン、API レスポンスエンベロープ等 | **必ず** Read |
 
 判定基準が agent 本文と skill / rules で矛盾した場合は **skill / rules 側を正** とします。
