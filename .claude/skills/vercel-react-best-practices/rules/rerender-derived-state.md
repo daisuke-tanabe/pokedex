@@ -7,19 +7,19 @@ tags: rerender, derived-state, media-query, optimization
 
 ## Subscribe to Derived State
 
-Subscribe to derived boolean state instead of continuous values to reduce re-render frequency.
+連続的に変わる値ではなく、派生した boolean を subscribe して、再レンダリングの回数を減らす。
 
-**Incorrect (re-renders on every pixel change):**
+**Incorrect (1 ピクセル変わるたびに再レンダリングされる):**
 
 ```tsx
 function Sidebar() {
-  const width = useWindowWidth()  // updates continuously
+  const width = useWindowWidth()  // 連続的に更新される
   const isMobile = width < 768
   return <nav className={isMobile ? 'mobile' : 'desktop'} />
 }
 ```
 
-**Correct (re-renders only when boolean changes):**
+**Correct (boolean が切り替わったときだけ再レンダリングする):**
 
 ```tsx
 function Sidebar() {

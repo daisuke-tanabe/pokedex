@@ -1,15 +1,15 @@
 ---
 title: Index JSONB Columns for Efficient Querying
 impact: MEDIUM
-impactDescription: 10-100x faster JSONB queries with proper indexing
+impactDescription: 適切なインデックス指定で JSONB クエリが 10〜100 倍高速化
 tags: jsonb, gin, indexes, json
 ---
 
 ## Index JSONB Columns for Efficient Querying
 
-JSONB queries without indexes scan the entire table. Use GIN indexes for containment queries.
+インデックスがないと JSONB クエリはテーブル全体をスキャンしてしまう。containment 系のクエリには GIN インデックスを使う。
 
-**Incorrect (no index on JSONB):**
+**誤り (JSONB にインデックスを張らない):**
 
 ```sql
 create table products (
@@ -17,32 +17,32 @@ create table products (
   attributes jsonb
 );
 
--- Full table scan for every query
+-- クエリのたびにテーブル全体をスキャン
 select * from products where attributes @> '{"color": "red"}';
 select * from products where attributes->>'brand' = 'Nike';
 ```
 
-**Correct (GIN index for JSONB):**
+**正しい例 (JSONB に GIN インデックスを張る):**
 
 ```sql
--- GIN index for containment operators (@>, ?, ?&, ?|)
+-- containment 系の演算子 (@>, ?, ?&, ?|) 向けの GIN インデックス
 create index products_attrs_gin on products using gin (attributes);
 
--- Now containment queries use the index
+-- containment クエリでインデックスが使われるようになる
 select * from products where attributes @> '{"color": "red"}';
 
--- For specific key lookups, use expression index
+-- 特定のキーで検索する場合は式インデックスを使う
 create index products_brand_idx on products ((attributes->>'brand'));
 select * from products where attributes->>'brand' = 'Nike';
 ```
 
-Choose the right operator class:
+適切な operator class を選ぶ:
 
 ```sql
--- jsonb_ops (default): supports all operators, larger index
+-- jsonb_ops (デフォルト): すべての演算子に対応するが、インデックスサイズが大きい
 create index idx1 on products using gin (attributes);
 
--- jsonb_path_ops: only @> operator, but 2-3x smaller index
+-- jsonb_path_ops: @> 演算子のみだが、インデックスサイズは 2〜3 倍小さい
 create index idx2 on products using gin (attributes jsonb_path_ops);
 ```
 

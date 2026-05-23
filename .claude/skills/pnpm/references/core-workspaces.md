@@ -1,31 +1,31 @@
 ---
 name: pnpm-workspaces
-description: Monorepo support with workspaces for managing multiple packages
+description: 複数パッケージを管理する monorepo を workspace で扱う
 ---
 
-# pnpm Workspaces
+# pnpm の Workspaces
 
-pnpm has built-in support for monorepos (multi-package repositories) through workspaces.
+pnpm は workspace を通じて monorepo (複数パッケージのリポジトリ) を標準でサポートする。
 
-## Setting Up Workspaces
+## Workspace のセットアップ
 
-Create `pnpm-workspace.yaml` at the repository root:
+リポジトリのルートに `pnpm-workspace.yaml` を作成する。
 
 ```yaml
 packages:
-  # Include all packages in packages/ directory
+  # packages/ 配下のすべてのパッケージを含める
   - 'packages/*'
-  # Include all apps
+  # すべての app を含める
   - 'apps/*'
-  # Include nested packages
+  # ネストしたパッケージを含める
   - 'tools/*/packages/*'
-  # Exclude test directories
+  # test ディレクトリを除外
   - '!**/test/**'
 ```
 
-## Workspace Protocol
+## Workspace protocol
 
-Use `workspace:` protocol to reference local packages:
+ローカルパッケージを参照する際は `workspace:` プロトコルを使う。
 
 ```json
 {
@@ -37,125 +37,125 @@ Use `workspace:` protocol to reference local packages:
 }
 ```
 
-### Protocol Variants
+### プロトコルのバリエーション
 
-| Protocol | Behavior | Published As |
+| プロトコル | 挙動 | 公開時の置換結果 |
 |----------|----------|--------------|
-| `workspace:*` | Any version | Actual version (e.g., `1.2.3`) |
-| `workspace:^` | Compatible version | `^1.2.3` |
-| `workspace:~` | Patch version | `~1.2.3` |
-| `workspace:^1.0.0` | Semver range | `^1.0.0` |
+| `workspace:*` | 任意のバージョン | 実バージョン (例: `1.2.3`) |
+| `workspace:^` | 互換バージョン | `^1.2.3` |
+| `workspace:~` | パッチバージョン | `~1.2.3` |
+| `workspace:^1.0.0` | semver 範囲指定 | `^1.0.0` |
 
-## Filtering Packages
+## パッケージのフィルタリング
 
-Run commands on specific packages using `--filter`:
+`--filter` で特定パッケージに対してコマンドを実行する。
 
 ```bash
-# By package name
+# パッケージ名で指定
 pnpm --filter @myorg/app build
 pnpm -F @myorg/app build
 
-# By directory path
+# ディレクトリパスで指定
 pnpm --filter "./packages/core" test
 
-# Glob patterns
+# glob パターン
 pnpm --filter "@myorg/*" lint
 pnpm --filter "!@myorg/internal-*" publish
 
-# All packages
+# 全パッケージ
 pnpm -r build
 pnpm --recursive build
 ```
 
-### Dependency-based Filtering
+### 依存関係に基づくフィルタリング
 
 ```bash
-# Package and all its dependencies
+# 指定パッケージとその依存元すべて
 pnpm --filter "...@myorg/app" build
 
-# Package and all its dependents
+# 指定パッケージとそれに依存するすべて
 pnpm --filter "@myorg/core..." test
 
-# Both directions
+# 両方向
 pnpm --filter "...@myorg/shared..." build
 
-# Changed since git ref
+# Git の特定 ref 以降の変更
 pnpm --filter "...[origin/main]" test
 pnpm --filter "[HEAD~5]" lint
 ```
 
-## Workspace Commands
+## Workspace 系コマンド
 
-### Install dependencies
+### 依存のインストール
 ```bash
-# Install all workspace packages
+# すべての workspace パッケージをインストール
 pnpm install
 
-# Add dependency to specific package
+# 特定パッケージに依存を追加
 pnpm --filter @myorg/app add lodash
 
-# Add workspace dependency
+# workspace 依存を追加
 pnpm --filter @myorg/app add @myorg/utils
 ```
 
-### Run scripts
+### スクリプトの実行
 ```bash
-# Run in all packages with that script
+# スクリプトを持つすべてのパッケージで実行
 pnpm -r run build
 
-# Run in topological order (dependencies first)
+# トポロジカル順 (依存元優先) で実行
 pnpm -r --workspace-concurrency=1 run build
 
-# Run in parallel
+# 並列実行
 pnpm -r --parallel run test
 
-# Stream output
+# 出力をストリーム表示
 pnpm -r --stream run dev
 ```
 
-### Execute commands
+### コマンドの実行
 ```bash
-# Run command in all packages
+# 全パッケージでコマンドを実行
 pnpm -r exec pwd
 
-# Run in specific packages
+# 特定パッケージのみで実行
 pnpm --filter "./packages/**" exec rm -rf dist
 ```
 
-## Workspace Settings
+## Workspace の設定
 
-Configure in `.npmrc` or `pnpm-workspace.yaml`:
+`.npmrc` または `pnpm-workspace.yaml` で設定する。
 
 ```ini
-# Link workspace packages automatically
+# workspace パッケージを自動的にリンク
 link-workspace-packages=true
 
-# Prefer workspace packages over registry
+# レジストリより workspace パッケージを優先
 prefer-workspace-packages=true
 
-# Single lockfile (recommended)
+# 単一の lockfile (推奨)
 shared-workspace-lockfile=true
 
-# Workspace protocol handling
+# workspace protocol の取り扱い
 save-workspace-protocol=rolling
 
-# Concurrent workspace scripts
+# workspace スクリプトの並列度
 workspace-concurrency=4
 ```
 
-## Publishing Workspaces
+## Workspace の公開
 
-When publishing, `workspace:` protocols are converted:
+公開時、`workspace:` プロトコルは変換される。
 
 ```json
-// Before publish
+// 公開前
 {
   "dependencies": {
     "@myorg/utils": "workspace:^"
   }
 }
 
-// After publish
+// 公開後
 {
   "dependencies": {
     "@myorg/utils": "^1.2.3"
@@ -163,20 +163,20 @@ When publishing, `workspace:` protocols are converted:
 }
 ```
 
-Use `--no-git-checks` for publishing from CI:
+CI から公開する場合は `--no-git-checks` を付ける。
 ```bash
 pnpm publish -r --no-git-checks
 ```
 
-## Best Practices
+## ベストプラクティス
 
-1. **Use workspace protocol** for internal dependencies
-2. **Enable `link-workspace-packages`** for automatic linking
-3. **Use shared lockfile** for consistency
-4. **Filter by dependencies** when building to ensure correct order
-5. **Use catalogs** for shared external dependency versions
+1. **workspace protocol を使う**: 内部依存関係に活用する
+2. **`link-workspace-packages` を有効にする**: 自動リンクのため
+3. **共有 lockfile を使う**: 整合性を保つ
+4. **依存方向でフィルタする**: ビルド時に正しい順序を保証する
+5. **catalog を使う**: 外部依存のバージョンを共有する
 
-## Example Project Structure
+## プロジェクト構成の例
 
 ```
 my-monorepo/
@@ -197,7 +197,7 @@ my-monorepo/
         └── package.json
 ```
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/workspaces
 - https://pnpm.io/filtering

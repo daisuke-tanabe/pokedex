@@ -7,13 +7,13 @@ tags: javascript, arrays, immutability, react, state, mutation
 
 ## Use toSorted() Instead of sort() for Immutability
 
-`.sort()` mutates the array in place, which can cause bugs with React state and props. Use `.toSorted()` to create a new sorted array without mutation.
+`.sort()` は配列をその場で破壊的に書き換えるため、React の state や props でバグの原因になる。`.toSorted()` を使えばソート済みの新しい配列を作りつつ元を変更しない。
 
-**Incorrect (mutates original array):**
+**Incorrect (元配列を破壊する):**
 
 ```typescript
 function UserList({ users }: { users: User[] }) {
-  // Mutates the users prop array!
+  // users prop の配列を破壊してしまう！
   const sorted = useMemo(
     () => users.sort((a, b) => a.name.localeCompare(b.name)),
     [users]
@@ -22,11 +22,11 @@ function UserList({ users }: { users: User[] }) {
 }
 ```
 
-**Correct (creates new array):**
+**Correct (新しい配列を作る):**
 
 ```typescript
 function UserList({ users }: { users: User[] }) {
-  // Creates new sorted array, original unchanged
+  // ソート済みの新しい配列を作り、元は変えない
   const sorted = useMemo(
     () => users.toSorted((a, b) => a.name.localeCompare(b.name)),
     [users]
@@ -35,23 +35,23 @@ function UserList({ users }: { users: User[] }) {
 }
 ```
 
-**Why this matters in React:**
+**React で重要な理由:**
 
-1. Props/state mutations break React's immutability model - React expects props and state to be treated as read-only
-2. Causes stale closure bugs - Mutating arrays inside closures (callbacks, effects) can lead to unexpected behavior
+1. props/state の破壊は React のイミュータブルモデルを壊す - React は props と state を read-only として扱う前提
+2. stale closure バグの原因になる - クロージャ（コールバック、effect）内で配列を破壊すると予期しない挙動を招く
 
-**Browser support (fallback for older browsers):**
+**ブラウザサポート (古い環境向けフォールバック):**
 
-`.toSorted()` is available in all modern browsers (Chrome 110+, Safari 16+, Firefox 115+, Node.js 20+). For older environments, use spread operator:
+`.toSorted()` は主要な現行ブラウザで利用可能 (Chrome 110+, Safari 16+, Firefox 115+, Node.js 20+)。古い環境ではスプレッド構文を使う:
 
 ```typescript
-// Fallback for older browsers
+// 古いブラウザ向けフォールバック
 const sorted = [...items].sort((a, b) => a.value - b.value)
 ```
 
-**Other immutable array methods:**
+**その他のイミュータブル系メソッド:**
 
-- `.toSorted()` - immutable sort
-- `.toReversed()` - immutable reverse
-- `.toSpliced()` - immutable splice
-- `.with()` - immutable element replacement
+- `.toSorted()` - イミュータブルなソート
+- `.toReversed()` - イミュータブルな反転
+- `.toSpliced()` - イミュータブルな splice
+- `.with()` - 要素のイミュータブルな差し替え

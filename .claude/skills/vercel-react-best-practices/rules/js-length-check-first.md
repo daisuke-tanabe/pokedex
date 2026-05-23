@@ -7,30 +7,30 @@ tags: javascript, arrays, performance, optimization, comparison
 
 ## Early Length Check for Array Comparisons
 
-When comparing arrays with expensive operations (sorting, deep equality, serialization), check lengths first. If lengths differ, the arrays cannot be equal.
+ソート、深い等値比較、シリアライズなど高コストな操作で配列を比較する場合は、まず長さを確認する。長さが違えば、その配列は決して等しくない。
 
-In real-world applications, this optimization is especially valuable when the comparison runs in hot paths (event handlers, render loops).
+実際のアプリケーションでは、比較がホットパス（イベントハンドラ、レンダーループ）で動くときに特に効く。
 
-**Incorrect (always runs expensive comparison):**
+**Incorrect (常に重い比較が走る):**
 
 ```typescript
 function hasChanges(current: string[], original: string[]) {
-  // Always sorts and joins, even when lengths differ
+  // 長さが違っても常に sort と join をしてしまう
   return current.sort().join() !== original.sort().join()
 }
 ```
 
-Two O(n log n) sorts run even when `current.length` is 5 and `original.length` is 100. There is also overhead of joining the arrays and comparing the strings.
+`current.length` が 5、`original.length` が 100 でも、O(n log n) のソートが 2 回動く。さらに join した文字列の生成と比較のオーバーヘッドもある。
 
-**Correct (O(1) length check first):**
+**Correct (O(1) で長さチェックを先に行う):**
 
 ```typescript
 function hasChanges(current: string[], original: string[]) {
-  // Early return if lengths differ
+  // 長さが違うなら早期 return
   if (current.length !== original.length) {
     return true
   }
-  // Only sort when lengths match
+  // 長さが一致したときだけソートする
   const currentSorted = current.toSorted()
   const originalSorted = original.toSorted()
   for (let i = 0; i < currentSorted.length; i++) {
@@ -42,8 +42,8 @@ function hasChanges(current: string[], original: string[]) {
 }
 ```
 
-This new approach is more efficient because:
-- It avoids the overhead of sorting and joining the arrays when lengths differ
-- It avoids consuming memory for the joined strings (especially important for large arrays)
-- It avoids mutating the original arrays
-- It returns early when a difference is found
+この新しいアプローチが効率的な理由:
+- 長さが異なるときにソートと join のオーバーヘッドを避けられる
+- join 文字列のメモリ消費を回避できる（特に大きな配列で重要）
+- 元の配列を変更しない
+- 違いを見つけた時点で早期 return できる

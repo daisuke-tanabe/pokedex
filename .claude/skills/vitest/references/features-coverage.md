@@ -1,37 +1,37 @@
 ---
 name: code-coverage
-description: Code coverage with V8 or Istanbul providers
+description: V8 または Istanbul プロバイダーによるコードカバレッジ
 ---
 
-# Code Coverage
+# コードカバレッジ
 
-## Setup
+## セットアップ
 
 ```bash
-# Run tests with coverage
+# カバレッジ付きでテストを実行
 vitest run --coverage
 ```
 
-## Configuration
+## 設定
 
 ```ts
 // vitest.config.ts
 defineConfig({
   test: {
     coverage: {
-      // Provider: 'v8' (default, faster) or 'istanbul' (more compatible)
+      // Provider: 'v8' (デフォルト・高速) もしくは 'istanbul' (互換性が高い)
       provider: 'v8',
       
-      // Enable coverage
+      // カバレッジを有効化
       enabled: true,
       
-      // Reporters
+      // レポーター
       reporter: ['text', 'json', 'html'],
       
-      // Files to include
+      // 含めるファイル
       include: ['src/**/*.{ts,tsx}'],
       
-      // Files to exclude
+      // 除外するファイル
       exclude: [
         'node_modules/',
         'tests/',
@@ -39,10 +39,10 @@ defineConfig({
         '**/*.test.ts',
       ],
       
-      // Report uncovered files
+      // 未カバーのファイルもレポート
       all: true,
       
-      // Thresholds
+      // 閾値
       thresholds: {
         lines: 80,
         functions: 80,
@@ -54,17 +54,17 @@ defineConfig({
 })
 ```
 
-## Providers
+## プロバイダー
 
-### V8 (Default)
+### V8 (デフォルト)
 
 ```bash
 npm i -D @vitest/coverage-v8
 ```
 
-- Faster, no pre-instrumentation
-- Uses V8's native coverage
-- Recommended for most projects
+- 高速、事前インストルメント不要
+- V8 ネイティブの coverage を利用
+- 多くのプロジェクトで推奨
 
 ### Istanbul
 
@@ -72,49 +72,49 @@ npm i -D @vitest/coverage-v8
 npm i -D @vitest/coverage-istanbul
 ```
 
-- Pre-instruments code
-- Works in any JS runtime
-- More overhead but widely compatible
+- コードを事前にインストルメントする
+- 任意の JS ランタイムで動作する
+- オーバーヘッドは大きいが互換性が高い
 
-## Reporters
+## レポーター
 
 ```ts
 coverage: {
   reporter: [
-    'text',           // Terminal output
-    'text-summary',   // Summary only
-    'json',           // JSON file
-    'html',           // HTML report
-    'lcov',           // For CI tools
-    'cobertura',      // XML format
+    'text',           // ターミナル出力
+    'text-summary',   // サマリーのみ
+    'json',           // JSON ファイル
+    'html',           // HTML レポート
+    'lcov',           // CI ツール向け
+    'cobertura',      // XML 形式
   ],
   reportsDirectory: './coverage',
 }
 ```
 
-## Thresholds
+## 閾値
 
-Fail tests if coverage is below threshold:
+閾値を下回るとテストを失敗させる:
 
 ```ts
 coverage: {
   thresholds: {
-    // Global thresholds
+    // グローバル閾値
     lines: 80,
     functions: 75,
     branches: 70,
     statements: 80,
     
-    // Per-file thresholds
+    // ファイル単位の閾値
     perFile: true,
     
-    // Auto-update thresholds (for gradual improvement)
+    // 閾値の自動更新 (段階的改善向け)
     autoUpdate: true,
   },
 }
 ```
 
-## Ignoring Code
+## コードを無視する
 
 ### V8
 
@@ -125,7 +125,7 @@ function ignored() {
 }
 
 /* v8 ignore start -- @preserve */
-// All code here ignored
+// この範囲のコードを無視する
 /* v8 ignore stop -- @preserve */
 ```
 
@@ -137,13 +137,13 @@ function ignored() {}
 
 /* istanbul ignore if -- @preserve */
 if (condition) {
-  // ignored
+  // 無視される
 }
 ```
 
-Note: `@preserve` keeps comments through esbuild.
+注: `@preserve` を付けると esbuild でもコメントが保持される。
 
-## Package.json Scripts
+## Package.json のスクリプト
 
 ```json
 {
@@ -155,9 +155,9 @@ Note: `@preserve` keeps comments through esbuild.
 }
 ```
 
-## Vitest UI Coverage
+## Vitest UI のカバレッジ
 
-Enable HTML coverage in Vitest UI:
+Vitest UI で HTML カバレッジを有効化する:
 
 ```ts
 coverage: {
@@ -166,9 +166,9 @@ coverage: {
 }
 ```
 
-Run with `vitest --ui` to view coverage visually.
+`vitest --ui` で起動するとカバレッジをビジュアルに確認できる。
 
-## CI Integration
+## CI 連携
 
 ```yaml
 # GitHub Actions
@@ -181,9 +181,9 @@ Run with `vitest --ui` to view coverage visually.
     files: ./coverage/lcov.info
 ```
 
-## Coverage with Sharding
+## シャーディングとの併用
 
-Merge coverage from sharded runs:
+シャード実行のカバレッジをマージする:
 
 ```bash
 vitest run --shard=1/3 --coverage --reporter=blob
@@ -193,13 +193,13 @@ vitest run --shard=3/3 --coverage --reporter=blob
 vitest --merge-reports --coverage --reporter=json
 ```
 
-## Key Points
+## 要点
 
-- V8 is faster, Istanbul is more compatible
-- Use `--coverage` flag or `coverage.enabled: true`
-- Include `all: true` to see uncovered files
-- Set thresholds to enforce minimum coverage
-- Use `@preserve` comment to keep ignore hints
+- V8 は高速、Istanbul は互換性が高い
+- `--coverage` フラグまたは `coverage.enabled: true` を利用する
+- 未カバーのファイルも見たい場合は `all: true` を指定する
+- 最低カバレッジを強制するには閾値を設定する
+- ignore コメントを保持するには `@preserve` を付ける
 
 <!-- 
 Source references:

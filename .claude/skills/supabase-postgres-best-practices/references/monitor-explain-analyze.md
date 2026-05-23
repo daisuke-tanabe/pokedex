@@ -1,29 +1,29 @@
 ---
 title: Use EXPLAIN ANALYZE to Diagnose Slow Queries
 impact: LOW-MEDIUM
-impactDescription: Identify exact bottlenecks in query execution
+impactDescription: クエリ実行のボトルネックを正確に特定できる
 tags: explain, analyze, diagnostics, query-plan
 ---
 
 ## Use EXPLAIN ANALYZE to Diagnose Slow Queries
 
-EXPLAIN ANALYZE executes the query and shows actual timings, revealing the true performance bottlenecks.
+EXPLAIN ANALYZE は実際にクエリを実行し、実測時間を出力するため、本当のパフォーマンスのボトルネックを明らかにできる。
 
-**Incorrect (guessing at performance issues):**
+**誤り (パフォーマンス問題を勘で推測する):**
 
 ```sql
--- Query is slow, but why?
+-- クエリが遅いが、原因が分からない
 select * from orders where customer_id = 123 and status = 'pending';
--- "It must be missing an index" - but which one?
+-- 「インデックスが足りないはず」 - だがどのカラム?
 ```
 
-**Correct (use EXPLAIN ANALYZE):**
+**正しい例 (EXPLAIN ANALYZE を使う):**
 
 ```sql
 explain (analyze, buffers, format text)
 select * from orders where customer_id = 123 and status = 'pending';
 
--- Output reveals the issue:
+-- 出力例から問題が分かる:
 -- Seq Scan on orders (cost=0.00..25000.00 rows=50 width=100) (actual time=0.015..450.123 rows=50 loops=1)
 --   Filter: ((customer_id = 123) AND (status = 'pending'::text))
 --   Rows Removed by Filter: 999950
@@ -32,14 +32,14 @@ select * from orders where customer_id = 123 and status = 'pending';
 -- Execution Time: 450.500 ms
 ```
 
-Key things to look for:
+注目すべきポイント:
 
 ```sql
--- Seq Scan on large tables = missing index
--- Rows Removed by Filter = poor selectivity or missing index
--- Buffers: read >> hit = data not cached, needs more memory
--- Nested Loop with high loops = consider different join strategy
--- Sort Method: external merge = work_mem too low
+-- 大きなテーブルでの Seq Scan = インデックス不足
+-- Rows Removed by Filter = 選択性が低い、もしくはインデックス不足
+-- Buffers: read >> hit = データがキャッシュされておらず、メモリ不足
+-- ループ回数の多い Nested Loop = 別の join 戦略を検討する
+-- Sort Method: external merge = work_mem が不足している
 ```
 
 Reference: [EXPLAIN](https://supabase.com/docs/guides/database/inspect)

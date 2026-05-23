@@ -7,9 +7,9 @@ tags: client, swr, deduplication, data-fetching
 
 ## Use SWR for Automatic Deduplication
 
-SWR enables request deduplication, caching, and revalidation across component instances.
+SWR を使うと、コンポーネントインスタンスをまたいだリクエストの重複排除、キャッシュ、再検証ができる。
 
-**Incorrect (no deduplication, each instance fetches):**
+**Incorrect (重複排除なし、各インスタンスが fetch する):**
 
 ```tsx
 function UserList() {
@@ -22,7 +22,7 @@ function UserList() {
 }
 ```
 
-**Correct (multiple instances share one request):**
+**Correct (複数インスタンスが 1 つのリクエストを共有する):**
 
 ```tsx
 import useSWR from 'swr'
@@ -32,7 +32,7 @@ function UserList() {
 }
 ```
 
-**For immutable data:**
+**イミュータブルなデータの場合:**
 
 ```tsx
 import { useImmutableSWR } from '@/lib/swr'
@@ -42,7 +42,7 @@ function StaticContent() {
 }
 ```
 
-**For mutations:**
+**ミューテーションの場合:**
 
 ```tsx
 import { useSWRMutation } from 'swr/mutation'

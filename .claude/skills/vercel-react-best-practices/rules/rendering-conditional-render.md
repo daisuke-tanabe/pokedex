@@ -7,9 +7,9 @@ tags: rendering, conditional, jsx, falsy-values
 
 ## Use Explicit Conditional Rendering
 
-Use explicit ternary operators (`? :`) instead of `&&` for conditional rendering when the condition can be `0`, `NaN`, or other falsy values that render.
+条件分岐の値が `0` や `NaN` などレンダリングされる falsy 値になり得る場合は、`&&` ではなく三項演算子 (`? :`) を使って明示する。
 
-**Incorrect (renders "0" when count is 0):**
+**Incorrect (count が 0 のときに "0" が描画される):**
 
 ```tsx
 function Badge({ count }: { count: number }) {
@@ -20,11 +20,11 @@ function Badge({ count }: { count: number }) {
   )
 }
 
-// When count = 0, renders: <div>0</div>
-// When count = 5, renders: <div><span class="badge">5</span></div>
+// count = 0 のとき: <div>0</div>
+// count = 5 のとき: <div><span class="badge">5</span></div>
 ```
 
-**Correct (renders nothing when count is 0):**
+**Correct (count が 0 のときは何も描画されない):**
 
 ```tsx
 function Badge({ count }: { count: number }) {
@@ -35,6 +35,6 @@ function Badge({ count }: { count: number }) {
   )
 }
 
-// When count = 0, renders: <div></div>
-// When count = 5, renders: <div><span class="badge">5</span></div>
+// count = 0 のとき: <div></div>
+// count = 5 のとき: <div><span class="badge">5</span></div>
 ```

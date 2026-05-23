@@ -7,17 +7,17 @@ tags: rerender, components, remount, performance
 
 ## Don't Define Components Inside Components
 
-**Impact: HIGH (prevents remount on every render)**
+**Impact: HIGH (毎レンダーでの再マウントを防ぐ)**
 
-Defining a component inside another component creates a new component type on every render. React sees a different component each time and fully remounts it, destroying all state and DOM.
+別のコンポーネント内でコンポーネントを定義すると、毎レンダーで新しいコンポーネント型が生成される。React からは毎回別のコンポーネントに見えるため完全に再マウントされ、state も DOM もすべて失われる。
 
-A common reason developers do this is to access parent variables without passing props. Always pass props instead.
+開発者がこれを行う典型的な理由は、props を渡さずに親の変数へアクセスしたい、というもの。常に props を渡す形にする。
 
-**Incorrect (remounts on every render):**
+**Incorrect (毎レンダーで再マウントされる):**
 
 ```tsx
 function UserProfile({ user, theme }) {
-  // Defined inside to access `theme` - BAD
+  // `theme` にアクセスしたいので中で定義 - 悪い
   const Avatar = () => (
     <img
       src={user.avatarUrl}
@@ -25,7 +25,7 @@ function UserProfile({ user, theme }) {
     />
   )
 
-  // Defined inside to access `user` - BAD
+  // `user` にアクセスしたいので中で定義 - 悪い
   const Stats = () => (
     <div>
       <span>{user.followers} followers</span>
@@ -42,9 +42,9 @@ function UserProfile({ user, theme }) {
 }
 ```
 
-Every time `UserProfile` renders, `Avatar` and `Stats` are new component types. React unmounts the old instances and mounts new ones, losing any internal state, running effects again, and recreating DOM nodes.
+`UserProfile` がレンダリングされるたびに、`Avatar` と `Stats` は毎回新しいコンポーネント型になる。React は古いインスタンスを unmount して新しいものをマウントするため、内部 state は失われ、effect が再実行され、DOM ノードも作り直される。
 
-**Correct (pass props instead):**
+**Correct (代わりに props で渡す):**
 
 ```tsx
 function Avatar({ src, theme }: { src: string; theme: string }) {
@@ -75,8 +75,8 @@ function UserProfile({ user, theme }) {
 }
 ```
 
-**Symptoms of this bug:**
-- Input fields lose focus on every keystroke
-- Animations restart unexpectedly
-- `useEffect` cleanup/setup runs on every parent render
-- Scroll position resets inside the component
+**このバグの兆候:**
+- 入力欄が 1 文字入力するたびにフォーカスを失う
+- アニメーションが突然リスタートする
+- 親が再レンダリングされるたびに `useEffect` の cleanup/setup が走る
+- コンポーネント内のスクロール位置がリセットされる

@@ -1,16 +1,16 @@
-# Skill Feedback
+# スキルへのフィードバック
 
-Use this when the user reports that the skill gave incorrect guidance, is missing information, or could be improved. This is about the skill (agent instructions), not about Supabase the product.
+このスキルが誤った案内をした、情報が不足している、または改善できるとユーザーが報告した場合に使用する。対象はスキル（エージェントへの指示）であり、Supabase というプロダクト自体ではない。
 
-## Steps
+## 手順
 
-1. **Ask permission** — Ask the user if they'd like to submit feedback to the skill maintainers. If they decline, move on.
+1. **許可を取る** — スキルメンテナにフィードバックを送ってよいかユーザーに確認する。断られた場合はそのまま次の作業に進む。
 
-2. **Draft the issue** — Use the template at [assets/feedback-issue-template.md](../assets/feedback-issue-template.md) to structure the feedback. Fill in the fields based on the conversation. Always identify which specific reference file and section caused the problem.
+2. **イシュー本文を起案する** — [assets/feedback-issue-template.md](../assets/feedback-issue-template.md) のテンプレートに従ってフィードバックを構成する。会話内容に基づいて各項目を埋める。問題の原因となった具体的なリファレンスファイルとセクションを必ず特定する。
 
-3. **Submit** — Create a GitHub Issue on the `supabase/agent-skills` repository using the draft as the issue body. The title must follow this format: `user-feedback: <summary of the problem>`.
+3. **送信する** — 起案した内容を本文として、`supabase/agent-skills` リポジトリに GitHub Issue を作成する。タイトルは次のフォーマットに従う: `user-feedback: <summary of the problem>`。
 
-4. **Share the result** — Share the issue URL with the user after submission. If submission fails, give the user this link to create the issue manually:
+4. **結果を共有する** — 送信後、作成された Issue の URL をユーザーに共有する。送信に失敗した場合は、以下のリンクを案内し、手動で Issue を作成してもらう:
 
 ```
 https://github.com/supabase/agent-skills/issues/new

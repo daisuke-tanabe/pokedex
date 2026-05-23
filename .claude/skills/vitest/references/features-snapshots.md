@@ -1,13 +1,13 @@
 ---
 name: snapshot-testing
-description: Snapshot testing with file, inline, and file snapshots
+description: ファイル、インライン、ファイルスナップショットによるスナップショットテスト
 ---
 
-# Snapshot Testing
+# スナップショットテスト
 
-Snapshot tests capture output and compare against stored references.
+スナップショットテストでは出力をキャプチャし、保存された参照と比較する。
 
-## Basic Snapshot
+## 基本のスナップショット
 
 ```ts
 import { expect, test } from 'vitest'
@@ -18,7 +18,7 @@ test('snapshot', () => {
 })
 ```
 
-First run creates `.snap` file:
+初回実行時に `.snap` ファイルが作成される:
 
 ```js
 // __snapshots__/test.spec.ts.snap
@@ -30,9 +30,9 @@ exports['snapshot 1'] = `
 `
 ```
 
-## Inline Snapshots
+## インラインスナップショット
 
-Stored directly in test file:
+テストファイル内に直接保存される:
 
 ```ts
 test('inline snapshot', () => {
@@ -41,7 +41,7 @@ test('inline snapshot', () => {
 })
 ```
 
-Vitest updates the test file:
+Vitest がテストファイルを更新する:
 
 ```ts
 test('inline snapshot', () => {
@@ -54,9 +54,9 @@ test('inline snapshot', () => {
 })
 ```
 
-## File Snapshots
+## ファイルスナップショット
 
-Compare against explicit file:
+明示的なファイルと比較する:
 
 ```ts
 test('render html', async () => {
@@ -65,9 +65,9 @@ test('render html', async () => {
 })
 ```
 
-## Snapshot Hints
+## スナップショットのヒント
 
-Add descriptive hints:
+説明的なヒントを追加できる:
 
 ```ts
 test('multiple snapshots', () => {
@@ -77,9 +77,9 @@ test('multiple snapshots', () => {
 })
 ```
 
-## Object Shape Matching
+## オブジェクト形状のマッチング
 
-Match partial structure:
+部分構造でマッチする:
 
 ```ts
 test('shape snapshot', () => {
@@ -96,7 +96,7 @@ test('shape snapshot', () => {
 })
 ```
 
-## Error Snapshots
+## エラーのスナップショット
 
 ```ts
 test('error message', () => {
@@ -112,19 +112,19 @@ test('inline error', () => {
 })
 ```
 
-## Updating Snapshots
+## スナップショットの更新
 
 ```bash
-# Update all snapshots
+# すべてのスナップショットを更新
 vitest -u
 vitest --update
 
-# In watch mode, press 'u' to update failed snapshots
+# watch モードでは 'u' を押すと失敗したスナップショットを更新
 ```
 
-## Custom Serializers
+## カスタムシリアライザー
 
-Add custom snapshot formatting:
+スナップショットのフォーマットをカスタマイズする:
 
 ```ts
 expect.addSnapshotSerializer({
@@ -137,7 +137,7 @@ expect.addSnapshotSerializer({
 })
 ```
 
-Or via config:
+config 経由でも指定可能:
 
 ```ts
 // vitest.config.ts
@@ -148,22 +148,22 @@ defineConfig({
 })
 ```
 
-## Snapshot Format Options
+## スナップショットのフォーマットオプション
 
 ```ts
 defineConfig({
   test: {
     snapshotFormat: {
-      printBasicPrototype: false, // Don't print Array/Object prototypes
+      printBasicPrototype: false, // Array / Object のプロトタイプを出力しない
       escapeString: false,
     },
   },
 })
 ```
 
-## Concurrent Test Snapshots
+## Concurrent テストのスナップショット
 
-Use context's expect:
+context の expect を使う:
 
 ```ts
 test.concurrent('concurrent 1', async ({ expect }) => {
@@ -175,11 +175,11 @@ test.concurrent('concurrent 2', async ({ expect }) => {
 })
 ```
 
-## Snapshot File Location
+## スナップショットファイルの場所
 
-Default: `__snapshots__/<test-file>.snap`
+デフォルト: `__snapshots__/<test-file>.snap`
 
-Customize:
+カスタマイズ:
 
 ```ts
 defineConfig({
@@ -191,14 +191,14 @@ defineConfig({
 })
 ```
 
-## Key Points
+## 要点
 
-- Commit snapshot files to version control
-- Review snapshot changes in code review
-- Use hints for multiple snapshots in one test
-- Use `toMatchFileSnapshot` for large outputs (HTML, JSON)
-- Inline snapshots auto-update in test file
-- Use context's `expect` for concurrent tests
+- スナップショットファイルはバージョン管理にコミットする
+- コードレビューでスナップショットの変更を確認する
+- 1 つのテストで複数のスナップショットを使うときはヒントを付ける
+- 大きな出力 (HTML、JSON) には `toMatchFileSnapshot` を使う
+- インラインスナップショットはテストファイル内で自動更新される
+- concurrent テストでは context の `expect` を使う
 
 <!-- 
 Source references:

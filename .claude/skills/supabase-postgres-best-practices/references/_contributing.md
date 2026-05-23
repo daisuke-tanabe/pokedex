@@ -1,21 +1,18 @@
-# Writing Guidelines for Postgres References
+# Postgres リファレンスの執筆ガイドライン
 
-This document provides guidelines for creating effective Postgres best
-practice references that work well with AI agents and LLMs.
+このドキュメントでは、AI エージェントや LLM とうまく連動する Postgres ベストプラクティスのリファレンスを作成するためのガイドラインを示す。
 
-## Key Principles
+## 主要な原則
 
-### 1. Concrete Transformation Patterns
+### 1. 具体的な変換パターン
 
-Show exact SQL rewrites. Avoid philosophical advice.
+SQL の書き換え例を具体的に示すこと。抽象的なアドバイスは避ける。
 
-**Good:** "Use `WHERE id = ANY(ARRAY[...])` instead of
-`WHERE id IN (SELECT ...)`" **Bad:** "Design good schemas"
+**良い例:** "`WHERE id IN (SELECT ...)` ではなく `WHERE id = ANY(ARRAY[...])` を使う" **悪い例:** "良いスキーマを設計する"
 
-### 2. Error-First Structure
+### 2. エラー優先の構造
 
-Always show the problematic pattern first, then the solution. This trains agents
-to recognize anti-patterns.
+必ず問題となるパターンを先に示し、その後で解決策を提示する。これによりエージェントはアンチパターンを認識しやすくなる。
 
 ```markdown
 **Incorrect (sequential queries):** [bad example]
@@ -23,82 +20,81 @@ to recognize anti-patterns.
 **Correct (batched query):** [good example]
 ```
 
-### 3. Quantified Impact
+### 3. 効果を定量化する
 
-Include specific metrics. Helps agents prioritize fixes.
+具体的なメトリクスを含める。これによりエージェントが優先順位を判断しやすくなる。
 
-**Good:** "10x faster queries", "50% smaller index", "Eliminates N+1" 
-**Bad:** "Faster", "Better", "More efficient"
+**良い例:** "クエリが 10 倍高速化"、"インデックスサイズが 50% 縮小"、"N+1 を解消"
+**悪い例:** "速い"、"良い"、"効率的"
 
-### 4. Self-Contained Examples
+### 4. 自己完結した例
 
-Examples should be complete and runnable (or close to it). Include `CREATE TABLE`
-if context is needed.
+例は完結していて、そのまま実行できる (もしくはそれに近い) 形にする。文脈に必要であれば `CREATE TABLE` も含める。
 
 ```sql
--- Include table definition when needed for clarity
+-- 必要であればテーブル定義も含めて明確にする
 CREATE TABLE users (
   id bigint PRIMARY KEY,
   email text NOT NULL,
   deleted_at timestamptz
 );
 
--- Now show the index
+-- そのうえでインデックスを示す
 CREATE INDEX users_active_email_idx ON users(email) WHERE deleted_at IS NULL;
 ```
 
-### 5. Semantic Naming
+### 5. 意味のある命名
 
-Use meaningful table/column names. Names carry intent for LLMs.
+意味の伝わるテーブル名・カラム名を使う。LLM にとって名前は意図を表す重要な手がかりとなる。
 
-**Good:** `users`, `email`, `created_at`, `is_active`
-**Bad:** `table1`, `col1`, `field`, `flag`
+**良い例:** `users`, `email`, `created_at`, `is_active`
+**悪い例:** `table1`, `col1`, `field`, `flag`
 
 ---
 
-## Code Example Standards
+## コード例の規約
 
-### SQL Formatting
+### SQL のフォーマット
 
 ```sql
--- Use lowercase keywords, clear formatting
+-- キーワードは小文字にし、フォーマットを明瞭に
 CREATE INDEX CONCURRENTLY users_email_idx
   ON users(email)
   WHERE deleted_at IS NULL;
 
--- Not cramped or ALL CAPS
+-- 詰めすぎや ALL CAPS にしない
 CREATE INDEX CONCURRENTLY USERS_EMAIL_IDX ON USERS(EMAIL) WHERE DELETED_AT IS NULL;
 ```
 
-### Comments
+### コメント
 
-- Explain _why_, not _what_
-- Highlight performance implications
-- Point out common pitfalls
+- _なぜ_ そうするのかを説明する。_何_ をしているかではない
+- パフォーマンスへの影響を強調する
+- よくある落とし穴を指摘する
 
-### Language Tags
+### 言語タグ
 
-- `sql` - Standard SQL queries
-- `plpgsql` - Stored procedures/functions
-- `typescript` - Application code (when needed)
-- `python` - Application code (when needed)
+- `sql` - 通常の SQL クエリ
+- `plpgsql` - ストアドプロシージャ／関数
+- `typescript` - アプリケーションコード（必要な場合）
+- `python` - アプリケーションコード（必要な場合）
 
 ---
 
-## When to Include Application Code
+## アプリケーションコードを含めるべきとき
 
-**Default: SQL Only**
+**デフォルト: SQL のみ**
 
-Most references should focus on pure SQL patterns. This keeps examples portable.
+ほとんどのリファレンスは純粋な SQL パターンに集中させる。これにより例の汎用性が保たれる。
 
-**Include Application Code When:**
+**アプリケーションコードを含めるケース:**
 
-- Connection pooling configuration
-- Transaction management in application context
-- ORM anti-patterns (N+1 in Prisma/TypeORM)
-- Prepared statement usage
+- connection pool の設定
+- アプリケーション文脈でのトランザクション管理
+- ORM のアンチパターン (Prisma/TypeORM の N+1 など)
+- prepared statement の利用
 
-**Format for Mixed Examples:**
+**混在する例のフォーマット:**
 
 ````markdown
 **Incorrect (N+1 in application):**
@@ -122,29 +118,29 @@ const posts = await db.query("SELECT * FROM posts WHERE user_id = ANY($1)", [
 
 ---
 
-## Impact Level Guidelines
+## 影響度のガイドライン
 
-| Level | Improvement | Use When |
+| レベル | 改善幅 | 利用シーン |
 |-------|-------------|----------|
-| **CRITICAL** | 10-100x | Missing indexes, connection exhaustion, sequential scans on large tables |
-| **HIGH** | 5-20x | Wrong index types, poor partitioning, missing covering indexes |
-| **MEDIUM-HIGH** | 2-5x | N+1 queries, inefficient pagination, RLS optimization |
-| **MEDIUM** | 1.5-3x | Redundant indexes, query plan instability |
-| **LOW-MEDIUM** | 1.2-2x | VACUUM tuning, configuration tweaks |
-| **LOW** | Incremental | Advanced patterns, edge cases |
+| **CRITICAL** | 10〜100 倍 | インデックス欠落、コネクション枯渇、大規模テーブルでの sequential scan |
+| **HIGH** | 5〜20 倍 | インデックスタイプの誤り、不適切な partitioning、covering index の欠落 |
+| **MEDIUM-HIGH** | 2〜5 倍 | N+1 クエリ、非効率なページネーション、RLS の最適化 |
+| **MEDIUM** | 1.5〜3 倍 | 冗長なインデックス、クエリプランの不安定さ |
+| **LOW-MEDIUM** | 1.2〜2 倍 | VACUUM のチューニング、設定の微調整 |
+| **LOW** | 局所的 | 発展的なパターン、エッジケース |
 
 ---
 
-## Reference Standards
+## 参考資料の基準
 
-**Primary Sources:**
+**主要なソース:**
 
-- Official Postgres documentation
-- Supabase documentation
+- Postgres 公式ドキュメント
+- Supabase 公式ドキュメント
 - Postgres wiki
-- Established blogs (2ndQuadrant, Crunchy Data)
+- 信頼できるブログ (2ndQuadrant、Crunchy Data など)
 
-**Format:**
+**フォーマット:**
 
 ```markdown
 Reference:
@@ -153,18 +149,18 @@ Reference:
 
 ---
 
-## Review Checklist
+## レビューチェックリスト
 
-Before submitting a reference:
+リファレンスを提出する前に確認すること。
 
-- [ ] Title is clear and action-oriented
-- [ ] Impact level matches the performance gain
-- [ ] impactDescription includes quantification
-- [ ] Explanation is concise (1-2 sentences)
-- [ ] Has at least 1 **Incorrect** SQL example
-- [ ] Has at least 1 **Correct** SQL example
-- [ ] SQL uses semantic naming
-- [ ] Comments explain _why_, not _what_
-- [ ] Trade-offs mentioned if applicable
-- [ ] Reference links included
-- [ ] `pnpm test` passes
+- [ ] タイトルが明瞭かつアクション指向になっている
+- [ ] 影響度（impact）がパフォーマンス改善幅と一致している
+- [ ] impactDescription に定量的な指標が含まれている
+- [ ] 説明が簡潔である (1〜2 文)
+- [ ] **Incorrect** な SQL 例が少なくとも 1 つある
+- [ ] **Correct** な SQL 例が少なくとも 1 つある
+- [ ] SQL が意味のある命名になっている
+- [ ] コメントが _なぜ_ を説明していて、_何_ を説明していない
+- [ ] 必要に応じてトレードオフに触れている
+- [ ] 参考リンクが含まれている
+- [ ] `pnpm test` が通る

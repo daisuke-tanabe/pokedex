@@ -1,29 +1,29 @@
 ---
 name: pnpm-configuration
-description: Configuration options via pnpm-workspace.yaml and .npmrc settings
+description: pnpm-workspace.yaml と .npmrc を用いた設定オプション
 ---
 
-# pnpm Configuration
+# pnpm の設定
 
-pnpm uses two main configuration files: `pnpm-workspace.yaml` for workspace and pnpm-specific settings, and `.npmrc` for npm-compatible and pnpm-specific settings.
+pnpm では、workspace と pnpm 固有の設定を記述する `pnpm-workspace.yaml` と、npm 互換および pnpm 固有の設定を記述する `.npmrc` という、2 つの主要な設定ファイルを利用する。
 
 ## pnpm-workspace.yaml
 
-The recommended location for pnpm-specific configurations. Place at project root.
+pnpm 固有の設定の推奨配置先。プロジェクトのルートに置く。
 
 ```yaml
-# Define workspace packages
+# workspace パッケージの定義
 packages:
   - 'packages/*'
   - 'apps/*'
-  - '!**/test/**'  # Exclude pattern
+  - '!**/test/**'  # 除外パターン
 
-# Catalog for shared dependency versions
+# 共有する依存バージョンの catalog
 catalog:
   react: ^18.2.0
   typescript: ~5.3.0
 
-# Named catalogs for different dependency groups
+# 依存グループ別の名前付き catalog
 catalogs:
   react17:
     react: ^17.0.2
@@ -32,12 +32,12 @@ catalogs:
     react: ^18.2.0
     react-dom: ^18.2.0
 
-# Override resolutions (preferred location)
+# 解決結果の override (推奨配置先)
 overrides:
   lodash: ^4.17.21
   'foo@^1.0.0>bar': ^2.0.0
 
-# pnpm settings (alternative to .npmrc)
+# pnpm 設定 (.npmrc の代替)
 settings:
   auto-install-peers: true
   strict-peer-dependencies: false
@@ -46,108 +46,108 @@ settings:
   shared-workspace-lockfile: true
 ```
 
-## .npmrc Settings
+## .npmrc の設定
 
-pnpm reads settings from `.npmrc` files. Create at project root or user home.
+pnpm は `.npmrc` から設定を読み込む。プロジェクトのルートまたはユーザーホームに作成する。
 
-### Common pnpm Settings
+### よく使う pnpm 設定
 
 ```ini
-# Automatically install peer dependencies
+# peer dependency を自動インストール
 auto-install-peers=true
 
-# Fail on peer dependency issues
+# peer dependency 問題で失敗させる
 strict-peer-dependencies=false
 
-# Hoist patterns for dependencies
+# 依存の hoist パターン
 public-hoist-pattern[]=*types*
 public-hoist-pattern[]=*eslint*
 shamefully-hoist=false
 
-# Store location
+# store の場所
 store-dir=~/.pnpm-store
 
-# Virtual store location  
+# 仮想 store の場所
 virtual-store-dir=node_modules/.pnpm
 
-# Lockfile settings
+# lockfile 関連
 lockfile=true
 prefer-frozen-lockfile=true
 
-# Side effects cache (speeds up rebuilds)
+# 副作用キャッシュ (再ビルドを高速化)
 side-effects-cache=true
 
-# Registry settings
+# レジストリ設定
 registry=https://registry.npmjs.org/
 @myorg:registry=https://npm.myorg.com/
 ```
 
-### Workspace Settings
+### Workspace 関連の設定
 
 ```ini
-# Link workspace packages
+# workspace パッケージをリンク
 link-workspace-packages=true
 
-# Prefer workspace packages over registry
+# レジストリより workspace パッケージを優先
 prefer-workspace-packages=true
 
-# Single lockfile for all packages
+# すべてのパッケージで単一の lockfile を共有
 shared-workspace-lockfile=true
 
-# Save prefix for workspace dependencies
+# workspace 依存の save prefix
 save-workspace-protocol=rolling
 ```
 
-### Node.js Settings
+### Node.js 関連の設定
 
 ```ini
-# Use specific Node.js version
+# 特定の Node.js バージョンを使用
 use-node-version=20.10.0
 
-# Node.js version file
+# Node.js バージョンファイル
 node-version-file=.nvmrc
 
-# Manage Node.js versions
+# Node.js のバージョン管理
 manage-package-manager-versions=true
 ```
 
-### Security Settings
+### セキュリティ関連の設定
 
 ```ini
-# Ignore specific scripts
+# 特定スクリプトを無視
 ignore-scripts=false
 
-# Allow specific build scripts
+# 特定のビルドスクリプトのみ許可
 onlyBuiltDependencies[]=esbuild
 onlyBuiltDependencies[]=sharp
 
-# Package extensions for missing peer deps
+# 不足する peer dependency を補う package extensions
 package-extensions[foo@1].peerDependencies.bar=*
 ```
 
-## Configuration Hierarchy
+## 設定の優先順位
 
-Settings are read in order (later overrides earlier):
+設定は次の順に読み込まれ、後のものが先のものを上書きする。
 
-1. `/etc/npmrc` - Global config
-2. `~/.npmrc` - User config  
-3. `<project>/.npmrc` - Project config
-4. Environment variables: `npm_config_<key>=<value>`
-5. `pnpm-workspace.yaml` settings field
+1. `/etc/npmrc` — グローバル設定
+2. `~/.npmrc` — ユーザー設定
+3. `<project>/.npmrc` — プロジェクト設定
+4. 環境変数: `npm_config_<key>=<value>`
+5. `pnpm-workspace.yaml` の settings フィールド
 
-## Environment Variables
+## 環境変数
 
 ```bash
-# Set config via env
+# 環境変数経由で設定
 npm_config_registry=https://registry.npmjs.org/
 
-# pnpm-specific env vars
+# pnpm 固有の環境変数
 PNPM_HOME=~/.local/share/pnpm
 ```
 
-## Package.json Fields
+## package.json のフィールド
 
-pnpm reads specific fields from `package.json`:
+pnpm は `package.json` の特定フィールドを読み取る。
 
 ```json
 {
@@ -173,14 +173,14 @@ pnpm reads specific fields from `package.json`:
 }
 ```
 
-## Key Differences from npm/yarn
+## npm/yarn との主な違い
 
-1. **Strict by default**: No phantom dependencies
-2. **Workspace protocol**: `workspace:*` for local packages
-3. **Catalogs**: Centralized version management
-4. **Content-addressable store**: Shared across projects
+1. **デフォルトで strict**: phantom dependency を許容しない
+2. **Workspace protocol**: ローカルパッケージに `workspace:*` を使用
+3. **Catalogs**: バージョンを一元管理
+4. **コンテンツアドレス指定 store**: プロジェクト間で共有される
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/pnpm-workspace_yaml
 - https://pnpm.io/npmrc

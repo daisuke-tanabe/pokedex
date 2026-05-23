@@ -1,41 +1,41 @@
 ---
 title: Set Appropriate Connection Limits
 impact: CRITICAL
-impactDescription: Prevent database crashes and memory exhaustion
+impactDescription: データベースのクラッシュやメモリ枯渇を防ぐ
 tags: connections, max-connections, limits, stability
 ---
 
 ## Set Appropriate Connection Limits
 
-Too many connections exhaust memory and degrade performance. Set limits based on available resources.
+接続数が多すぎるとメモリを使い切り、パフォーマンスが低下する。利用可能リソースに応じて上限を設定する。
 
-**Incorrect (unlimited or excessive connections):**
+**誤り (接続数の上限がない、または過剰):**
 
 ```sql
--- Default max_connections = 100, but often increased blindly
-show max_connections;  -- 500 (way too high for 4GB RAM)
+-- デフォルトの max_connections は 100 だが、安易に増やされがち
+show max_connections;  -- 500 (4GB RAM では多すぎる)
 
--- Each connection uses 1-3MB RAM
--- 500 connections * 2MB = 1GB just for connections!
--- Out of memory errors under load
+-- 1 接続あたり 1〜3MB のメモリを消費
+-- 500 接続 × 2MB = 接続だけで 1GB を消費!
+-- 高負荷時にメモリ不足エラーになる
 ```
 
-**Correct (calculate based on resources):**
+**正しい例 (リソースを元に算出する):**
 
 ```sql
--- Formula: max_connections = (RAM in MB / 5MB per connection) - reserved
--- For 4GB RAM: (4096 / 5) - 10 = ~800 theoretical max
--- But practically, 100-200 is better for query performance
+-- 計算式: max_connections = (RAM のメガバイト / 接続あたり 5MB) - 予約分
+-- 4GB RAM の場合: (4096 / 5) - 10 = 理論上は約 800 が上限
+-- 実用上はクエリ性能の観点から 100〜200 が望ましい
 
--- Recommended settings for 4GB RAM
+-- 4GB RAM 向けの推奨設定
 alter system set max_connections = 100;
 
--- Also set work_mem appropriately
--- work_mem * max_connections should not exceed 25% of RAM
-alter system set work_mem = '8MB';  -- 8MB * 100 = 800MB max
+-- work_mem も併せて適切に設定する
+-- work_mem × max_connections が RAM の 25% を超えないようにする
+alter system set work_mem = '8MB';  -- 8MB × 100 = 最大 800MB
 ```
 
-Monitor connection usage:
+接続数の利用状況を監視する:
 
 ```sql
 select count(*), state from pg_stat_activity group by state;

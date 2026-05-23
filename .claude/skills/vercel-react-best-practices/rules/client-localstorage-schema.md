@@ -7,12 +7,12 @@ tags: client, localStorage, storage, versioning, data-minimization
 
 ## Version and Minimize localStorage Data
 
-Add version prefix to keys and store only needed fields. Prevents schema conflicts and accidental storage of sensitive data.
+キーにバージョン接頭辞を付け、必要なフィールドだけを保存する。スキーマ衝突や機微情報の誤保存を防げる。
 
 **Incorrect:**
 
 ```typescript
-// No version, stores everything, no error handling
+// バージョンなし、すべてを保存、エラーハンドリングなし
 localStorage.setItem('userConfig', JSON.stringify(fullUserObject))
 const data = localStorage.getItem('userConfig')
 ```
@@ -26,7 +26,7 @@ function saveConfig(config: { theme: string; language: string }) {
   try {
     localStorage.setItem(`userConfig:${VERSION}`, JSON.stringify(config))
   } catch {
-    // Throws in incognito/private browsing, quota exceeded, or disabled
+    // シークレットブラウジング、容量超過、無効化されているケースでは throw する
   }
 }
 
@@ -39,7 +39,7 @@ function loadConfig() {
   }
 }
 
-// Migration from v1 to v2
+// v1 から v2 へのマイグレーション
 function migrate() {
   try {
     const v1 = localStorage.getItem('userConfig:v1')
@@ -52,10 +52,10 @@ function migrate() {
 }
 ```
 
-**Store minimal fields from server responses:**
+**サーバーレスポンスからは最小限のフィールドだけを保存する:**
 
 ```typescript
-// User object has 20+ fields, only store what UI needs
+// User オブジェクトは 20 以上のフィールドを持つが、UI が必要とするものだけを保存する
 function cachePrefs(user: FullUser) {
   try {
     localStorage.setItem('prefs:v1', JSON.stringify({
@@ -66,6 +66,6 @@ function cachePrefs(user: FullUser) {
 }
 ```
 
-**Always wrap in try-catch:** `getItem()` and `setItem()` throw in incognito/private browsing (Safari, Firefox), when quota exceeded, or when disabled.
+**必ず try-catch で囲む:** `getItem()` と `setItem()` は、シークレット／プライベートブラウジング (Safari, Firefox)、容量超過、機能無効化のときに throw する。
 
-**Benefits:** Schema evolution via versioning, reduced storage size, prevents storing tokens/PII/internal flags.
+**メリット:** バージョニングによるスキーマ進化、ストレージサイズの削減、トークン／PII／内部フラグの混入防止。

@@ -1,59 +1,59 @@
 # React Best Practices
 
-A structured repository for creating and maintaining React Best Practices optimized for agents and LLMs.
+エージェントや LLM 向けに最適化された React Best Practices を作成・メンテナンスするための構造化リポジトリ。
 
-## Structure
+## 構成
 
-- `rules/` - Individual rule files (one per rule)
-  - `_sections.md` - Section metadata (titles, impacts, descriptions)
-  - `_template.md` - Template for creating new rules
-  - `area-description.md` - Individual rule files
-- `src/` - Build scripts and utilities
-- `metadata.json` - Document metadata (version, organization, abstract)
-- __`AGENTS.md`__ - Compiled output (generated)
-- __`test-cases.json`__ - Test cases for LLM evaluation (generated)
+- `rules/` - 個別のルールファイル（1 ルール 1 ファイル）
+  - `_sections.md` - セクションのメタデータ（タイトル、影響度、説明）
+  - `_template.md` - 新規ルール作成用のテンプレート
+  - `area-description.md` - 個別のルールファイル
+- `src/` - ビルドスクリプトとユーティリティ
+- `metadata.json` - ドキュメントのメタデータ（バージョン、組織、要約）
+- __`AGENTS.md`__ - コンパイル後の出力（生成物）
+- __`test-cases.json`__ - LLM 評価用のテストケース（生成物）
 
-## Getting Started
+## 始め方
 
-1. Install dependencies:
+1. 依存関係をインストール:
    ```bash
    pnpm install
    ```
 
-2. Build AGENTS.md from rules:
+2. ルールから AGENTS.md をビルド:
    ```bash
    pnpm build
    ```
 
-3. Validate rule files:
+3. ルールファイルを検証:
    ```bash
    pnpm validate
    ```
 
-4. Extract test cases:
+4. テストケースを抽出:
    ```bash
    pnpm extract-tests
    ```
 
-## Creating a New Rule
+## 新しいルールを作成する
 
-1. Copy `rules/_template.md` to `rules/area-description.md`
-2. Choose the appropriate area prefix:
-   - `async-` for Eliminating Waterfalls (Section 1)
-   - `bundle-` for Bundle Size Optimization (Section 2)
-   - `server-` for Server-Side Performance (Section 3)
-   - `client-` for Client-Side Data Fetching (Section 4)
-   - `rerender-` for Re-render Optimization (Section 5)
-   - `rendering-` for Rendering Performance (Section 6)
-   - `js-` for JavaScript Performance (Section 7)
-   - `advanced-` for Advanced Patterns (Section 8)
-3. Fill in the frontmatter and content
-4. Ensure you have clear examples with explanations
-5. Run `pnpm build` to regenerate AGENTS.md and test-cases.json
+1. `rules/_template.md` を `rules/area-description.md` にコピーする
+2. 適切な領域プレフィックスを選ぶ:
+   - `async-` - ウォーターフォールの排除（セクション 1）
+   - `bundle-` - バンドルサイズ最適化（セクション 2）
+   - `server-` - サーバーサイドパフォーマンス（セクション 3）
+   - `client-` - クライアントサイドのデータ取得（セクション 4）
+   - `rerender-` - 再レンダリング最適化（セクション 5）
+   - `rendering-` - レンダリングパフォーマンス（セクション 6）
+   - `js-` - JavaScript パフォーマンス（セクション 7）
+   - `advanced-` - 高度なパターン（セクション 8）
+3. frontmatter と本文を埋める
+4. 例には明確な解説を添える
+5. `pnpm build` を実行して AGENTS.md と test-cases.json を再生成する
 
-## Rule File Structure
+## ルールファイルの構造
 
-Each rule file should follow this structure:
+各ルールファイルは次の構造に従う:
 
 ```markdown
 ---
@@ -65,7 +65,7 @@ tags: tag1, tag2, tag3
 
 ## Rule Title Here
 
-Brief explanation of the rule and why it matters.
+ルールの簡単な説明と、なぜ重要なのか。
 
 **Incorrect (description of what's wrong):**
 
@@ -79,45 +79,45 @@ Brief explanation of the rule and why it matters.
 // Good code example
 ```
 
-Optional explanatory text after examples.
+例の後に補足説明を入れてもよい。
 
 Reference: [Link](https://example.com)
 
-## File Naming Convention
+## ファイル命名規約
 
-- Files starting with `_` are special (excluded from build)
-- Rule files: `area-description.md` (e.g., `async-parallel.md`)
-- Section is automatically inferred from filename prefix
-- Rules are sorted alphabetically by title within each section
-- IDs (e.g., 1.1, 1.2) are auto-generated during build
+- `_` で始まるファイルは特殊扱い（ビルド対象外）
+- ルールファイル: `area-description.md`（例: `async-parallel.md`）
+- セクションはファイル名のプレフィックスから自動推論される
+- 各セクション内ではタイトル順にアルファベット順でソートされる
+- ID（例: 1.1, 1.2）はビルド時に自動生成される
 
-## Impact Levels
+## 影響度レベル
 
-- `CRITICAL` - Highest priority, major performance gains
-- `HIGH` - Significant performance improvements
-- `MEDIUM-HIGH` - Moderate-high gains
-- `MEDIUM` - Moderate performance improvements
-- `LOW-MEDIUM` - Low-medium gains
-- `LOW` - Incremental improvements
+- `CRITICAL` - 最優先、大きなパフォーマンス向上
+- `HIGH` - 顕著なパフォーマンス改善
+- `MEDIUM-HIGH` - 中〜高程度の改善
+- `MEDIUM` - 中程度のパフォーマンス改善
+- `LOW-MEDIUM` - 低〜中程度の改善
+- `LOW` - 漸進的な改善
 
-## Scripts
+## スクリプト
 
-- `pnpm build` - Compile rules into AGENTS.md
-- `pnpm validate` - Validate all rule files
-- `pnpm extract-tests` - Extract test cases for LLM evaluation
-- `pnpm dev` - Build and validate
+- `pnpm build` - ルールを AGENTS.md にコンパイルする
+- `pnpm validate` - すべてのルールファイルを検証する
+- `pnpm extract-tests` - LLM 評価用のテストケースを抽出する
+- `pnpm dev` - ビルドと検証
 
-## Contributing
+## コントリビュート
 
-When adding or modifying rules:
+ルールを追加・修正する際は以下に従う:
 
-1. Use the correct filename prefix for your section
-2. Follow the `_template.md` structure
-3. Include clear bad/good examples with explanations
-4. Add appropriate tags
-5. Run `pnpm build` to regenerate AGENTS.md and test-cases.json
-6. Rules are automatically sorted by title - no need to manage numbers!
+1. セクションに対応した正しいファイル名プレフィックスを使う
+2. `_template.md` の構造に従う
+3. 良い例／悪い例を解説付きで明示する
+4. 適切なタグを付ける
+5. `pnpm build` を実行して AGENTS.md と test-cases.json を再生成する
+6. ルールはタイトルで自動ソートされる — 番号管理は不要
 
-## Acknowledgments
+## 謝辞
 
-Originally created by [@shuding](https://x.com/shuding) at [Vercel](https://vercel.com).
+[Vercel](https://vercel.com) の [@shuding](https://x.com/shuding) が当初作成。

@@ -7,18 +7,18 @@ tags: server, io, performance, next.js, route-handlers, og-image
 
 ## Hoist Static I/O to Module Level
 
-**Impact: HIGH (avoids repeated file/network I/O per request)**
+**Impact: HIGH (リクエスト毎の繰り返しファイル/ネットワーク I/O を回避する)**
 
-When loading static assets (fonts, logos, images, config files) in route handlers or server functions, hoist the I/O operation to module level. Module-level code runs once when the module is first imported, not on every request. This eliminates redundant file system reads or network fetches that would otherwise run on every invocation.
+ルートハンドラやサーバー関数で静的アセット (フォント、ロゴ、画像、設定ファイル) を読み込む場合、I/O 処理をモジュールレベルに巻き上げる。モジュールレベルのコードはモジュールが最初に import されたときに 1 回だけ実行され、毎回のリクエストでは走らない。これにより、毎回呼ばれていた冗長なファイルシステム読み出しやネットワーク fetch を排除できる。
 
-**Incorrect (reads font file on every request):**
+**Incorrect (リクエストごとにフォントを読み込む):**
 
 ```typescript
 // app/api/og/route.tsx
 import { ImageResponse } from 'next/og'
 
 export async function GET(request: Request) {
-  // Runs on EVERY request - expensive!
+  // 毎回のリクエストで実行される - 高コスト！
   const fontData = await fetch(
     new URL('./fonts/Inter.ttf', import.meta.url)
   ).then(res => res.arrayBuffer())
@@ -37,13 +37,13 @@ export async function GET(request: Request) {
 }
 ```
 
-**Correct (loads once at module initialization):**
+**Correct (モジュール初期化時に 1 回だけ読み込む):**
 
 ```typescript
 // app/api/og/route.tsx
 import { ImageResponse } from 'next/og'
 
-// Module-level: runs ONCE when module is first imported
+// モジュールレベル: モジュールが最初に import されたとき 1 回だけ実行される
 const fontData = fetch(
   new URL('./fonts/Inter.ttf', import.meta.url)
 ).then(res => res.arrayBuffer())
@@ -53,7 +53,7 @@ const logoData = fetch(
 ).then(res => res.arrayBuffer())
 
 export async function GET(request: Request) {
-  // Await the already-started promises
+  // 既に開始済みの promise を await する
   const [font, logo] = await Promise.all([fontData, logoData])
 
   return new ImageResponse(
@@ -66,7 +66,7 @@ export async function GET(request: Request) {
 }
 ```
 
-**Correct (synchronous fs at module level):**
+**Correct (モジュールレベルで同期 fs を使う):**
 
 ```typescript
 // app/api/og/route.tsx
@@ -74,7 +74,7 @@ import { ImageResponse } from 'next/og'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-// Synchronous read at module level - blocks only during module init
+// モジュールレベルの同期読み込み - モジュール初期化中のみブロックする
 const fontData = readFileSync(
   join(process.cwd(), 'public/fonts/Inter.ttf')
 )
@@ -94,7 +94,7 @@ export async function GET(request: Request) {
 }
 ```
 
-**Incorrect (reads config on every call):**
+**Incorrect (毎回 config を読み込む):**
 
 ```typescript
 import fs from 'node:fs/promises'
@@ -109,7 +109,7 @@ export async function processRequest(data: Data) {
 }
 ```
 
-**Correct (hoists config and template to module level):**
+**Correct (config と template をモジュールレベルに巻き上げる):**
 
 ```typescript
 import fs from 'node:fs/promises'
@@ -129,21 +129,21 @@ export async function processRequest(data: Data) {
 }
 ```
 
-When to use this pattern:
+このパターンを使うべきとき:
 
-- Loading fonts for OG image generation
-- Loading static logos, icons, or watermarks
-- Reading configuration files that don't change at runtime
-- Loading email templates or other static templates
-- Any static asset that's the same across all requests
+- OG イメージ生成のためのフォント読み込み
+- 静的なロゴ、アイコン、ウォーターマークの読み込み
+- 実行時に変化しない設定ファイルの読み込み
+- メールテンプレートやその他の静的テンプレートの読み込み
+- すべてのリクエストで同一になる静的アセット全般
 
-When not to use this pattern:
+使うべきでないとき:
 
-- Assets that vary per request or user
-- Files that may change during runtime (use caching with TTL instead)
-- Large files that would consume too much memory if kept loaded
-- Sensitive data that shouldn't persist in memory
+- リクエストやユーザーごとに変わるアセット
+- 実行時に変わり得るファイル (代わりに TTL 付きのキャッシュを使う)
+- メモリを大量に消費する大きなファイル
+- メモリに残してはいけない機微情報
 
-With Vercel's [Fluid Compute](https://vercel.com/docs/fluid-compute), module-level caching is especially effective because multiple concurrent requests share the same function instance. The static assets stay loaded in memory across requests without cold start penalties.
+Vercel の [Fluid Compute](https://vercel.com/docs/fluid-compute) と組み合わせる場合、複数の同時リクエストが同じ関数インスタンスを共有するため、モジュールレベルのキャッシュは特に効果的。静的アセットがコールドスタートのペナルティなしにメモリに保持される。
 
-In traditional serverless, each cold start re-executes module-level code, but subsequent warm invocations reuse the loaded assets until the instance is recycled.
+従来型のサーバーレスでは、コールドスタートごとにモジュールレベルのコードが再実行されるが、ウォーム呼び出しではインスタンスがリサイクルされるまで読み込んだアセットが再利用される。

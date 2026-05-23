@@ -7,16 +7,16 @@ tags: javascript, set, map, data-structures, performance
 
 ## Use Set/Map for O(1) Lookups
 
-Convert arrays to Set/Map for repeated membership checks.
+繰り返し所属チェックを行う場合は、配列を Set/Map に変換する。
 
-**Incorrect (O(n) per check):**
+**Incorrect (1 チェックごとに O(n)):**
 
 ```typescript
 const allowedIds = ['a', 'b', 'c', ...]
 items.filter(item => allowedIds.includes(item.id))
 ```
 
-**Correct (O(1) per check):**
+**Correct (1 チェックごとに O(1)):**
 
 ```typescript
 const allowedIds = new Set(['a', 'b', 'c', ...])

@@ -7,9 +7,9 @@ tags: initialization, useEffect, app-startup, side-effects
 
 ## Initialize App Once, Not Per Mount
 
-Do not put app-wide initialization that must run once per app load inside `useEffect([])` of a component. Components can remount and effects will re-run. Use a module-level guard or top-level init in the entry module instead.
+アプリ全体で 1 回だけ実行したい初期化処理を、コンポーネントの `useEffect([])` に書いてはならない。コンポーネントは再マウントされ得るし、effect も再実行される。代わりにモジュールレベルのガードか、エントリモジュールでのトップレベル初期化を使う。
 
-**Incorrect (runs twice in dev, re-runs on remount):**
+**Incorrect (開発時に 2 回、再マウント時にも再実行される):**
 
 ```tsx
 function Comp() {
@@ -22,7 +22,7 @@ function Comp() {
 }
 ```
 
-**Correct (once per app load):**
+**Correct (アプリの起動ごとに 1 回だけ):**
 
 ```tsx
 let didInit = false

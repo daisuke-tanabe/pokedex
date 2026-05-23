@@ -7,9 +7,9 @@ tags: bundle, third-party, analytics, defer
 
 ## Defer Non-Critical Third-Party Libraries
 
-Analytics, logging, and error tracking don't block user interaction. Load them after hydration.
+計測、ロギング、エラートラッキングはユーザー操作をブロックしない。hydration 後に読み込めばよい。
 
-**Incorrect (blocks initial bundle):**
+**Incorrect (初期バンドルをブロックする):**
 
 ```tsx
 import { Analytics } from '@vercel/analytics/react'
@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
 }
 ```
 
-**Correct (loads after hydration):**
+**Correct (hydration 後にロードする):**
 
 ```tsx
 import dynamic from 'next/dynamic'

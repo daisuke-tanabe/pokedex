@@ -1,21 +1,21 @@
-# Debug Tricks
+# デバッグの小技
 
-Tricks to speed up debugging Next.js applications.
+Next.js アプリのデバッグを速くするための小技集。
 
-## MCP Endpoint (Dev Server)
+## MCP エンドポイント（開発サーバー）
 
-Next.js exposes a `/_next/mcp` endpoint in development for AI-assisted debugging via MCP (Model Context Protocol).
+Next.js は開発中、`/_next/mcp` エンドポイントを公開する。これにより MCP (Model Context Protocol) 経由で AI 支援デバッグが行える。
 
-- **Next.js 16+**: Enabled by default, use `next-devtools-mcp`
-- **Next.js < 16**: Requires `experimental.mcpServer: true` in next.config.js
+- **Next.js 16+**: 既定で有効。`next-devtools-mcp` を使う
+- **Next.js < 16**: `next.config.js` で `experimental.mcpServer: true` が必要
 
-Reference: https://nextjs.org/docs/app/guides/mcp
+参考: https://nextjs.org/docs/app/guides/mcp
 
-**Important**: Find the actual port of the running Next.js dev server (check terminal output or `package.json` scripts). Don't assume port 3000.
+**重要**: 動作中の Next.js dev サーバーの実際のポートを確認すること（ターミナル出力や `package.json` のスクリプトを参照）。ポート 3000 と決め打ちしない。
 
-### Request Format
+### リクエストフォーマット
 
-The endpoint uses JSON-RPC 2.0 over HTTP POST:
+エンドポイントは JSON-RPC 2.0 over HTTP POST。
 
 ```bash
 curl -X POST http://localhost:<port>/_next/mcp \
@@ -32,50 +32,66 @@ curl -X POST http://localhost:<port>/_next/mcp \
   }'
 ```
 
-### Available Tools
+### 利用可能なツール
 
 #### `get_errors`
-Get current errors from dev server (build errors, runtime errors with source-mapped stacks):
+
+dev サーバーの現在のエラーを取得（ビルドエラー、ソースマップ付き実行時エラースタック）:
+
 ```json
 { "name": "get_errors", "arguments": {} }
 ```
 
 #### `get_routes`
-Discover all routes by scanning filesystem:
+
+ファイルシステムをスキャンして全ルートを取得:
+
 ```json
 { "name": "get_routes", "arguments": {} }
 // Optional: { "name": "get_routes", "arguments": { "routerType": "app" } }
 ```
-Returns: `{ "appRouter": ["/", "/api/users/[id]", ...], "pagesRouter": [...] }`
+
+戻り値: `{ "appRouter": ["/", "/api/users/[id]", ...], "pagesRouter": [...] }`
 
 #### `get_project_metadata`
-Get project path and dev server URL:
+
+プロジェクトのパスと dev サーバー URL を取得:
+
 ```json
 { "name": "get_project_metadata", "arguments": {} }
 ```
-Returns: `{ "projectPath": "/path/to/project", "devServerUrl": "http://localhost:3000" }`
+
+戻り値: `{ "projectPath": "/path/to/project", "devServerUrl": "http://localhost:3000" }`
 
 #### `get_page_metadata`
-Get runtime metadata about current page render (requires active browser session):
+
+現在のページレンダリングに関する実行時メタデータを取得（アクティブなブラウザセッションが必要）:
+
 ```json
 { "name": "get_page_metadata", "arguments": {} }
 ```
-Returns segment trie data showing layouts, boundaries, and page components.
+
+layout、境界、ページコンポーネントを示すセグメントトライのデータが返る。
 
 #### `get_logs`
-Get path to Next.js development log file:
+
+Next.js の開発ログファイルへのパスを取得:
+
 ```json
 { "name": "get_logs", "arguments": {} }
 ```
-Returns path to `<distDir>/logs/next-development.log`
+
+`<distDir>/logs/next-development.log` のパスが返る。
 
 #### `get_server_action_by_id`
-Locate a Server Action by ID:
+
+ID から Server Action を特定する:
+
 ```json
 { "name": "get_server_action_by_id", "arguments": { "actionId": "<action-id>" } }
 ```
 
-### Example: Get Errors
+### 例: エラー取得
 
 ```bash
 curl -X POST http://localhost:<port>/_next/mcp \
@@ -84,22 +100,23 @@ curl -X POST http://localhost:<port>/_next/mcp \
   -d '{"jsonrpc":"2.0","id":"1","method":"tools/call","params":{"name":"get_errors","arguments":{}}}'
 ```
 
-## Rebuild Specific Routes (Next.js 16+)
+## 特定ルートだけリビルド（Next.js 16+）
 
-Use `--debug-build-paths` to rebuild only specific routes instead of the entire app:
+`--debug-build-paths` を使えば、アプリ全体ではなく特定のルートだけをリビルドできる。
 
 ```bash
-# Rebuild a specific route
+# 特定のルートをリビルド
 next build --debug-build-paths "/dashboard"
 
-# Rebuild routes matching a glob
+# glob にマッチするルートをリビルド
 next build --debug-build-paths "/api/*"
 
-# Dynamic routes
+# 動的ルート
 next build --debug-build-paths "/blog/[slug]"
 ```
 
-Use this to:
-- Quickly verify a build fix without full rebuild
-- Debug static generation issues for specific pages
-- Iterate faster on build errors
+次のような場面で活用する:
+
+- フルリビルドせずにビルド修正を素早く検証する
+- 特定ページの静的生成の問題をデバッグする
+- ビルドエラーへのイテレーションを高速化する

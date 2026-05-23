@@ -1,39 +1,40 @@
-# Runtime Selection
+# ランタイム選択
 
-## Use Node.js Runtime by Default
+## 既定では Node.js ランタイムを使う
 
-Use the default Node.js runtime for new routes and pages. Only use Edge runtime if the project already uses it or there's a specific requirement.
+新しいルートやページでは、既定の Node.js ランタイムを使う。Edge ランタイムは、プロジェクトで既に使われているか、明確な要件がある場合に限り採用する。
 
 ```tsx
-// Good: Default - no runtime config needed (uses Node.js)
+// Good: 既定。runtime の指定は不要（Node.js を利用）
 export default function Page() { ... }
 
-// Caution: Only if already used in project or specifically required
+// Caution: 既にプロジェクトで使われている、または明確な要件がある場合のみ
 export const runtime = 'edge'
 ```
 
-## When to Use Each
+## それぞれを使うべきケース
 
-### Node.js Runtime (Default)
+### Node.js ランタイム（既定）
 
-- Full Node.js API support
-- File system access (`fs`)
-- Full `crypto` support
-- Database connections
-- Most npm packages work
+- Node.js API をフルサポート
+- ファイルシステムへのアクセス（`fs`）
+- `crypto` のフルサポート
+- データベース接続
+- ほとんどの npm パッケージが動作
 
-### Edge Runtime
+### Edge ランタイム
 
-- Only for specific edge-location latency requirements
-- Limited API (no `fs`, limited `crypto`)
-- Smaller cold start
-- Geographic distribution needs
+- 特定のエッジロケーションでのレイテンシ要件がある場合のみ
+- 限定的な API（`fs` なし、`crypto` も限定的）
+- コールドスタートが小さい
+- 地理的に分散したい場合
 
-## Detection
+## 判断ポイント
 
-**Before adding `runtime = 'edge'`**, check:
-1. Does the project already use Edge runtime?
-2. Is there a specific latency requirement?
-3. Are all dependencies Edge-compatible?
+**`runtime = 'edge'` を追加する前に**、以下を確認する。
 
-If unsure, use Node.js runtime.
+1. プロジェクトで既に Edge ランタイムを使っているか？
+2. 明確なレイテンシ要件があるか？
+3. すべての依存関係が Edge 互換か？
+
+判断が付かない場合は Node.js ランタイムを使う。

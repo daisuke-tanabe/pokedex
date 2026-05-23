@@ -7,43 +7,43 @@ tags: async, await, conditional, optimization
 
 ## Defer Await Until Needed
 
-Move `await` operations into the branches where they're actually used to avoid blocking code paths that don't need them.
+`await` の処理は、実際に使うブランチへ移動する。そうすれば、その値を必要としないコードパスがブロックされなくなる。
 
-**Incorrect (blocks both branches):**
+**Incorrect (両方のブランチがブロックされる):**
 
 ```typescript
 async function handleRequest(userId: string, skipProcessing: boolean) {
   const userData = await fetchUserData(userId)
   
   if (skipProcessing) {
-    // Returns immediately but still waited for userData
+    // すぐ返るが、userData は待ってしまっている
     return { skipped: true }
   }
   
-  // Only this branch uses userData
+  // userData を使うのはこちらのブランチだけ
   return processUserData(userData)
 }
 ```
 
-**Correct (only blocks when needed):**
+**Correct (必要なときだけブロックする):**
 
 ```typescript
 async function handleRequest(userId: string, skipProcessing: boolean) {
   if (skipProcessing) {
-    // Returns immediately without waiting
+    // 待たずに即座に返す
     return { skipped: true }
   }
   
-  // Fetch only when needed
+  // 必要になったときだけ fetch する
   const userData = await fetchUserData(userId)
   return processUserData(userData)
 }
 ```
 
-**Another example (early return optimization):**
+**もう 1 つの例 (早期 return の最適化):**
 
 ```typescript
-// Incorrect: always fetches permissions
+// Incorrect: 常に permissions を取得する
 async function updateResource(resourceId: string, userId: string) {
   const permissions = await fetchPermissions(userId)
   const resource = await getResource(resourceId)
@@ -59,7 +59,7 @@ async function updateResource(resourceId: string, userId: string) {
   return await updateResourceData(resource, permissions)
 }
 
-// Correct: fetches only when needed
+// Correct: 必要なときだけ取得する
 async function updateResource(resourceId: string, userId: string) {
   const resource = await getResource(resourceId)
   
@@ -77,6 +77,6 @@ async function updateResource(resourceId: string, userId: string) {
 }
 ```
 
-This optimization is especially valuable when the skipped branch is frequently taken, or when the deferred operation is expensive.
+スキップされる方のブランチが頻繁に通る場合や、後回しにする処理が高コストな場合に、特に効果が大きい。
 
-For `await getFlag()` combined with a cheap synchronous guard (`flag && someCondition`), see [Check Cheap Conditions Before Async Flags](./async-cheap-condition-before-await.md).
+`await getFlag()` と安価な同期ガードを組み合わせる `flag && someCondition` のケースについては [Check Cheap Conditions Before Async Flags](./async-cheap-condition-before-await.md) を参照。

@@ -1,81 +1,81 @@
 ---
 name: migration-to-pnpm
-description: Migrating from npm or Yarn to pnpm with minimal friction
+description: npm/Yarn から pnpm へ摩擦を抑えて移行する
 ---
 
-# Migration to pnpm
+# pnpm への移行
 
-Guide for migrating existing projects from npm or Yarn to pnpm.
+既存プロジェクトを npm または Yarn から pnpm に移行するためのガイド。
 
-## Quick Migration
+## 手早い移行
 
-### From npm
+### npm から
 
 ```bash
-# Remove npm lockfile and node_modules
+# npm の lockfile と node_modules を削除
 rm -rf node_modules package-lock.json
 
-# Install with pnpm
+# pnpm でインストール
 pnpm install
 ```
 
-### From Yarn
+### Yarn から
 
 ```bash
-# Remove yarn lockfile and node_modules
+# Yarn の lockfile と node_modules を削除
 rm -rf node_modules yarn.lock
 
-# Install with pnpm
+# pnpm でインストール
 pnpm install
 ```
 
-### Import Existing Lockfile
+### 既存 lockfile をインポート
 
-pnpm can import existing lockfiles:
+pnpm は既存の lockfile をインポートできる。
 
 ```bash
-# Import from npm or yarn lockfile
+# npm や yarn の lockfile からインポート
 pnpm import
 
-# This creates pnpm-lock.yaml from:
+# 以下から pnpm-lock.yaml を生成する:
 # - package-lock.json (npm)
 # - yarn.lock (yarn)
 # - npm-shrinkwrap.json (npm)
 ```
 
-## Handling Common Issues
+## よくある問題への対処
 
-### Phantom Dependencies
+### Phantom dependency
 
-pnpm is strict about dependencies. If code imports a package not in `package.json`, it will fail.
+pnpm は依存の宣言に厳しい。`package.json` に無いパッケージを import するコードは失敗する。
 
-**Problem:**
+**問題:**
 ```js
-// Works with npm (hoisted), fails with pnpm
-import lodash from 'lodash' // Not in dependencies, installed by another package
+// npm では動くが (hoist によって解決される)、pnpm では失敗する
+import lodash from 'lodash' // dependencies に無く、別パッケージ経由で入っている
 ```
 
-**Solution:** Add missing dependencies explicitly:
+**解決策:** 不足している依存を明示的に追加する。
 ```bash
 pnpm add lodash
 ```
 
-### Missing Peer Dependencies
+### Peer dependency の不足
 
-pnpm reports peer dependency issues by default.
+pnpm はデフォルトで peer dependency の問題を警告する。
 
-**Option 1:** Let pnpm auto-install:
+**選択肢 1:** pnpm に自動インストールさせる。
 ```ini
-# .npmrc (default in pnpm v8+)
+# .npmrc (pnpm v8 以降のデフォルト)
 auto-install-peers=true
 ```
 
-**Option 2:** Install manually:
+**選択肢 2:** 手動でインストールする。
 ```bash
 pnpm add react react-dom
 ```
 
-**Option 3:** Suppress warnings if acceptable:
+**選択肢 3:** 許容できるなら警告を抑制する。
 ```json
 {
   "pnpm": {
@@ -86,46 +86,46 @@ pnpm add react react-dom
 }
 ```
 
-### Symlink Issues
+### Symlink の問題
 
-Some tools don't work with symlinks. Use hoisted mode:
+symlink に対応しないツールがある場合は hoisted モードを使う。
 
 ```ini
 # .npmrc
 node-linker=hoisted
 ```
 
-Or hoist specific packages:
+特定のパッケージのみを hoist することもできる。
 
 ```ini
 public-hoist-pattern[]=*eslint*
 public-hoist-pattern[]=*babel*
 ```
 
-### Native Module Rebuilds
+### ネイティブモジュールの再ビルド
 
-If native modules fail, try:
+ネイティブモジュールが失敗する場合は次を試す。
 
 ```bash
-# Rebuild all native modules
+# すべてのネイティブモジュールを再ビルド
 pnpm rebuild
 
-# Or reinstall
+# あるいは再インストール
 rm -rf node_modules
 pnpm install
 ```
 
-## Monorepo Migration
+## Monorepo の移行
 
-### From npm Workspaces
+### npm workspaces から
 
-1. Create `pnpm-workspace.yaml`:
+1. `pnpm-workspace.yaml` を作成する:
    ```yaml
    packages:
      - 'packages/*'
    ```
 
-2. Update internal dependencies to use workspace protocol:
+2. 内部依存を workspace protocol に変更する:
    ```json
    {
      "dependencies": {
@@ -134,156 +134,156 @@ pnpm install
    }
    ```
 
-3. Install:
+3. インストールする:
    ```bash
    rm -rf node_modules packages/*/node_modules package-lock.json
    pnpm install
    ```
 
-### From Yarn Workspaces
+### Yarn workspaces から
 
-1. Remove Yarn-specific files:
+1. Yarn 固有ファイルを削除する:
    ```bash
    rm yarn.lock .yarnrc.yml
    rm -rf .yarn
    ```
 
-2. Create `pnpm-workspace.yaml` matching `workspaces` in package.json:
+2. `package.json` の `workspaces` に合わせて `pnpm-workspace.yaml` を作成する:
    ```yaml
    packages:
      - 'packages/*'
    ```
 
-3. Update `package.json` - remove Yarn workspace config if not needed:
+3. `package.json` を整理する。必要なければ Yarn の workspace 設定を削除する:
    ```json
    {
-     // Remove "workspaces" field (optional, pnpm uses pnpm-workspace.yaml)
+     // 必要なら "workspaces" フィールドを残す (任意。pnpm は pnpm-workspace.yaml を使う)
    }
    ```
 
-4. Convert workspace references:
+4. workspace 参照を変換する:
    ```json
-   // From Yarn
+   // Yarn の場合
    "@myorg/utils": "*"
-   
-   // To pnpm
+
+   // pnpm の場合
    "@myorg/utils": "workspace:*"
    ```
 
-### From Lerna
+### Lerna から
 
-pnpm can replace Lerna for most use cases:
+ほとんどのユースケースでは pnpm が Lerna を置き換えられる。
 
 ```bash
-# Lerna: run script in all packages
+# Lerna: 全パッケージでスクリプト実行
 lerna run build
 
-# pnpm equivalent
+# pnpm の等価コマンド
 pnpm -r run build
 
-# Lerna: run in specific package
+# Lerna: 特定パッケージで実行
 lerna run build --scope=@myorg/app
 
-# pnpm equivalent  
+# pnpm の等価コマンド
 pnpm --filter @myorg/app run build
 
-# Lerna: publish
+# Lerna: 公開
 lerna publish
 
-# pnpm: use changesets instead
+# pnpm: 代わりに changesets を使う
 pnpm add -Dw @changesets/cli
 pnpm changeset
 pnpm changeset version
 pnpm publish -r
 ```
 
-## Configuration Migration
+## 設定の移行
 
-### .npmrc Settings
+### .npmrc の設定
 
-Most npm/Yarn settings work in pnpm's `.npmrc`:
+npm/Yarn の設定の多くは pnpm の `.npmrc` でそのまま動作する。
 
 ```ini
-# Registry settings (same as npm)
+# レジストリ設定 (npm と同じ)
 registry=https://registry.npmjs.org/
 @myorg:registry=https://npm.myorg.com/
 
-# Auth tokens (same as npm)
+# 認証トークン (npm と同じ)
 //registry.npmjs.org/:_authToken=${NPM_TOKEN}
 
-# pnpm-specific additions
+# pnpm 固有の追加設定
 auto-install-peers=true
 strict-peer-dependencies=false
 ```
 
-### Scripts Migration
+### スクリプトの移行
 
-Most scripts work unchanged. Update pnpm-specific patterns:
+多くのスクリプトは変更不要。pnpm 固有のパターンに合わせる。
 
 ```json
 {
   "scripts": {
-    // npm: recursive scripts
+    // npm: 全 workspace でスクリプト実行
     "build:all": "npm run build --workspaces",
-    // pnpm: use -r flag
+    // pnpm: -r フラグを使う
     "build:all": "pnpm -r run build",
-    
-    // npm: run in specific workspace  
+
+    // npm: 特定 workspace で実行
     "dev:app": "npm run dev -w packages/app",
-    // pnpm: use --filter
+    // pnpm: --filter を使う
     "dev:app": "pnpm --filter @myorg/app run dev"
   }
 }
 ```
 
-## CI/CD Migration
+## CI/CD の移行
 
-Update CI configuration:
+CI 設定を更新する。
 
 ```yaml
-# Before (npm)
+# 移行前 (npm)
 - run: npm ci
 
-# After (pnpm)
+# 移行後 (pnpm)
 - uses: pnpm/action-setup@v4
 - run: pnpm install --frozen-lockfile
 ```
 
-Add to `package.json` for Corepack:
+Corepack 用に `package.json` に追記する。
 ```json
 {
   "packageManager": "pnpm@9.0.0"
 }
 ```
 
-## Gradual Migration
+## 段階的な移行
 
-For large projects, migrate gradually:
+大規模プロジェクトでは段階的に移行する。
 
-1. **Start with CI**: Use pnpm in CI, keep npm/yarn locally
-2. **Add pnpm-lock.yaml**: Run `pnpm import` to create lockfile
-3. **Test thoroughly**: Ensure builds work with pnpm
-4. **Update documentation**: Update README, CONTRIBUTING
-5. **Remove old files**: Delete old lockfiles after team adoption
+1. **CI から始める**: CI のみ pnpm を使い、ローカルは npm/yarn のまま
+2. **pnpm-lock.yaml を追加**: `pnpm import` で lockfile を作成
+3. **十分に検証**: pnpm でビルドが動くことを確認
+4. **ドキュメントを更新**: README、CONTRIBUTING を更新
+5. **古いファイルを削除**: チーム全体が移行できたら旧 lockfile を削除
 
-## Rollback Plan
+## ロールバック計画
 
-If migration causes issues:
+移行で問題が発生した場合は、
 
 ```bash
-# Remove pnpm files
+# pnpm のファイルを削除
 rm -rf node_modules pnpm-lock.yaml pnpm-workspace.yaml
 
-# Restore npm
+# npm に戻す
 npm install
 
-# Or restore Yarn
+# あるいは Yarn に戻す
 yarn install
 ```
 
-Keep old lockfile in git history for easy rollback.
+ロールバックを容易にするため、旧 lockfile を git 履歴に残しておく。
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/installation
 - https://pnpm.io/cli/import

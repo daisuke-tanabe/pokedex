@@ -1,43 +1,43 @@
 ---
 name: pnpm-cli-commands
-description: Essential pnpm commands for package management, running scripts, and workspace operations
+description: パッケージ管理・スクリプト実行・workspace 操作のための主要な pnpm コマンド
 ---
 
-# pnpm CLI Commands
+# pnpm の CLI コマンド
 
-pnpm provides a comprehensive CLI for package management with commands similar to npm/yarn but with unique features.
+pnpm は npm/yarn と似た包括的な CLI を提供しつつ、独自機能も備えたパッケージ管理ツールである。
 
-## Installation Commands
+## インストール系コマンド
 
-### Install all dependencies
+### すべての依存をインストール
 ```bash
 pnpm install
-# or
+# または
 pnpm i
 ```
 
-### Add a dependency
+### 依存を追加
 ```bash
-# Production dependency
+# 本番用 dependency
 pnpm add <pkg>
 
-# Dev dependency
+# 開発用 dependency
 pnpm add -D <pkg>
 pnpm add --save-dev <pkg>
 
-# Optional dependency
+# optional dependency
 pnpm add -O <pkg>
 
-# Global package
+# グローバルパッケージ
 pnpm add -g <pkg>
 
-# Specific version
+# バージョン指定
 pnpm add <pkg>@<version>
 pnpm add <pkg>@next
 pnpm add <pkg>@^1.0.0
 ```
 
-### Remove a dependency
+### 依存を削除
 ```bash
 pnpm remove <pkg>
 pnpm rm <pkg>
@@ -45,182 +45,182 @@ pnpm uninstall <pkg>
 pnpm un <pkg>
 ```
 
-### Update dependencies
+### 依存を更新
 ```bash
-# Update all
+# すべて更新
 pnpm update
 pnpm up
 
-# Update specific package
+# 特定のパッケージを更新
 pnpm update <pkg>
 
-# Update to latest (ignore semver)
+# 最新版に更新 (semver を無視)
 pnpm update --latest
 pnpm up -L
 
-# Interactive update
+# 対話モードでの更新
 pnpm update --interactive
 pnpm up -i
 ```
 
-## Script Commands
+## スクリプト系コマンド
 
-### Run scripts
+### スクリプトを実行
 ```bash
 pnpm run <script>
-# or shorthand
+# またはショートハンド
 pnpm <script>
 
-# Pass arguments to script
+# スクリプトに引数を渡す
 pnpm run build -- --watch
 
-# Run script if exists (no error if missing)
+# スクリプトが存在する場合のみ実行 (無ければエラーにしない)
 pnpm run --if-present build
 ```
 
-### Execute binaries
+### バイナリの実行
 ```bash
-# Run local binary
+# ローカルのバイナリを実行
 pnpm exec <command>
 
-# Example
+# 例
 pnpm exec eslint .
 ```
 
-### dlx - Run without installing
+### dlx — インストールせずに実行
 ```bash
-# Like npx but for pnpm
+# npx の pnpm 版
 pnpm dlx <pkg>
 
-# Examples
+# 例
 pnpm dlx create-vite my-app
 pnpm dlx degit user/repo my-project
 ```
 
-## Workspace Commands
+## Workspace 系コマンド
 
-### Run in all packages
+### すべてのパッケージで実行
 ```bash
-# Run script in all workspace packages
+# workspace 内のすべてのパッケージでスクリプトを実行
 pnpm -r run <script>
 pnpm --recursive run <script>
 
-# Run in specific packages
+# 特定のパッケージのみで実行
 pnpm --filter <pattern> run <script>
 
-# Examples
+# 例
 pnpm --filter "./packages/**" run build
 pnpm --filter "!./packages/internal/**" run test
 pnpm --filter "@myorg/*" run lint
 ```
 
-### Filter patterns
+### フィルタパターン
 ```bash
-# By package name
+# パッケージ名で指定
 pnpm --filter <pkg-name> <command>
 pnpm --filter "@scope/pkg" build
 
-# By directory
+# ディレクトリで指定
 pnpm --filter "./packages/core" test
 
-# Dependencies of a package
+# パッケージの依存元方向 (依存しているパッケージ群)
 pnpm --filter "...@scope/app" build
 
-# Dependents of a package
+# パッケージの依存先方向 (依存されているパッケージ群)
 pnpm --filter "@scope/core..." test
 
-# Changed packages since commit/branch
+# 特定のコミット/ブランチ以降で変更があったパッケージ
 pnpm --filter "...[origin/main]" build
 ```
 
-## Other Useful Commands
+## その他の便利なコマンド
 
-### Link packages
+### パッケージをリンク
 ```bash
-# Link global package
+# グローバルにリンク
 pnpm link --global
 pnpm link -g
 
-# Use linked package
+# リンク済みパッケージを利用
 pnpm link --global <pkg>
 ```
 
-### Patch packages
+### パッケージをパッチ
 ```bash
-# Create patch for a package
+# パッケージのパッチを作成
 pnpm patch <pkg>@<version>
 
-# After editing, commit the patch
+# 編集後、パッチをコミット
 pnpm patch-commit <path>
 
-# Remove a patch
+# パッチを削除
 pnpm patch-remove <pkg>
 ```
 
-### Store management
+### Store の管理
 ```bash
-# Show store path
+# store のパスを表示
 pnpm store path
 
-# Remove unreferenced packages
+# 参照されていないパッケージを削除
 pnpm store prune
 
-# Check store integrity
+# store の整合性をチェック
 pnpm store status
 ```
 
-### Other commands
+### その他のコマンド
 ```bash
-# Clean install (like npm ci)
+# クリーンインストール (npm ci 相当)
 pnpm install --frozen-lockfile
 
-# List installed packages
+# インストール済みパッケージの一覧
 pnpm list
 pnpm ls
 
-# Why is package installed?
+# あるパッケージがなぜ入っているかを表示
 pnpm why <pkg>
 
-# Outdated packages
+# 古くなったパッケージを表示
 pnpm outdated
 
-# Audit for vulnerabilities
+# 脆弱性監査
 pnpm audit
 
-# Rebuild native modules
+# ネイティブモジュールを再ビルド
 pnpm rebuild
 
-# Import from npm/yarn lockfile
+# npm/yarn の lockfile からインポート
 pnpm import
 
-# Create tarball
+# tarball を作成
 pnpm pack
 
-# Publish package
+# パッケージを公開
 pnpm publish
 ```
 
-## Useful Flags
+## 便利なフラグ
 
 ```bash
-# Ignore scripts
+# スクリプトを無視
 pnpm install --ignore-scripts
 
-# Prefer offline (use cache)
+# オフライン (キャッシュ) を優先
 pnpm install --prefer-offline
 
-# Strict peer dependencies
+# 厳格な peer dependency チェック
 pnpm install --strict-peer-dependencies
 
-# Production only
+# 本番依存のみ
 pnpm install --prod
 pnpm install -P
 
-# No optional dependencies
+# optional dependency を無視
 pnpm install --no-optional
 ```
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/cli/install
 - https://pnpm.io/cli/add

@@ -1,21 +1,21 @@
-# Base vs Radix
+# Base と Radix の違い
 
-API differences between `base` and `radix`. Check the `base` field from `npx shadcn@latest info`.
+`base` と `radix` の API の差分。`npx shadcn@latest info` の `base` フィールドを確認する。
 
-## Contents
+## 目次
 
-- Composition: asChild vs render
-- Button / trigger as non-button element
-- Select (items prop, placeholder, positioning, multiple, object values)
-- ToggleGroup (type vs multiple)
-- Slider (scalar vs array)
-- Accordion (type and defaultValue)
+- コンポジション: asChild と render
+- ボタン/トリガーを非ボタン要素として使う
+- Select (items prop、placeholder、配置、multiple、オブジェクト値)
+- ToggleGroup (type と multiple)
+- Slider (スカラー値と配列)
+- Accordion (type と defaultValue)
 
 ---
 
-## Composition: asChild (radix) vs render (base)
+## コンポジション: asChild (radix) と render (base)
 
-Radix uses `asChild` to replace the default element. Base uses `render`. Don't wrap triggers in extra elements.
+Radix はデフォルト要素を置き換えるのに `asChild` を使う。Base は `render` を使う。トリガーを余計な要素で包まない。
 
 **Incorrect:**
 
@@ -41,15 +41,15 @@ Radix uses `asChild` to replace the default element. Base uses `render`. Don't w
 <DialogTrigger render={<Button />}>Open</DialogTrigger>
 ```
 
-This applies to all trigger and close components: `DialogTrigger`, `SheetTrigger`, `AlertDialogTrigger`, `DropdownMenuTrigger`, `PopoverTrigger`, `TooltipTrigger`, `CollapsibleTrigger`, `DialogClose`, `SheetClose`, `NavigationMenuLink`, `BreadcrumbLink`, `SidebarMenuButton`, `Badge`, `Item`.
+これはすべてのトリガー/クローズ系コンポーネントに当てはまる: `DialogTrigger`、`SheetTrigger`、`AlertDialogTrigger`、`DropdownMenuTrigger`、`PopoverTrigger`、`TooltipTrigger`、`CollapsibleTrigger`、`DialogClose`、`SheetClose`、`NavigationMenuLink`、`BreadcrumbLink`、`SidebarMenuButton`、`Badge`、`Item`。
 
 ---
 
-## Button / trigger as non-button element (base only)
+## ボタン/トリガーを非ボタン要素として使う (base のみ)
 
-When `render` changes an element to a non-button (`<a>`, `<span>`), add `nativeButton={false}`.
+`render` で要素を非ボタン (`<a>`、`<span>`) に変える場合は `nativeButton={false}` を追加する。
 
-**Incorrect (base):** missing `nativeButton={false}`.
+**Incorrect (base):** `nativeButton={false}` の付け忘れ。
 
 ```tsx
 <Button render={<a href="/docs" />}>Read the docs</Button>
@@ -71,7 +71,7 @@ When `render` changes an element to a non-button (`<a>`, `<span>`), add `nativeB
 </Button>
 ```
 
-Same for triggers whose `render` is not a `Button`:
+`render` が `Button` 以外のトリガーでも同じ。
 
 ```tsx
 // base.
@@ -84,7 +84,7 @@ Same for triggers whose `render` is not a `Button`:
 
 ## Select
 
-**items prop (base only).** Base requires an `items` prop on the root. Radix uses inline JSX only.
+**items prop (base のみ)。** Base はルートに `items` prop が必須。Radix はインライン JSX のみを使う。
 
 **Incorrect (base):**
 
@@ -133,9 +133,9 @@ const items = [
 </Select>
 ```
 
-**Placeholder.** Base uses a `{ value: null }` item in the items array. Radix uses `<SelectValue placeholder="...">`.
+**Placeholder。** Base は items 配列の `{ value: null }` アイテムで指定する。Radix は `<SelectValue placeholder="...">` を使う。
 
-**Content positioning.** Base uses `alignItemWithTrigger`. Radix uses `position`.
+**コンテンツの配置。** Base は `alignItemWithTrigger` を使う。Radix は `position` を使う。
 
 ```tsx
 // base.
@@ -147,11 +147,11 @@ const items = [
 
 ---
 
-## Select — multiple selection and object values (base only)
+## Select — 複数選択とオブジェクト値 (base のみ)
 
-Base supports `multiple`, render-function children on `SelectValue`, and object values with `itemToStringValue`. Radix is single-select with string values only.
+Base は `multiple`、`SelectValue` の render-function children、`itemToStringValue` によるオブジェクト値をサポートする。Radix は単一選択かつ文字列値のみ。
 
-**Correct (base — multiple selection):**
+**Correct (base — 複数選択):**
 
 ```tsx
 <Select items={items} multiple defaultValue={[]}>
@@ -164,7 +164,7 @@ Base supports `multiple`, render-function children on `SelectValue`, and object 
 </Select>
 ```
 
-**Correct (base — object values):**
+**Correct (base — オブジェクト値):**
 
 ```tsx
 <Select defaultValue={plans[0]} itemToStringValue={(plan) => plan.name}>
@@ -179,7 +179,7 @@ Base supports `multiple`, render-function children on `SelectValue`, and object 
 
 ## ToggleGroup
 
-Base uses a `multiple` boolean prop. Radix uses `type="single"` or `type="multiple"`.
+Base は `multiple` の真偽値 prop を使う。Radix は `type="single"` または `type="multiple"` を使う。
 
 **Incorrect (base):**
 
@@ -192,13 +192,13 @@ Base uses a `multiple` boolean prop. Radix uses `type="single"` or `type="multip
 **Correct (base):**
 
 ```tsx
-// Single (no prop needed), defaultValue is always an array.
+// 単一選択 (prop 不要)、defaultValue は常に配列。
 <ToggleGroup defaultValue={["daily"]} spacing={2}>
   <ToggleGroupItem value="daily">Daily</ToggleGroupItem>
   <ToggleGroupItem value="weekly">Weekly</ToggleGroupItem>
 </ToggleGroup>
 
-// Multi-selection.
+// 複数選択。
 <ToggleGroup multiple>
   <ToggleGroupItem value="bold">Bold</ToggleGroupItem>
   <ToggleGroupItem value="italic">Italic</ToggleGroupItem>
@@ -208,27 +208,27 @@ Base uses a `multiple` boolean prop. Radix uses `type="single"` or `type="multip
 **Correct (radix):**
 
 ```tsx
-// Single, defaultValue is a string.
+// 単一選択。defaultValue は文字列。
 <ToggleGroup type="single" defaultValue="daily" spacing={2}>
   <ToggleGroupItem value="daily">Daily</ToggleGroupItem>
   <ToggleGroupItem value="weekly">Weekly</ToggleGroupItem>
 </ToggleGroup>
 
-// Multi-selection.
+// 複数選択。
 <ToggleGroup type="multiple">
   <ToggleGroupItem value="bold">Bold</ToggleGroupItem>
   <ToggleGroupItem value="italic">Italic</ToggleGroupItem>
 </ToggleGroup>
 ```
 
-**Controlled single value:**
+**単一値の制御:**
 
 ```tsx
-// base — wrap/unwrap arrays.
+// base — 配列で wrap/unwrap する。
 const [value, setValue] = React.useState("normal")
 <ToggleGroup value={[value]} onValueChange={(v) => setValue(v[0])}>
 
-// radix — plain string.
+// radix — 単純な文字列。
 const [value, setValue] = React.useState("normal")
 <ToggleGroup type="single" value={value} onValueChange={setValue}>
 ```
@@ -237,7 +237,7 @@ const [value, setValue] = React.useState("normal")
 
 ## Slider
 
-Base accepts a plain number for a single thumb. Radix always requires an array.
+Base は単一つまみの場合に素のナンバーを受け付ける。Radix は常に配列が必要。
 
 **Incorrect (base):**
 
@@ -257,7 +257,7 @@ Base accepts a plain number for a single thumb. Radix always requires an array.
 <Slider defaultValue={[50]} max={100} step={1} />
 ```
 
-Both use arrays for range sliders. Controlled `onValueChange` in base may need a cast:
+レンジスライダーはどちらも配列を使う。base の制御モードでは `onValueChange` にキャストが必要になる場合がある。
 
 ```tsx
 // base.
@@ -273,7 +273,7 @@ const [value, setValue] = React.useState([0.3, 0.7])
 
 ## Accordion
 
-Radix requires `type="single"` or `type="multiple"` and supports `collapsible`. `defaultValue` is a string. Base uses no `type` prop, uses `multiple` boolean, and `defaultValue` is always an array.
+Radix は `type="single"` か `type="multiple"` が必要で、`collapsible` をサポートする。`defaultValue` は文字列。Base は `type` prop を使わず、`multiple` の真偽値を使う。`defaultValue` は常に配列。
 
 **Incorrect (base):**
 
@@ -290,7 +290,7 @@ Radix requires `type="single"` or `type="multiple"` and supports `collapsible`. 
   <AccordionItem value="item-1">...</AccordionItem>
 </Accordion>
 
-// Multi-select.
+// 複数選択。
 <Accordion multiple defaultValue={["item-1", "item-2"]}>
   <AccordionItem value="item-1">...</AccordionItem>
   <AccordionItem value="item-2">...</AccordionItem>

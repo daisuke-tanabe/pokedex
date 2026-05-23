@@ -7,9 +7,9 @@ tags: rerender, useDeferredValue, optimization, concurrent
 
 ## Use useDeferredValue for Expensive Derived Renders
 
-When user input triggers expensive computations or renders, use `useDeferredValue` to keep the input responsive. The deferred value lags behind, allowing React to prioritize the input update and render the expensive result when idle.
+ユーザー入力で高コストな計算やレンダリングが発生する場合は、`useDeferredValue` を使って入力の応答性を保つ。defer された値は遅れて反映され、React は入力更新を優先的に処理し、アイドル時に高コストな結果をレンダリングする。
 
-**Incorrect (input feels laggy while filtering):**
+**Incorrect (フィルタリング中に入力がもたつく):**
 
 ```tsx
 function Search({ items }: { items: Item[] }) {
@@ -25,7 +25,7 @@ function Search({ items }: { items: Item[] }) {
 }
 ```
 
-**Correct (input stays snappy, results render when ready):**
+**Correct (入力は機敏なまま、結果は準備でき次第描画される):**
 
 ```tsx
 function Search({ items }: { items: Item[] }) {
@@ -48,12 +48,12 @@ function Search({ items }: { items: Item[] }) {
 }
 ```
 
-**When to use:**
+**使うべきケース:**
 
-- Filtering/searching large lists
-- Expensive visualizations (charts, graphs) reacting to input
-- Any derived state that causes noticeable render delays
+- 大きなリストのフィルタリング／検索
+- 入力に反応する高コストな可視化 (チャート、グラフ)
+- 描画遅延がはっきり認識できる派生 state
 
-**Note:** Wrap the expensive computation in `useMemo` with the deferred value as a dependency, otherwise it still runs on every render.
+**注意:** 高コストな計算は defer された値を依存にした `useMemo` で包む。包まないと毎レンダーで再実行されてしまう。
 
 Reference: [React useDeferredValue](https://react.dev/reference/react/useDeferredValue)

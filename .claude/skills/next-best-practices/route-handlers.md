@@ -1,8 +1,8 @@
 # Route Handlers
 
-Create API endpoints with `route.ts` files.
+`route.ts` で API エンドポイントを作る。
 
-## Basic Usage
+## 基本的な使い方
 
 ```tsx
 // app/api/users/route.ts
@@ -18,13 +18,13 @@ export async function POST(request: Request) {
 }
 ```
 
-## Supported Methods
+## サポートされる HTTP メソッド
 
-`GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`
+`GET`、`POST`、`PUT`、`PATCH`、`DELETE`、`HEAD`、`OPTIONS`
 
-## GET Handler Conflicts with page.tsx
+## GET ハンドラと page.tsx の衝突
 
-**A `route.ts` and `page.tsx` cannot coexist in the same folder.**
+**同じフォルダ内に `route.ts` と `page.tsx` を共存させることはできない。**
 
 ```
 app/
@@ -32,34 +32,34 @@ app/
 │   └── users/
 │       └── route.ts    # /api/users
 └── users/
-    ├── page.tsx        # /users (page)
-    └── route.ts        # Warning: Conflicts with page.tsx!
+    ├── page.tsx        # /users（ページ）
+    └── route.ts        # 警告: page.tsx と衝突する!
 ```
 
-If you need both a page and an API at the same path, use different paths:
+同じパスでページと API の両方が必要なら、別のパスにする。
 
 ```
 app/
 ├── users/
-│   └── page.tsx        # /users (page)
+│   └── page.tsx        # /users（ページ）
 └── api/
     └── users/
-        └── route.ts    # /api/users (API)
+        └── route.ts    # /api/users（API）
 ```
 
-## Environment Behavior
+## 実行環境の挙動
 
-Route handlers run in a **Server Component-like environment**:
+route handler は **Server Component と同等の環境** で動作する。
 
-- Yes: Can use `async/await`
-- Yes: Can access `cookies()`, `headers()`
-- Yes: Can use Node.js APIs
-- No: Cannot use React hooks
-- No: Cannot use React DOM APIs
-- No: Cannot use browser APIs
+- Yes: `async/await` が使える
+- Yes: `cookies()`、`headers()` にアクセス可能
+- Yes: Node.js API が使える
+- No: React フックは使えない
+- No: React DOM API は使えない
+- No: ブラウザ API は使えない
 
 ```tsx
-// Bad: This won't work - no React DOM in route handlers
+// Bad: これは動作しない - route handler では React DOM が使えない
 import { renderToString } from 'react-dom/server'
 
 export async function GET() {
@@ -68,7 +68,7 @@ export async function GET() {
 }
 ```
 
-## Dynamic Route Handlers
+## 動的 route handler
 
 ```tsx
 // app/api/users/[id]/route.ts
@@ -87,18 +87,18 @@ export async function GET(
 }
 ```
 
-## Request Helpers
+## リクエストヘルパー
 
 ```tsx
 export async function GET(request: Request) {
-  // URL and search params
+  // URL と search params
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('q')
 
-  // Headers
+  // ヘッダ
   const authHeader = request.headers.get('authorization')
 
-  // Cookies (Next.js helper)
+  // Cookie（Next.js のヘルパー）
   const cookieStore = await cookies()
   const token = cookieStore.get('token')
 
@@ -106,41 +106,41 @@ export async function GET(request: Request) {
 }
 ```
 
-## Response Helpers
+## レスポンスヘルパー
 
 ```tsx
-// JSON response
+// JSON レスポンス
 return Response.json({ data })
 
-// With status
+// ステータス付き
 return Response.json({ error: 'Not found' }, { status: 404 })
 
-// With headers
+// ヘッダ付き
 return Response.json(data, {
   headers: {
     'Cache-Control': 'max-age=3600',
   },
 })
 
-// Redirect
+// リダイレクト
 return Response.redirect(new URL('/login', request.url))
 
-// Stream
+// ストリーム
 return new Response(stream, {
   headers: { 'Content-Type': 'text/event-stream' },
 })
 ```
 
-## When to Use Route Handlers vs Server Actions
+## Route Handlers と Server Actions の使い分け
 
-| Use Case | Route Handlers | Server Actions |
+| ユースケース | Route Handlers | Server Actions |
 |----------|----------------|----------------|
-| Form submissions | No | Yes |
-| Data mutations from UI | No | Yes |
-| Third-party webhooks | Yes | No |
-| External API consumption | Yes | No |
-| Public REST API | Yes | No |
-| File uploads | Both work | Both work |
+| フォーム送信 | No | Yes |
+| UI からのデータミューテーション | No | Yes |
+| サードパーティの webhook | Yes | No |
+| 外部 API の利用 | Yes | No |
+| 公開 REST API | Yes | No |
+| ファイルアップロード | どちらも可 | どちらも可 |
 
-**Prefer Server Actions** for mutations triggered from your UI.
-**Use Route Handlers** for external integrations and public APIs.
+**UI からのミューテーションには Server Actions を推奨**。
+**外部連携や公開 API には Route Handlers を使う**。

@@ -1,32 +1,33 @@
 ---
 name: supabase-postgres-best-practices
-description: Postgres performance optimization and best practices from Supabase. Use this skill when writing, reviewing, or optimizing Postgres queries, schema designs, or database configurations.
+description: Supabase が提供する Postgres のパフォーマンス最適化およびベストプラクティス集。Postgres のクエリ・スキーマ設計・データベース設定を記述／レビュー／最適化する際に本スキルを使用する。
 license: MIT
 metadata:
   author: supabase
   version: "1.1.1"
   organization: Supabase
   date: January 2026
-  abstract: Comprehensive Postgres performance optimization guide for developers using Supabase and Postgres. Contains performance rules across 8 categories, prioritized by impact from critical (query performance, connection management) to incremental (advanced features). Each rule includes detailed explanations, incorrect vs. correct SQL examples, query plan analysis, and specific performance metrics to guide automated optimization and code generation.
+  abstract: Supabase および Postgres を利用する開発者向けの包括的な Postgres パフォーマンス最適化ガイド。8 つのカテゴリにわたるパフォーマンスルールを、クエリ性能や接続管理といった CRITICAL なものから、より発展的な機能のような追加的な改善まで、影響度の高い順に整理している。各ルールには詳細な説明、誤った SQL 例と正しい SQL 例、クエリプランの分析、自動最適化やコード生成の指針となる具体的なパフォーマンス指標が含まれる。
 ---
 
 # Supabase Postgres Best Practices
 
-Comprehensive performance optimization guide for Postgres, maintained by Supabase. Contains rules across 8 categories, prioritized by impact to guide automated query optimization and schema design.
+Supabase がメンテナンスする Postgres 向けの包括的なパフォーマンス最適化ガイド。8 つのカテゴリにわたるルールを影響度の高い順に整理し、クエリ最適化とスキーマ設計の自動化を支援する。
 
 ## When to Apply
 
-Reference these guidelines when:
-- Writing SQL queries or designing schemas
-- Implementing indexes or query optimization
-- Reviewing database performance issues
-- Configuring connection pooling or scaling
-- Optimizing for Postgres-specific features
-- Working with Row-Level Security (RLS)
+次のような場面でこのガイドラインを参照する。
+
+- SQL クエリの記述やスキーマ設計を行うとき
+- インデックスの実装やクエリ最適化を行うとき
+- データベースのパフォーマンス問題をレビューするとき
+- connection pool やスケーリングを設定するとき
+- Postgres 固有の機能向けに最適化を行うとき
+- Row-Level Security (RLS) を扱うとき
 
 ## Rule Categories by Priority
 
-| Priority | Category | Impact | Prefix |
+| 優先度 | カテゴリ | 影響度 | プレフィックス |
 |----------|----------|--------|--------|
 | 1 | Query Performance | CRITICAL | `query-` |
 | 2 | Connection Management | CRITICAL | `conn-` |
@@ -39,7 +40,7 @@ Reference these guidelines when:
 
 ## How to Use
 
-Read individual rule files for detailed explanations and SQL examples:
+詳細な説明と SQL 例については、各ルールファイルを参照する。
 
 ```
 references/query-missing-indexes.md
@@ -47,13 +48,14 @@ references/query-partial-indexes.md
 references/_sections.md
 ```
 
-Each rule file contains:
-- Brief explanation of why it matters
-- Incorrect SQL example with explanation
-- Correct SQL example with explanation
-- Optional EXPLAIN output or metrics
-- Additional context and references
-- Supabase-specific notes (when applicable)
+各ルールファイルには次の内容が含まれる。
+
+- なぜそれが重要なのかの簡潔な説明
+- 誤った SQL 例とその解説
+- 正しい SQL 例とその解説
+- 必要に応じた EXPLAIN の出力やメトリクス
+- 追加のコンテキストと参考資料
+- 該当する場合は Supabase 固有の補足
 
 ## References
 

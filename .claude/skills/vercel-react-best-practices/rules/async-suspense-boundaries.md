@@ -7,13 +7,13 @@ tags: async, suspense, streaming, layout-shift
 
 ## Strategic Suspense Boundaries
 
-Instead of awaiting data in async components before returning JSX, use Suspense boundaries to show the wrapper UI faster while data loads.
+async コンポーネントの中で JSX を返す前にデータを await するのではなく、Suspense 境界を使ってラッパー UI を先に表示し、データはバックグラウンドでロードする。
 
-**Incorrect (wrapper blocked by data fetching):**
+**Incorrect (ラッパー全体がデータ取得でブロックされる):**
 
 ```tsx
 async function Page() {
-  const data = await fetchData() // Blocks entire page
+  const data = await fetchData() // ページ全体をブロック
   
   return (
     <div>
@@ -28,9 +28,9 @@ async function Page() {
 }
 ```
 
-The entire layout waits for data even though only the middle section needs it.
+中央セクションだけがデータを必要としているのに、レイアウト全体がデータを待ってしまう。
 
-**Correct (wrapper shows immediately, data streams in):**
+**Correct (ラッパーは即座に表示され、データはストリームで流れてくる):**
 
 ```tsx
 function Page() {
@@ -49,18 +49,18 @@ function Page() {
 }
 
 async function DataDisplay() {
-  const data = await fetchData() // Only blocks this component
+  const data = await fetchData() // このコンポーネントだけがブロックされる
   return <div>{data.content}</div>
 }
 ```
 
-Sidebar, Header, and Footer render immediately. Only DataDisplay waits for data.
+Sidebar、Header、Footer はすぐに描画される。データを待つのは DataDisplay だけ。
 
-**Alternative (share promise across components):**
+**代替 (複数コンポーネントで promise を共有する):**
 
 ```tsx
 function Page() {
-  // Start fetch immediately, but don't await
+  // すぐに fetch を開始するが、await はしない
   const dataPromise = fetchData()
   
   return (
@@ -77,23 +77,23 @@ function Page() {
 }
 
 function DataDisplay({ dataPromise }: { dataPromise: Promise<Data> }) {
-  const data = use(dataPromise) // Unwraps the promise
+  const data = use(dataPromise) // promise を取り出す
   return <div>{data.content}</div>
 }
 
 function DataSummary({ dataPromise }: { dataPromise: Promise<Data> }) {
-  const data = use(dataPromise) // Reuses the same promise
+  const data = use(dataPromise) // 同じ promise を再利用する
   return <div>{data.summary}</div>
 }
 ```
 
-Both components share the same promise, so only one fetch occurs. Layout renders immediately while both components wait together.
+両コンポーネントが同じ promise を共有するので、fetch は 1 回だけ。レイアウトはすぐ描画され、2 つのコンポーネントが同時に待機する。
 
-**When NOT to use this pattern:**
+**このパターンを避けるべきケース:**
 
-- Critical data needed for layout decisions (affects positioning)
-- SEO-critical content above the fold
-- Small, fast queries where suspense overhead isn't worth it
-- When you want to avoid layout shift (loading → content jump)
+- レイアウト判断（配置に影響する）に必要なクリティカルなデータ
+- SEO 上重要な above-the-fold のコンテンツ
+- Suspense のオーバーヘッドに見合わない、小さく高速なクエリ
+- レイアウトシフト（ロード中→コンテンツの飛び）を避けたいとき
 
-**Trade-off:** Faster initial paint vs potential layout shift. Choose based on your UX priorities.
+**トレードオフ:** 初回描画の高速化と、潜在的なレイアウトシフトとの兼ね合い。UX の優先度に応じて選ぶ。

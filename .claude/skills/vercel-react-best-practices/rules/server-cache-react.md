@@ -7,9 +7,9 @@ tags: server, cache, react-cache, deduplication
 
 ## Per-Request Deduplication with React.cache()
 
-Use `React.cache()` for server-side request deduplication. Authentication and database queries benefit most.
+サーバーサイドのリクエスト内重複排除には `React.cache()` を使う。認証チェックや DB クエリで特に効果がある。
 
-**Usage:**
+**使い方:**
 
 ```typescript
 import { cache } from 'react'
@@ -23,54 +23,54 @@ export const getCurrentUser = cache(async () => {
 })
 ```
 
-Within a single request, multiple calls to `getCurrentUser()` execute the query only once.
+1 リクエストの中で `getCurrentUser()` が複数回呼ばれても、クエリは 1 回だけ実行される。
 
-**Avoid inline objects as arguments:**
+**引数にインラインオブジェクトを使わない:**
 
-`React.cache()` uses shallow equality (`Object.is`) to determine cache hits. Inline objects create new references each call, preventing cache hits.
+`React.cache()` はキャッシュヒットの判定に浅い等価性 (`Object.is`) を使う。インラインオブジェクトは呼び出しごとに新しい参照を作るため、キャッシュヒットしない。
 
-**Incorrect (always cache miss):**
+**Incorrect (常にキャッシュミス):**
 
 ```typescript
 const getUser = cache(async (params: { uid: number }) => {
   return await db.user.findUnique({ where: { id: params.uid } })
 })
 
-// Each call creates new object, never hits cache
+// 呼び出しごとに新しいオブジェクトが生成され、キャッシュにヒットしない
 getUser({ uid: 1 })
-getUser({ uid: 1 })  // Cache miss, runs query again
+getUser({ uid: 1 })  // キャッシュミス、再度クエリが走る
 ```
 
-**Correct (cache hit):**
+**Correct (キャッシュヒット):**
 
 ```typescript
 const getUser = cache(async (uid: number) => {
   return await db.user.findUnique({ where: { id: uid } })
 })
 
-// Primitive args use value equality
+// プリミティブは値の等価で判定される
 getUser(1)
-getUser(1)  // Cache hit, returns cached result
+getUser(1)  // キャッシュヒット、キャッシュされた結果を返す
 ```
 
-If you must pass objects, pass the same reference:
+オブジェクトを渡す必要があるなら、同じ参照を渡す:
 
 ```typescript
 const params = { uid: 1 }
-getUser(params)  // Query runs
-getUser(params)  // Cache hit (same reference)
+getUser(params)  // クエリが走る
+getUser(params)  // キャッシュヒット (同じ参照)
 ```
 
-**Next.js-Specific Note:**
+**Next.js 固有の注意:**
 
-In Next.js, the `fetch` API is automatically extended with request memoization. Requests with the same URL and options are automatically deduplicated within a single request, so you don't need `React.cache()` for `fetch` calls. However, `React.cache()` is still essential for other async tasks:
+Next.js では `fetch` API がリクエストメモ化付きに拡張されている。同じ URL とオプションの `fetch` は同一リクエスト内で自動的に重複排除されるため、`fetch` 呼び出しに `React.cache()` は不要。一方、`React.cache()` は以下のような非 fetch 系の非同期処理に依然として重要:
 
-- Database queries (Prisma, Drizzle, etc.)
-- Heavy computations
-- Authentication checks
-- File system operations
-- Any non-fetch async work
+- DB クエリ (Prisma、Drizzle 等)
+- 重い計算
+- 認証チェック
+- ファイルシステム操作
+- その他の非 fetch な非同期処理
 
-Use `React.cache()` to deduplicate these operations across your component tree.
+コンポーネントツリー全体でこれらの処理を重複排除するために `React.cache()` を使う。
 
 Reference: [React.cache documentation](https://react.dev/reference/react/cache)

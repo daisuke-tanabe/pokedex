@@ -1,39 +1,39 @@
-# Image Optimization
+# 画像最適化
 
-Use `next/image` for automatic image optimization.
+`next/image` を使えば画像を自動で最適化できる。
 
-## Always Use next/image
+## 必ず next/image を使う
 
 ```tsx
-// Bad: Avoid native img
+// Bad: ネイティブ img を避ける
 <img src="/hero.png" alt="Hero" />
 
-// Good: Use next/image
+// Good: next/image を使う
 import Image from 'next/image'
 <Image src="/hero.png" alt="Hero" width={800} height={400} />
 ```
 
-## Required Props
+## 必須の props
 
-Images need explicit dimensions to prevent layout shift:
+レイアウトシフトを防ぐため、画像には明示的な寸法が必要。
 
 ```tsx
-// Local images - dimensions inferred automatically
+// ローカル画像 - 寸法は自動で推測される
 import heroImage from './hero.png'
 <Image src={heroImage} alt="Hero" />
 
-// Remote images - must specify width/height
+// リモート画像 - width と height を必ず指定する
 <Image src="https://example.com/image.jpg" alt="Hero" width={800} height={400} />
 
-// Or use fill for parent-relative sizing
+// 親要素に追従させたい場合は fill を使う
 <div style={{ position: 'relative', width: '100%', height: 400 }}>
   <Image src="/hero.png" alt="Hero" fill style={{ objectFit: 'cover' }} />
 </div>
 ```
 
-## Remote Images Configuration
+## リモート画像の設定
 
-Remote domains must be configured in `next.config.js`:
+リモートドメインは `next.config.js` で設定する。
 
 ```js
 // next.config.js
@@ -47,19 +47,19 @@ module.exports = {
       },
       {
         protocol: 'https',
-        hostname: '*.cdn.com', // Wildcard subdomain
+        hostname: '*.cdn.com', // サブドメインのワイルドカード
       },
     ],
   },
 }
 ```
 
-## Responsive Images
+## レスポンシブ画像
 
-Use `sizes` to tell the browser which size to download:
+`sizes` でブラウザにダウンロードすべきサイズを伝える。
 
 ```tsx
-// Full-width hero
+// フル幅のヒーロー画像
 <Image
   src="/hero.png"
   alt="Hero"
@@ -67,7 +67,7 @@ Use `sizes` to tell the browser which size to download:
   sizes="100vw"
 />
 
-// Responsive grid (3 columns on desktop, 1 on mobile)
+// レスポンシブグリッド（デスクトップで 3 カラム、モバイルで 1 カラム）
 <Image
   src="/card.png"
   alt="Card"
@@ -75,7 +75,7 @@ Use `sizes` to tell the browser which size to download:
   sizes="(max-width: 768px) 100vw, 33vw"
 />
 
-// Fixed sidebar image
+// 固定サイズのサイドバー画像
 <Image
   src="/avatar.png"
   alt="Avatar"
@@ -85,16 +85,16 @@ Use `sizes` to tell the browser which size to download:
 />
 ```
 
-## Blur Placeholder
+## blur placeholder
 
-Prevent layout shift with placeholders:
+placeholder でレイアウトシフトを防ぐ。
 
 ```tsx
-// Local images - automatic blur hash
+// ローカル画像 - 自動で blur hash が生成される
 import heroImage from './hero.png'
 <Image src={heroImage} alt="Hero" placeholder="blur" />
 
-// Remote images - provide blurDataURL
+// リモート画像 - blurDataURL を渡す
 <Image
   src="https://example.com/image.jpg"
   alt="Hero"
@@ -104,7 +104,7 @@ import heroImage from './hero.png'
   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRg..."
 />
 
-// Or use color placeholder
+// 単色の placeholder を使う
 <Image
   src="https://example.com/image.jpg"
   alt="Hero"
@@ -115,56 +115,56 @@ import heroImage from './hero.png'
 />
 ```
 
-## Priority Loading
+## 優先読み込み（priority）
 
-Use `priority` for above-the-fold images (LCP):
+ファーストビューに含まれる画像（LCP）には `priority` を使う。
 
 ```tsx
-// Hero image - loads immediately
+// ヒーロー画像 - 即座に読み込む
 <Image src="/hero.png" alt="Hero" fill priority />
 
-// Below-fold images - lazy loaded by default (no priority needed)
+// ファーストビュー外の画像 - 既定で遅延読み込み（priority は不要）
 <Image src="/card.png" alt="Card" width={400} height={300} />
 ```
 
-## Common Mistakes
+## よくあるミス
 
 ```tsx
-// Bad: Missing sizes with fill - downloads largest image
+// Bad: fill 利用時に sizes を指定していない - 最大サイズの画像がダウンロードされる
 <Image src="/hero.png" alt="Hero" fill />
 
-// Good: Add sizes for proper responsive behavior
+// Good: 適切なレスポンシブ挙動になるよう sizes を追加する
 <Image src="/hero.png" alt="Hero" fill sizes="100vw" />
 
-// Bad: Using width/height for aspect ratio only
+// Bad: アスペクト比のためだけに width/height を使う
 <Image src="/hero.png" alt="Hero" width={16} height={9} />
 
-// Good: Use actual display dimensions or fill with sizes
+// Good: 実際の表示寸法を指定するか、fill と sizes を組み合わせる
 <Image src="/hero.png" alt="Hero" fill sizes="100vw" style={{ objectFit: 'cover' }} />
 
-// Bad: Remote image without config
+// Bad: 設定なしのリモート画像
 <Image src="https://untrusted.com/image.jpg" alt="Image" width={400} height={300} />
 // Error: Invalid src prop, hostname not configured
 
-// Good: Add hostname to next.config.js remotePatterns
+// Good: next.config.js の remotePatterns に hostname を追加する
 ```
 
-## Static Export
+## 静的エクスポート
 
-When using `output: 'export'`, use `unoptimized` or custom loader:
+`output: 'export'` を使う場合は、`unoptimized` を指定するかカスタムローダーを使う。
 
 ```tsx
-// Option 1: Disable optimization
+// 選択肢 1: 最適化を無効化する
 <Image src="/hero.png" alt="Hero" width={800} height={400} unoptimized />
 
-// Option 2: Global config
+// 選択肢 2: グローバル設定で無効化する
 // next.config.js
 module.exports = {
   output: 'export',
   images: { unoptimized: true },
 }
 
-// Option 3: Custom loader (Cloudinary, Imgix, etc.)
+// 選択肢 3: カスタムローダー（Cloudinary、Imgix など）
 const cloudinaryLoader = ({ src, width, quality }) => {
   return `https://res.cloudinary.com/demo/image/upload/w_${width},q_${quality || 75}/${src}`
 }

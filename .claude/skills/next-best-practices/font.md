@@ -1,6 +1,6 @@
-# Font Optimization
+# フォント最適化
 
-Use `next/font` for automatic font optimization with zero layout shift.
+`next/font` を使えば、レイアウトシフトなしでフォントを自動最適化できる。
 
 ## Google Fonts
 
@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-## Multiple Fonts
+## 複数フォント
 
 ```tsx
 import { Inter, Roboto_Mono } from 'next/font/google'
@@ -43,7 +43,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
-Use in CSS:
+CSS で使う:
+
 ```css
 body {
   font-family: var(--font-inter);
@@ -54,35 +55,35 @@ code {
 }
 ```
 
-## Font Weights and Styles
+## ウェイトとスタイル
 
 ```tsx
-// Single weight
+// 単一ウェイト
 const inter = Inter({
   subsets: ['latin'],
   weight: '400',
 })
 
-// Multiple weights
+// 複数ウェイト
 const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '700'],
 })
 
-// Variable font (recommended) - includes all weights
+// 可変フォント（推奨） - 全ウェイトを含む
 const inter = Inter({
   subsets: ['latin'],
-  // No weight needed - variable fonts support all weights
+  // 可変フォントは全ウェイトに対応するので weight は不要
 })
 
-// With italic
+// italic も指定
 const inter = Inter({
   subsets: ['latin'],
   style: ['normal', 'italic'],
 })
 ```
 
-## Local Fonts
+## ローカルフォント
 
 ```tsx
 import localFont from 'next/font/local'
@@ -91,7 +92,7 @@ const myFont = localFont({
   src: './fonts/MyFont.woff2',
 })
 
-// Multiple files for different weights
+// ウェイトごとに複数ファイルを指定
 const myFont = localFont({
   src: [
     {
@@ -107,14 +108,14 @@ const myFont = localFont({
   ],
 })
 
-// Variable font
+// 可変フォント
 const myFont = localFont({
   src: './fonts/MyFont-Variable.woff2',
   variable: '--font-my-font',
 })
 ```
 
-## Tailwind CSS Integration
+## Tailwind CSS との統合
 
 ```tsx
 // app/layout.tsx
@@ -147,89 +148,89 @@ module.exports = {
 }
 ```
 
-## Preloading Subsets
+## サブセットのプリロード
 
-Only load needed character subsets:
+必要な文字集合だけを読み込む。
 
 ```tsx
-// Latin only (most common)
+// latin のみ（最も一般的）
 const inter = Inter({ subsets: ['latin'] })
 
-// Multiple subsets
+// 複数のサブセット
 const inter = Inter({ subsets: ['latin', 'latin-ext', 'cyrillic'] })
 ```
 
-## Display Strategy
+## display 戦略
 
-Control font loading behavior:
+フォントの読み込み挙動を制御する。
 
 ```tsx
 const inter = Inter({
   subsets: ['latin'],
-  display: 'swap', // Default - shows fallback, swaps when loaded
+  display: 'swap', // 既定 - フォールバックを表示し、読み込み後に差し替える
 })
 
-// Options:
-// 'auto' - browser decides
-// 'block' - short block period, then swap
-// 'swap' - immediate fallback, swap when ready (recommended)
-// 'fallback' - short block, short swap, then fallback
-// 'optional' - short block, no swap (use if font is optional)
+// 選択肢:
+// 'auto' - ブラウザに任せる
+// 'block' - 短い block 期間の後に swap
+// 'swap' - 即座にフォールバック、ロード後に差し替え（推奨）
+// 'fallback' - 短い block の後、短い swap、最終的にフォールバック
+// 'optional' - 短い block の後、swap なし（フォントがオプション扱いの場合）
 ```
 
-## Don't Use Manual Font Links
+## 手動の font リンクは使わない
 
-Always use `next/font` instead of `<link>` tags for Google Fonts.
+Google Fonts には必ず `next/font` を使い、`<link>` タグは使わない。
 
 ```tsx
-// Bad: Manual link tag (blocks rendering, no optimization)
+// Bad: 手動の link タグ（描画をブロックし、最適化されない）
 <link href="https://fonts.googleapis.com/css2?family=Inter" rel="stylesheet" />
 
-// Bad: Missing display and preconnect
+// Bad: display と preconnect が抜けている
 <link href="https://fonts.googleapis.com/css2?family=Inter" rel="stylesheet" />
 
-// Good: Use next/font (self-hosted, zero layout shift)
+// Good: next/font を使う（self-host されレイアウトシフトもない）
 import { Inter } from 'next/font/google'
 
 const inter = Inter({ subsets: ['latin'] })
 ```
 
-## Common Mistakes
+## よくあるミス
 
 ```tsx
-// Bad: Importing font in every component
+// Bad: 各コンポーネントで font を import している
 // components/Button.tsx
 import { Inter } from 'next/font/google'
-const inter = Inter({ subsets: ['latin'] }) // Creates new instance each time!
+const inter = Inter({ subsets: ['latin'] }) // 呼び出すたびに新規インスタンスが作られる!
 
-// Good: Import once in layout, use CSS variable
+// Good: layout で一度だけ import し、CSS 変数経由で利用する
 // app/layout.tsx
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
-// Bad: Using @import in CSS (blocks rendering)
+// Bad: CSS で @import を使う（描画をブロックする）
 /* globals.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter');
 
-// Good: Use next/font (self-hosted, no network request)
+// Good: next/font を使う（self-host されてネットワークリクエストが発生しない）
 import { Inter } from 'next/font/google'
 
-// Bad: Loading all weights when only using a few
-const inter = Inter({ subsets: ['latin'] }) // Loads all weights
+// Bad: 一部のウェイトしか使わないのに全ウェイトを読み込む
+const inter = Inter({ subsets: ['latin'] }) // 全ウェイトを読み込む
 
-// Good: Specify only needed weights (for non-variable fonts)
+// Good: 可変フォントでなければ、必要なウェイトだけを指定する
 const inter = Inter({ subsets: ['latin'], weight: ['400', '700'] })
 
-// Bad: Missing subset - loads all characters
+// Bad: subset を指定せず全文字を読み込む
 const inter = Inter({})
 
-// Good: Always specify subset
+// Good: 必ず subset を指定する
 const inter = Inter({ subsets: ['latin'] })
 ```
 
-## Font in Specific Components
+## 特定のコンポーネントで使うフォント
 
 ```tsx
-// For component-specific fonts, export from a shared file
+// コンポーネント固有のフォントは共有ファイルから export する
 // lib/fonts.ts
 import { Inter, Playfair_Display } from 'next/font/google'
 

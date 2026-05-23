@@ -1,18 +1,18 @@
 ---
 name: test-environments
-description: Configure environments like jsdom, happy-dom for browser APIs
+description: jsdom や happy-dom などのブラウザ API 向け環境を設定する
 ---
 
-# Test Environments
+# テスト環境
 
-## Available Environments
+## 利用可能な環境
 
-- `node` (default) - Node.js environment
-- `jsdom` - Browser-like with DOM APIs
-- `happy-dom` - Faster alternative to jsdom
+- `node` (デフォルト) - Node.js 環境
+- `jsdom` - DOM API を備えたブラウザライク環境
+- `happy-dom` - jsdom より高速な代替
 - `edge-runtime` - Vercel Edge Runtime
 
-## Configuration
+## 設定
 
 ```ts
 // vitest.config.ts
@@ -20,7 +20,7 @@ defineConfig({
   test: {
     environment: 'jsdom',
     
-    // Environment-specific options
+    // 環境固有のオプション
     environmentOptions: {
       jsdom: {
         url: 'http://localhost',
@@ -30,19 +30,19 @@ defineConfig({
 })
 ```
 
-## Installing Environment Packages
+## 環境パッケージのインストール
 
 ```bash
 # jsdom
 npm i -D jsdom
 
-# happy-dom (faster, fewer APIs)
+# happy-dom (高速・API は少なめ)
 npm i -D happy-dom
 ```
 
-## Per-File Environment
+## ファイル単位の環境
 
-Use magic comment at top of file:
+ファイル先頭にマジックコメントを記述する:
 
 ```ts
 // @vitest-environment jsdom
@@ -55,9 +55,9 @@ test('DOM test', () => {
 })
 ```
 
-## jsdom Environment
+## jsdom 環境
 
-Full browser environment simulation:
+ブラウザ環境を完全にシミュレートする:
 
 ```ts
 // @vitest-environment jsdom
@@ -77,7 +77,7 @@ test('window APIs', () => {
 })
 ```
 
-### jsdom Options
+### jsdom のオプション
 
 ```ts
 defineConfig({
@@ -94,9 +94,9 @@ defineConfig({
 })
 ```
 
-## happy-dom Environment
+## happy-dom 環境
 
-Faster but fewer APIs:
+高速だが API は少ない:
 
 ```ts
 // @vitest-environment happy-dom
@@ -108,9 +108,9 @@ test('basic DOM', () => {
 })
 ```
 
-## Multiple Environments per Project
+## プロジェクトごとに複数の環境
 
-Use projects for different environments:
+異なる環境ごとに project を使う:
 
 ```ts
 defineConfig({
@@ -135,9 +135,9 @@ defineConfig({
 })
 ```
 
-## Custom Environment
+## カスタム環境
 
-Create custom environment package:
+カスタム環境パッケージを作成する:
 
 ```ts
 // vitest-environment-custom/index.ts
@@ -145,10 +145,10 @@ import type { Environment } from 'vitest/runtime'
 
 export default <Environment>{
   name: 'custom',
-  viteEnvironment: 'ssr', // or 'client'
+  viteEnvironment: 'ssr', // または 'client'
   
   setup() {
-    // Setup global state
+    // グローバル状態をセットアップ
     globalThis.myGlobal = 'value'
     
     return {
@@ -160,7 +160,7 @@ export default <Environment>{
 }
 ```
 
-Use with:
+使い方:
 
 ```ts
 defineConfig({
@@ -170,9 +170,9 @@ defineConfig({
 })
 ```
 
-## Environment with VM
+## VM 付きの環境
 
-For full isolation:
+完全な隔離向け:
 
 ```ts
 export default <Environment>{
@@ -197,32 +197,32 @@ export default <Environment>{
 }
 ```
 
-## Browser Mode (Separate from Environments)
+## Browser Mode (環境とは別)
 
-For real browser testing, use Vitest Browser Mode:
+実ブラウザでのテストには Vitest Browser Mode を使う:
 
 ```ts
 defineConfig({
   test: {
     browser: {
       enabled: true,
-      name: 'chromium', // or 'firefox', 'webkit'
+      name: 'chromium', // 'firefox' や 'webkit' も可
       provider: 'playwright',
     },
   },
 })
 ```
 
-## CSS and Assets
+## CSS とアセット
 
-In jsdom/happy-dom, configure CSS handling:
+jsdom / happy-dom では CSS の扱いを設定できる:
 
 ```ts
 defineConfig({
   test: {
-    css: true, // Process CSS
+    css: true, // CSS を処理する
     
-    // Or with options
+    // オプション付き
     css: {
       include: /\.module\.css$/,
       modules: {
@@ -233,9 +233,9 @@ defineConfig({
 })
 ```
 
-## Fixing External Dependencies
+## 外部依存の修正
 
-If external deps fail with CSS/asset errors:
+外部依存が CSS / アセットエラーで失敗する場合:
 
 ```ts
 defineConfig({
@@ -249,14 +249,14 @@ defineConfig({
 })
 ```
 
-## Key Points
+## 要点
 
-- Default is `node` - no browser APIs
-- Use `jsdom` for full browser simulation
-- Use `happy-dom` for faster tests with basic DOM
-- Per-file environment via `// @vitest-environment` comment
-- Use projects for multiple environment configurations
-- Browser Mode is for real browser testing, not environment
+- デフォルトは `node` - ブラウザ API は無い
+- 完全なブラウザシミュレーションには `jsdom` を使う
+- 基本的な DOM だけで高速にテストしたい場合は `happy-dom` を使う
+- ファイル単位の環境指定は `// @vitest-environment` コメントで行う
+- 複数の環境設定には project を使う
+- Browser Mode は環境ではなく実ブラウザテスト用
 
 <!-- 
 Source references:

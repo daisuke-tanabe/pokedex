@@ -1,15 +1,15 @@
 ---
 title: Partition Large Tables for Better Performance
 impact: MEDIUM-HIGH
-impactDescription: 5-20x faster queries and maintenance on large tables
+impactDescription: 大規模テーブルでクエリと運用が 5〜20 倍高速化
 tags: partitioning, large-tables, time-series, performance
 ---
 
 ## Partition Large Tables for Better Performance
 
-Partitioning splits a large table into smaller pieces, improving query performance and maintenance operations.
+partitioning は大規模テーブルを小さな単位に分割し、クエリ性能とメンテナンス性を向上させる。
 
-**Incorrect (single large table):**
+**誤り (単一の巨大テーブル):**
 
 ```sql
 create table events (
@@ -18,12 +18,12 @@ create table events (
   data jsonb
 );
 
--- 500M rows, queries scan everything
-select * from events where created_at > '2024-01-01';  -- Slow
-vacuum events;  -- Takes hours, locks table
+-- 5 億行あり、クエリは全件スキャンされる
+select * from events where created_at > '2024-01-01';  -- 遅い
+vacuum events;  -- 何時間もかかり、テーブルがロックされる
 ```
 
-**Correct (partitioned by time range):**
+**正しい例 (日時範囲で partitioning):**
 
 ```sql
 create table events (
@@ -32,24 +32,24 @@ create table events (
   data jsonb
 ) partition by range (created_at);
 
--- Create partitions for each month
+-- 月ごとにパーティションを作成する
 create table events_2024_01 partition of events
   for values from ('2024-01-01') to ('2024-02-01');
 
 create table events_2024_02 partition of events
   for values from ('2024-02-01') to ('2024-03-01');
 
--- Queries only scan relevant partitions
-select * from events where created_at > '2024-01-15';  -- Only scans events_2024_01+
+-- クエリは関連するパーティションだけをスキャンする
+select * from events where created_at > '2024-01-15';  -- events_2024_01 以降のみスキャン
 
--- Drop old data instantly
-drop table events_2023_01;  -- Instant vs DELETE taking hours
+-- 古いデータを瞬時に削除できる
+drop table events_2023_01;  -- DELETE では何時間もかかるが、こちらは即時
 ```
 
-When to partition:
+partitioning を検討すべきとき:
 
-- Tables > 100M rows
-- Time-series data with date-based queries
-- Need to efficiently drop old data
+- 行数が 1 億を超えるテーブル
+- 日時ベースでクエリする時系列データ
+- 古いデータを効率的に削除したいケース
 
 Reference: [Table Partitioning](https://www.postgresql.org/docs/current/ddl-partitioning.html)

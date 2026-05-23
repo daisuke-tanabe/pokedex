@@ -1,10 +1,10 @@
-# Self-Hosting Next.js
+# Next.js のセルフホスティング
 
-Deploy Next.js outside of Vercel with confidence.
+Vercel 以外の環境にも自信を持って Next.js をデプロイする。
 
-## Quick Start: Standalone Output
+## クイックスタート: Standalone Output
 
-For Docker or any containerized deployment, use standalone output:
+Docker やコンテナ化された環境向けには standalone output を使う。
 
 ```js
 // next.config.js
@@ -13,48 +13,48 @@ module.exports = {
 };
 ```
 
-This creates a minimal `standalone` folder with only production dependencies:
+これにより、本番の依存関係だけを含む最小限の `standalone` フォルダが作られる:
 
 ```
 .next/
 ├── standalone/
-│   ├── server.js          # Entry point
-│   ├── node_modules/      # Only production deps
-│   └── .next/             # Build output
-└── static/                # Must be copied separately
+│   ├── server.js          # エントリポイント
+│   ├── node_modules/      # 本番依存のみ
+│   └── .next/             # ビルド出力
+└── static/                # 別途コピーする必要がある
 ```
 
-## Docker Deployment
+## Docker デプロイ
 
 ### Dockerfile
 
 ```dockerfile
 FROM node:20-alpine AS base
 
-# Install dependencies
+# 依存関係のインストール
 FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-# Build
+# ビルド
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-# Production
+# 本番
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Create non-root user
+# 非 root ユーザーの作成
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy standalone output
+# standalone output をコピー
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
@@ -88,9 +88,9 @@ services:
       retries: 3
 ```
 
-## PM2 Deployment
+## PM2 でのデプロイ
 
-For traditional server deployments:
+従来型のサーバー向け:
 
 ```js
 // ecosystem.config.js
@@ -113,29 +113,29 @@ npm run build
 pm2 start ecosystem.config.js
 ```
 
-## ISR and Cache Handlers
+## ISR とキャッシュハンドラ
 
-### The Problem
+### 問題点
 
-ISR (Incremental Static Regeneration) uses filesystem caching by default. This **breaks with multiple instances**:
+ISR (Incremental Static Regeneration) は既定でファイルシステムキャッシュを使う。これは **マルチインスタンス環境では破綻** する:
 
-- Instance A regenerates page → saves to its local disk
-- Instance B serves stale page → doesn't see Instance A's cache
-- Load balancer sends users to random instances → inconsistent content
+- インスタンス A がページを再生成 → 自分のディスクに保存
+- インスタンス B が古いページを返す → A のキャッシュを認識できない
+- ロードバランサがランダムにインスタンスを振り分ける → コンテンツが一貫しない
 
-### Solution: Custom Cache Handler
+### 解決策: カスタムキャッシュハンドラ
 
-Next.js 14+ supports custom cache handlers for shared storage:
+Next.js 14 以降は共有ストレージ用のカスタムキャッシュハンドラをサポートする:
 
 ```js
 // next.config.js
 module.exports = {
   cacheHandler: require.resolve('./cache-handler.js'),
-  cacheMaxMemorySize: 0, // Disable in-memory cache
+  cacheMaxMemorySize: 0, // インメモリキャッシュを無効化
 };
 ```
 
-#### Redis Cache Handler Example
+#### Redis キャッシュハンドラの例
 
 ```js
 // cache-handler.js
@@ -166,7 +166,7 @@ module.exports = class CacheHandler {
       lastModified: Date.now(),
     };
 
-    // Set TTL based on revalidate option
+    // revalidate オプションに応じて TTL を設定
     if (ctx?.revalidate) {
       await redis.setex(
         CACHE_PREFIX + key,
@@ -179,13 +179,13 @@ module.exports = class CacheHandler {
   }
 
   async revalidateTag(tags) {
-    // Implement tag-based invalidation
-    // This requires tracking which keys have which tags
+    // タグベースの invalidate を実装する
+    // どのキーにどのタグが付いているかを追跡する必要がある
   }
 };
 ```
 
-#### S3 Cache Handler Example
+#### S3 キャッシュハンドラの例
 
 ```js
 // cache-handler.js
@@ -223,43 +223,44 @@ module.exports = class CacheHandler {
 };
 ```
 
-## What Works vs What Needs Setup
+## そのまま動くもの / 追加設定が必要なもの
 
-| Feature | Single Instance | Multi-Instance | Notes |
+| Feature | 単一インスタンス | マルチインスタンス | 補足 |
 |---------|----------------|----------------|-------|
-| SSR | Yes | Yes | No special setup |
-| SSG | Yes | Yes | Built at deploy time |
-| ISR | Yes | Needs cache handler | Filesystem cache breaks |
-| Image Optimization | Yes | Yes | CPU-intensive, consider CDN |
-| Middleware | Yes | Yes | Runs on Node.js |
-| Edge Runtime | Limited | Limited | Some features Node-only |
-| `revalidatePath/Tag` | Yes | Needs cache handler | Must share cache |
-| `next/font` | Yes | Yes | Fonts bundled at build |
-| Draft Mode | Yes | Yes | Cookie-based |
+| SSR | Yes | Yes | 特別な設定は不要 |
+| SSG | Yes | Yes | デプロイ時にビルドされる |
+| ISR | Yes | キャッシュハンドラが必要 | ファイルシステムキャッシュは破綻する |
+| Image Optimization | Yes | Yes | CPU 負荷が高い。CDN の利用を検討 |
+| Middleware | Yes | Yes | Node.js 上で動く |
+| Edge Runtime | 限定的 | 限定的 | 一部機能は Node.js 限定 |
+| `revalidatePath/Tag` | Yes | キャッシュハンドラが必要 | キャッシュ共有が前提 |
+| `next/font` | Yes | Yes | ビルド時にフォントがバンドルされる |
+| Draft Mode | Yes | Yes | cookie ベース |
 
-## Image Optimization
+## 画像最適化
 
-Next.js Image Optimization works out of the box but is CPU-intensive.
+Next.js の画像最適化はそのまま動くが、CPU 負荷が高い。
 
-### Option 1: Built-in (Simple)
+### 選択肢 1: 組み込み（シンプル）
 
-Works automatically, but consider:
-- Set `deviceSizes` and `imageSizes` in config to limit variants
-- Use `minimumCacheTTL` to reduce regeneration
+自動で動くが、次を考慮する:
+
+- バリエーション数を制限するため、config で `deviceSizes` と `imageSizes` を設定する
+- 再生成を抑えるため `minimumCacheTTL` を設定する
 
 ```js
 // next.config.js
 module.exports = {
   images: {
-    minimumCacheTTL: 60 * 60 * 24, // 24 hours
-    deviceSizes: [640, 750, 1080, 1920], // Limit sizes
+    minimumCacheTTL: 60 * 60 * 24, // 24 時間
+    deviceSizes: [640, 750, 1080, 1920], // サイズを制限
   },
 };
 ```
 
-### Option 2: External Loader (Recommended for Scale)
+### 選択肢 2: 外部ローダー（スケールを見据えるなら推奨）
 
-Offload to Cloudinary, Imgix, or similar:
+Cloudinary や Imgix などにオフロードする:
 
 ```js
 // next.config.js
@@ -279,22 +280,22 @@ export default function cloudinaryLoader({ src, width, quality }) {
 }
 ```
 
-## Environment Variables
+## 環境変数
 
-### Build-time vs Runtime
+### ビルドタイム vs ランタイム
 
 ```js
-// Available at build time only (baked into bundle)
+// ビルドタイムのみ利用可能（バンドルに焼き込まれる）
 NEXT_PUBLIC_API_URL=https://api.example.com
 
-// Available at runtime (server-side only)
+// ランタイムで利用可能（server 側のみ）
 DATABASE_URL=postgresql://...
 API_SECRET=...
 ```
 
-### Runtime Configuration
+### ランタイム設定
 
-For truly dynamic config, don't use `NEXT_PUBLIC_*`. Instead:
+本当に動的な設定が欲しいなら `NEXT_PUBLIC_*` を使わない。代わりに:
 
 ```tsx
 // app/api/config/route.ts
@@ -306,9 +307,9 @@ export async function GET() {
 }
 ```
 
-## OpenNext: Serverless Without Vercel
+## OpenNext: Vercel を使わないサーバーレス
 
-[OpenNext](https://open-next.js.org/) adapts Next.js for AWS Lambda, Cloudflare Workers, etc.
+[OpenNext](https://open-next.js.org/) は Next.js を AWS Lambda、Cloudflare Workers などに適合させる。
 
 ```bash
 npx create-sst@latest
@@ -316,21 +317,22 @@ npx create-sst@latest
 npx @opennextjs/aws build
 ```
 
-Supports:
+サポート対象:
+
 - AWS Lambda + CloudFront
 - Cloudflare Workers
 - Netlify Functions
 - Deno Deploy
 
-## Health Check Endpoint
+## ヘルスチェックエンドポイント
 
-Always include a health check for load balancers:
+ロードバランサ用に必ずヘルスチェックを用意する:
 
 ```tsx
 // app/api/health/route.ts
 export async function GET() {
   try {
-    // Optional: check database connection
+    // 任意: DB 接続のチェック
     // await db.$queryRaw`SELECT 1`;
 
     return Response.json({ status: 'healthy' }, { status: 200 });
@@ -340,32 +342,32 @@ export async function GET() {
 }
 ```
 
-## Pre-Deployment Checklist
+## デプロイ前チェックリスト
 
-1. **Build locally first**: `npm run build` - catch errors before deploy
-2. **Test standalone output**: `node .next/standalone/server.js`
-3. **Set `output: 'standalone'`** for Docker
-4. **Configure cache handler** for multi-instance ISR
-5. **Set `HOSTNAME="0.0.0.0"`** for containers
-6. **Copy `public/` and `.next/static/`** - not included in standalone
-7. **Add health check endpoint**
-8. **Test ISR revalidation** after deployment
-9. **Monitor memory usage** - Node.js defaults may need tuning
+1. **まずローカルでビルド**: `npm run build` でデプロイ前にエラーを潰す
+2. **standalone output をテスト**: `node .next/standalone/server.js`
+3. **Docker なら `output: 'standalone'` を設定**
+4. **マルチインスタンスの ISR には cache handler を設定**
+5. **コンテナ向けに `HOSTNAME="0.0.0.0"` を設定**
+6. **`public/` と `.next/static/` をコピー** - standalone には含まれない
+7. **ヘルスチェックエンドポイントを追加**
+8. **デプロイ後に ISR の revalidation をテスト**
+9. **メモリ使用量を監視** - Node.js のデフォルト値はチューニングが必要なことがある
 
-## Testing Cache Handler
+## キャッシュハンドラのテスト
 
-**Critical**: Test your cache handler on every Next.js upgrade:
+**重要**: Next.js をアップグレードするたびにキャッシュハンドラをテストする:
 
 ```bash
-# Start multiple instances
+# 複数インスタンスを起動
 PORT=3001 node .next/standalone/server.js &
 PORT=3002 node .next/standalone/server.js &
 
-# Trigger ISR revalidation
+# ISR の revalidation をトリガー
 curl http://localhost:3001/api/revalidate?path=/posts
 
-# Verify both instances see the update
+# 両インスタンスが更新を認識しているか確認
 curl http://localhost:3001/posts
 curl http://localhost:3002/posts
-# Should return identical content
+# 同じ内容が返るはず
 ```

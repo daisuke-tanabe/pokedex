@@ -1,26 +1,26 @@
-# Parallel & Intercepting Routes
+# 並列ルートとインターセプトルート
 
-Parallel routes render multiple pages in the same layout. Intercepting routes show a different UI when navigating from within your app vs direct URL access. Together they enable modal patterns.
+並列ルートは、同じ layout 内で複数のページを描画する。インターセプトルートは、アプリ内からの遷移と URL への直接アクセスで異なる UI を表示する。両者を組み合わせるとモーダルパターンを実現できる。
 
-## File Structure
+## ファイル構成
 
 ```
 app/
-├── @modal/                    # Parallel route slot
-│   ├── default.tsx            # Required! Returns null
-│   ├── (.)photos/             # Intercepts /photos/*
+├── @modal/                    # 並列ルートのスロット
+│   ├── default.tsx            # 必須! null を返す
+│   ├── (.)photos/             # /photos/* をインターセプト
 │   │   └── [id]/
-│   │       └── page.tsx       # Modal content
-│   └── [...]catchall/         # Optional: catch unmatched
+│   │       └── page.tsx       # モーダルの中身
+│   └── [...]catchall/         # 任意: 未マッチをキャッチする
 │       └── page.tsx
 ├── photos/
 │   └── [id]/
-│       └── page.tsx           # Full page (direct access)
-├── layout.tsx                 # Renders both children and @modal
+│       └── page.tsx           # フルページ（直接アクセス）
+├── layout.tsx                 # children と @modal を両方レンダリング
 └── page.tsx
 ```
 
-## Step 1: Root Layout with Slot
+## ステップ 1: スロット付きのルートレイアウト
 
 ```tsx
 // app/layout.tsx
@@ -42,9 +42,9 @@ export default function RootLayout({
 }
 ```
 
-## Step 2: Default File (Critical!)
+## ステップ 2: default ファイル（重要!）
 
-**Every parallel route slot MUST have a `default.tsx`** to prevent 404s on hard navigation.
+**並列ルートのスロットには必ず `default.tsx` を置く**。これがないとハードナビゲーション時に 404 になる。
 
 ```tsx
 // app/@modal/default.tsx
@@ -53,11 +53,11 @@ export default function Default() {
 }
 ```
 
-Without this file, refreshing any page will 404 because Next.js can't determine what to render in the `@modal` slot.
+このファイルが無いと、どんなページでもリロード時に 404 になる。`@modal` スロットでレンダリングすべき内容を Next.js が判断できないためだ。
 
-## Step 3: Intercepting Route (Modal)
+## ステップ 3: インターセプトルート（モーダル）
 
-The `(.)` prefix intercepts routes at the same level.
+`(.)` プレフィックスで同階層のルートをインターセプトする。
 
 ```tsx
 // app/@modal/(.)photos/[id]/page.tsx
@@ -79,7 +79,7 @@ export default async function PhotoModal({
 }
 ```
 
-## Step 4: Full Page (Direct Access)
+## ステップ 4: フルページ（直接アクセス）
 
 ```tsx
 // app/photos/[id]/page.tsx
@@ -100,9 +100,9 @@ export default async function PhotoPage({
 }
 ```
 
-## Step 5: Modal Component with Correct Closing
+## ステップ 5: 正しい閉じ方を持つモーダルコンポーネント
 
-**Critical: Use `router.back()` to close modals, NOT `router.push()` or `<Link>`.**
+**重要: モーダルを閉じるには `router.back()` を使う。`router.push()` や `<Link>` は使わない。**
 
 ```tsx
 // components/modal.tsx
@@ -115,21 +115,21 @@ export function Modal({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  // Close on escape key
+  // Escape キーで閉じる
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        router.back(); // Correct
+        router.back(); // 正しい
       }
     }
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [router]);
 
-  // Close on overlay click
+  // オーバーレイクリックで閉じる
   const handleOverlayClick = useCallback((e: React.MouseEvent) => {
     if (e.target === overlayRef.current) {
-      router.back(); // Correct
+      router.back(); // 正しい
     }
   }, [router]);
 
@@ -141,7 +141,7 @@ export function Modal({ children }: { children: React.ReactNode }) {
     >
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
         <button
-          onClick={() => router.back()} // Correct!
+          onClick={() => router.back()} // 正しい!
           className="absolute top-4 right-4"
         >
           Close
@@ -153,39 +153,42 @@ export function Modal({ children }: { children: React.ReactNode }) {
 }
 ```
 
-### Why NOT `router.push('/')` or `<Link href="/">`?
+### `router.push('/')` や `<Link href="/">` を使わない理由
 
-Using `push` or `Link` to "close" a modal:
-1. Adds a new history entry (back button shows modal again)
-2. Doesn't properly clear the intercepted route
-3. Can cause the modal to flash or persist unexpectedly
+`push` や `Link` でモーダルを「閉じる」と:
 
-`router.back()` correctly:
-1. Removes the intercepted route from history
-2. Returns to the previous page
-3. Properly unmounts the modal
+1. 新しい履歴エントリが追加される（戻るボタンでモーダルが再表示される）
+2. インターセプトされたルートが正しくクリアされない
+3. モーダルが一瞬チラついたり、想定外に残ったりする
 
-## Route Matcher Reference
+`router.back()` を使えば:
 
-Matchers match **route segments**, not filesystem paths:
+1. 履歴からインターセプトされたルートが取り除かれる
+2. 元のページに戻る
+3. モーダルが正しくアンマウントされる
 
-| Matcher | Matches | Example |
+## マッチャーのリファレンス
+
+マッチャーは **ルートセグメント** にマッチする。ファイルシステムのパスではない。
+
+| マッチャー | マッチ対象 | 例 |
 |---------|---------|---------|
-| `(.)` | Same level | `@modal/(.)photos` intercepts `/photos` |
-| `(..)` | One level up | `@modal/(..)settings` from `/dashboard/@modal` intercepts `/settings` |
-| `(..)(..)` | Two levels up | Rarely used |
-| `(...)` | From root | `@modal/(...)photos` intercepts `/photos` from anywhere |
+| `(.)` | 同階層 | `@modal/(.)photos` が `/photos` をインターセプト |
+| `(..)` | 1 階層上 | `/dashboard/@modal` 配下の `@modal/(..)settings` が `/settings` をインターセプト |
+| `(..)(..)` | 2 階層上 | あまり使わない |
+| `(...)` | ルートから | `@modal/(...)photos` が `/photos` をどこからでもインターセプト |
 
-**Common mistake**: Thinking `(..)` means "parent folder" - it means "parent route segment".
+**よくある誤解**: `(..)` を「親フォルダ」と捉えてしまう。実際は「親のルートセグメント」を意味する。
 
-## Handling Hard Navigation
+## ハードナビゲーションの扱い
 
-When users directly visit `/photos/123` (bookmark, refresh, shared link):
-- The intercepting route is bypassed
-- The full `photos/[id]/page.tsx` renders
-- Modal doesn't appear (expected behavior)
+ユーザーが `/photos/123` に直接アクセスした場合（ブックマーク、リロード、共有リンクなど）:
 
-If you want the modal to appear on direct access too, you need additional logic:
+- インターセプトルートは適用されない
+- `photos/[id]/page.tsx` の本体がレンダリングされる
+- モーダルは表示されない（想定通りの挙動）
+
+直接アクセス時にもモーダル風にしたい場合は、追加のロジックが必要:
 
 ```tsx
 // app/photos/[id]/page.tsx
@@ -195,7 +198,7 @@ export default async function PhotoPage({ params }) {
   const { id } = await params;
   const photo = await getPhoto(id);
 
-  // Option: Render as modal on direct access too
+  // 案: 直接アクセス時にも Modal として描画する
   return (
     <Modal>
       <img src={photo.url} alt={photo.title} />
@@ -204,47 +207,48 @@ export default async function PhotoPage({ params }) {
 }
 ```
 
-## Common Gotchas
+## よくある落とし穴
 
-### 1. Missing `default.tsx` → 404 on Refresh
+### 1. `default.tsx` 不足によるリロード 404
 
-Every `@slot` folder needs a `default.tsx` that returns `null` (or appropriate content).
+すべての `@slot` フォルダには `null`（あるいは適切な内容）を返す `default.tsx` が必要。
 
-### 2. Modal Persists After Navigation
+### 2. ナビゲーション後もモーダルが残る
 
-You're using `router.push()` instead of `router.back()`.
+`router.back()` ではなく `router.push()` を使っているのが原因。
 
-### 3. Nested Parallel Routes Need Defaults Too
+### 3. ネストした並列ルートには default もネストして配置する
 
-If you have `@modal` inside a route group, each level needs its own `default.tsx`:
+ルートグループ内に `@modal` を置く場合、各階層に `default.tsx` が必要:
 
 ```
 app/
 ├── (marketing)/
 │   ├── @modal/
-│   │   └── default.tsx     # Needed!
+│   │   └── default.tsx     # 必要!
 │   └── layout.tsx
 └── layout.tsx
 ```
 
-### 4. Intercepted Route Shows Wrong Content
+### 4. インターセプトされたルートの中身がおかしい
 
-Check your matcher:
-- `(.)photos` intercepts `/photos` from the same route level
-- If your `@modal` is in `app/dashboard/@modal`, use `(.)photos` to intercept `/dashboard/photos`, not `/photos`
+マッチャーを再確認する:
 
-### 5. TypeScript Errors with `params`
+- `(.)photos` は同じルート階層から `/photos` をインターセプトする
+- `@modal` が `app/dashboard/@modal` にあるなら、`(.)photos` がインターセプトするのは `/dashboard/photos` であって `/photos` ではない
 
-In Next.js 15+, `params` is a Promise:
+### 5. `params` で TypeScript エラー
+
+Next.js 15 以降では `params` は Promise:
 
 ```tsx
-// Correct
+// 正しい
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 }
 ```
 
-## Complete Example: Photo Gallery Modal
+## 完全な例: フォトギャラリーモーダル
 
 ```
 app/
@@ -254,14 +258,14 @@ app/
 │       └── [id]/
 │           └── page.tsx
 ├── photos/
-│   ├── page.tsx           # Gallery grid
+│   ├── page.tsx           # ギャラリーのグリッド
 │   └── [id]/
-│       └── page.tsx       # Full photo page
+│       └── page.tsx       # フルページの写真
 ├── layout.tsx
 └── page.tsx
 ```
 
-Links in the gallery:
+ギャラリー内のリンク:
 
 ```tsx
 // app/photos/page.tsx
@@ -282,6 +286,6 @@ export default async function Gallery() {
 }
 ```
 
-Clicking a photo → Modal opens (intercepted)
-Direct URL → Full page renders
-Refresh while modal open → Full page renders
+写真クリック → モーダルが開く（インターセプト）
+直接 URL アクセス → フルページが描画される
+モーダルを開いたままリロード → フルページが描画される

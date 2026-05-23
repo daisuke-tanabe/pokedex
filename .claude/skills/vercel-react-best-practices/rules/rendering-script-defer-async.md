@@ -7,16 +7,16 @@ tags: rendering, script, defer, async, performance
 
 ## Use defer or async on Script Tags
 
-**Impact: HIGH (eliminates render-blocking)**
+**Impact: HIGH (レンダリングブロックを排除する)**
 
-Script tags without `defer` or `async` block HTML parsing while the script downloads and executes. This delays First Contentful Paint and Time to Interactive.
+`defer` も `async` も付かない script タグは、スクリプトのダウンロードと実行のあいだ HTML パースをブロックする。これは First Contentful Paint と Time to Interactive を遅らせる。
 
-- **`defer`**: Downloads in parallel, executes after HTML parsing completes, maintains execution order
-- **`async`**: Downloads in parallel, executes immediately when ready, no guaranteed order
+- **`defer`**: 並行ダウンロード、HTML パース完了後に実行、実行順序を保持する
+- **`async`**: 並行ダウンロード、準備でき次第すぐ実行、実行順序は保証されない
 
-Use `defer` for scripts that depend on DOM or other scripts. Use `async` for independent scripts like analytics.
+DOM や他スクリプトに依存するスクリプトには `defer`、analytics のような独立したスクリプトには `async` を使う。
 
-**Incorrect (blocks rendering):**
+**Incorrect (描画をブロックする):**
 
 ```tsx
 export default function Document() {
@@ -32,16 +32,16 @@ export default function Document() {
 }
 ```
 
-**Correct (non-blocking):**
+**Correct (ブロックしない):**
 
 ```tsx
 export default function Document() {
   return (
     <html>
       <head>
-        {/* Independent script - use async */}
+        {/* 独立したスクリプト - async を使う */}
         <script src="https://example.com/analytics.js" async />
-        {/* DOM-dependent script - use defer */}
+        {/* DOM に依存するスクリプト - defer を使う */}
         <script src="/scripts/utils.js" defer />
       </head>
       <body>{/* content */}</body>
@@ -50,7 +50,7 @@ export default function Document() {
 }
 ```
 
-**Note:** In Next.js, prefer the `next/script` component with `strategy` prop instead of raw script tags:
+**注意:** Next.js では生の script タグではなく、`strategy` prop を指定した `next/script` コンポーネントを優先する:
 
 ```tsx
 import Script from 'next/script'

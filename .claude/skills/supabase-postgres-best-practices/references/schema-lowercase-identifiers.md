@@ -1,54 +1,54 @@
 ---
 title: Use Lowercase Identifiers for Compatibility
 impact: MEDIUM
-impactDescription: Avoid case-sensitivity bugs with tools, ORMs, and AI assistants
+impactDescription: ツール、ORM、AI アシスタントとの大小文字によるバグを回避できる
 tags: naming, identifiers, case-sensitivity, schema, conventions
 ---
 
 ## Use Lowercase Identifiers for Compatibility
 
-PostgreSQL folds unquoted identifiers to lowercase. Quoted mixed-case identifiers require quotes forever and cause issues with tools, ORMs, and AI assistants that may not recognize them.
+PostgreSQL は引用符なしの識別子を小文字に畳み込む。引用符付きで大小文字を混在させると常に引用符が必要となり、ツールや ORM、AI アシスタントが認識できずに問題を引き起こす。
 
-**Incorrect (mixed-case identifiers):**
+**誤り (大小文字を混在させた識別子):**
 
 ```sql
--- Quoted identifiers preserve case but require quotes everywhere
+-- 引用符付き識別子は大小文字を保持するが、どこでも引用符が必須になる
 CREATE TABLE "Users" (
   "userId" bigint PRIMARY KEY,
   "firstName" text,
   "lastName" text
 );
 
--- Must always quote or queries fail
+-- 引用符を付けないとクエリが失敗する
 SELECT "firstName" FROM "Users" WHERE "userId" = 1;
 
--- This fails - Users becomes users without quotes
+-- 失敗例 - 引用符を外すと Users は users に畳み込まれる
 SELECT firstName FROM Users;
 -- ERROR: relation "users" does not exist
 ```
 
-**Correct (lowercase snake_case):**
+**正しい例 (lowercase snake_case):**
 
 ```sql
--- Unquoted lowercase identifiers are portable and tool-friendly
+-- 引用符なしの lowercase 識別子は可搬性があり、ツールにも優しい
 CREATE TABLE users (
   user_id bigint PRIMARY KEY,
   first_name text,
   last_name text
 );
 
--- Works without quotes, recognized by all tools
+-- 引用符なしで動作し、あらゆるツールから認識される
 SELECT first_name FROM users WHERE user_id = 1;
 ```
 
-Common sources of mixed-case identifiers:
+大小文字混在の識別子が混入しがちな経路:
 
 ```sql
--- ORMs often generate quoted camelCase - configure them to use snake_case
--- Migrations from other databases may preserve original casing
--- Some GUI tools quote identifiers by default - disable this
+-- ORM は camelCase の引用符付き識別子を生成しやすい - snake_case を使うよう設定する
+-- 別のデータベースからのマイグレーションは元の大小文字を保持しがち
+-- 一部の GUI ツールはデフォルトで引用符を付与する - 無効化する
 
--- If stuck with mixed-case, create views as a compatibility layer
+-- 大小文字混在から逃れられない場合は、互換レイヤとして view を作る
 CREATE VIEW users AS SELECT "userId" AS user_id, "firstName" AS first_name FROM "Users";
 ```
 

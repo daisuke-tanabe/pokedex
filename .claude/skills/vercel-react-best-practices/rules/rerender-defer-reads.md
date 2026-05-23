@@ -7,9 +7,9 @@ tags: rerender, searchParams, localStorage, optimization
 
 ## Defer State Reads to Usage Point
 
-Don't subscribe to dynamic state (searchParams, localStorage) if you only read it inside callbacks.
+コールバック内でしか読まない動的状態 (searchParams、localStorage 等) は subscribe しない。
 
-**Incorrect (subscribes to all searchParams changes):**
+**Incorrect (searchParams のあらゆる変更を subscribe してしまう):**
 
 ```tsx
 function ShareButton({ chatId }: { chatId: string }) {
@@ -24,7 +24,7 @@ function ShareButton({ chatId }: { chatId: string }) {
 }
 ```
 
-**Correct (reads on demand, no subscription):**
+**Correct (必要なときだけ読み、subscribe しない):**
 
 ```tsx
 function ShareButton({ chatId }: { chatId: string }) {

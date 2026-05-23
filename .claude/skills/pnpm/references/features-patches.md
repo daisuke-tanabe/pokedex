@@ -1,48 +1,48 @@
 ---
 name: pnpm-patches
-description: Patch third-party packages directly with customized fixes
+description: サードパーティパッケージに独自パッチを当てて修正を加える
 ---
 
-# pnpm Patches
+# pnpm の Patches
 
-pnpm's patching feature lets you modify third-party packages directly. Useful for applying fixes before upstream releases or customizing package behavior.
+pnpm のパッチ機能を使うと、サードパーティパッケージを直接修正できる。上流のリリース前に修正を適用したり、パッケージの挙動をカスタマイズする際に有用である。
 
-## Creating a Patch
+## パッチの作成
 
-### Step 1: Initialize Patch
+### Step 1: パッチを初期化
 
 ```bash
 pnpm patch <pkg>@<version>
 
-# Example
+# 例
 pnpm patch express@4.18.2
 ```
 
-This creates a temporary directory with the package source and outputs the path:
+これにより、パッケージのソースを含む一時ディレクトリが作成され、そのパスが出力される。
 
 ```
 You can now edit the following folder: /tmp/abc123...
 ```
 
-### Step 2: Edit Files
+### Step 2: ファイルを編集
 
-Navigate to the temporary directory and make your changes:
+一時ディレクトリへ移動し、必要な変更を加える。
 
 ```bash
 cd /tmp/abc123...
-# Edit files as needed
+# 必要に応じてファイルを編集
 ```
 
-### Step 3: Commit Patch
+### Step 3: パッチをコミット
 
 ```bash
-pnpm patch-commit <path-from-step-1>
+pnpm patch-commit <step1 で出力されたパス>
 
-# Example
+# 例
 pnpm patch-commit /tmp/abc123...
 ```
 
-This creates a `.patch` file in `patches/` and updates `package.json`:
+これにより `patches/` 配下に `.patch` ファイルが作成され、`package.json` が更新される。
 
 ```
 patches/
@@ -59,9 +59,9 @@ patches/
 }
 ```
 
-## Patch File Format
+## パッチファイルの形式
 
-Patches use standard unified diff format:
+パッチは標準の unified diff 形式である。
 
 ```diff
 diff --git a/lib/router/index.js b/lib/router/index.js
@@ -76,42 +76,42 @@ index abc123..def456 100644
  }
 ```
 
-## Managing Patches
+## パッチの管理
 
-### List Patched Packages
+### パッチが当たっているパッケージを一覧表示
 
 ```bash
 pnpm list --depth=0
-# Shows (patched) marker for patched packages
+# パッチ済みパッケージには (patched) マーカーが表示される
 ```
 
-### Update a Patch
+### パッチを更新
 
 ```bash
-# Edit existing patch
+# 既存パッチを編集
 pnpm patch express@4.18.2
 
-# After editing
+# 編集が終わったら
 pnpm patch-commit <path>
 ```
 
-### Remove a Patch
+### パッチを削除
 
 ```bash
 pnpm patch-remove <pkg>@<version>
 
-# Example  
+# 例
 pnpm patch-remove express@4.18.2
 ```
 
-Or manually:
-1. Delete the patch file from `patches/`
-2. Remove entry from `patchedDependencies` in `package.json`
-3. Run `pnpm install`
+または手動で行う場合は、
+1. `patches/` 配下のパッチファイルを削除
+2. `package.json` の `patchedDependencies` から該当エントリを削除
+3. `pnpm install` を実行
 
-## Patch Configuration
+## パッチの設定
 
-### Custom Patches Directory
+### パッチディレクトリのカスタマイズ
 
 ```json
 {
@@ -123,7 +123,7 @@ Or manually:
 }
 ```
 
-### Multiple Packages
+### 複数パッケージにパッチ
 
 ```json
 {
@@ -139,10 +139,10 @@ Or manually:
 
 ## Workspaces
 
-Patches are shared across the workspace. Define in the root `package.json`:
+パッチは workspace 全体で共有される。ルート `package.json` で定義する。
 
 ```json
-// Root package.json
+// ルートの package.json
 {
   "pnpm": {
     "patchedDependencies": {
@@ -152,48 +152,48 @@ Patches are shared across the workspace. Define in the root `package.json`:
 }
 ```
 
-All workspace packages using `express@4.18.2` will have the patch applied.
+これにより、`express@4.18.2` を使用するすべての workspace パッケージにパッチが適用される。
 
-## Best Practices
+## ベストプラクティス
 
-1. **Version specificity**: Patches are tied to exact versions. Update patches when upgrading dependencies.
+1. **バージョンの厳密性**: パッチは正確なバージョンに紐づく。依存をアップグレードする際はパッチも更新する。
 
-2. **Document patches**: Add comments explaining why the patch exists:
+2. **パッチを文書化する**: パッチの存在理由を説明するコメントを残す。
    ```bash
-   # In patches/README.md
+   # patches/README.md 内
    ## express@4.18.2.patch
-   Fixes timeout issue. PR pending: https://github.com/expressjs/express/pull/1234
+   タイムアウト問題を修正。上流 PR は対応中: https://github.com/expressjs/express/pull/1234
    ```
 
-3. **Minimize patches**: Keep patches small and focused. Large patches are hard to maintain.
+3. **パッチは最小限に**: 小さく焦点を絞ったものにする。大きなパッチは保守が難しい。
 
-4. **Track upstream**: Note upstream issues/PRs so you can remove patches when fixed.
+4. **上流を追う**: 上流の issue や PR を控えておき、修正されたらパッチを除去できるようにする。
 
-5. **Test patches**: Ensure patched code works correctly in your use case.
+5. **パッチを検証する**: パッチ済みコードが自分のユースケースで正しく動くことを確認する。
 
-## Troubleshooting
+## トラブルシューティング
 
-### Patch fails to apply
+### パッチが適用できない
 
 ```
 ERR_PNPM_PATCH_FAILED  Cannot apply patch
 ```
 
-The package version changed. Recreate the patch:
+パッケージのバージョンが変わっている。パッチを作り直す。
 ```bash
 pnpm patch-remove express@4.18.2
 pnpm patch express@4.18.2
-# Reapply changes
+# 変更を再適用
 pnpm patch-commit <path>
 ```
 
-### Patch not applied
+### パッチが適用されない
 
-Ensure:
-1. Version in `patchedDependencies` matches installed version exactly
-2. Run `pnpm install` after adding patch configuration
+以下を確認する。
+1. `patchedDependencies` のバージョンが、インストール済みバージョンと完全一致している
+2. パッチ設定を追加した後に `pnpm install` を実行している
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/cli/patch
 - https://pnpm.io/cli/patch-commit

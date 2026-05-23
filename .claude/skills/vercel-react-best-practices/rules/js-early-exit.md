@@ -7,9 +7,9 @@ tags: javascript, functions, optimization, early-return
 
 ## Early Return from Functions
 
-Return early when result is determined to skip unnecessary processing.
+結果が確定した時点で早期 return し、無駄な処理を行わないようにする。
 
-**Incorrect (processes all items even after finding answer):**
+**Incorrect (結果が決まった後も全項目を処理してしまう):**
 
 ```typescript
 function validateUsers(users: User[]) {
@@ -25,14 +25,14 @@ function validateUsers(users: User[]) {
       hasError = true
       errorMessage = 'Name required'
     }
-    // Continues checking all users even after error found
+    // エラーが見つかった後もすべての user を検査し続けてしまう
   }
   
   return hasError ? { valid: false, error: errorMessage } : { valid: true }
 }
 ```
 
-**Correct (returns immediately on first error):**
+**Correct (最初のエラーで即 return):**
 
 ```typescript
 function validateUsers(users: User[]) {

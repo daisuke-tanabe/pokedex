@@ -1,38 +1,38 @@
 ---
 title: Add Indexes on WHERE and JOIN Columns
 impact: CRITICAL
-impactDescription: 100-1000x faster queries on large tables
+impactDescription: 大規模テーブルで 100〜1000 倍の高速化
 tags: indexes, performance, sequential-scan, query-optimization
 ---
 
 ## Add Indexes on WHERE and JOIN Columns
 
-Queries filtering or joining on unindexed columns cause full table scans, which become exponentially slower as tables grow.
+インデックスのないカラムでフィルタや join を行うとフルテーブルスキャンが発生し、テーブルが大きくなるほど指数関数的に遅くなる。
 
-**Incorrect (sequential scan on large table):**
+**誤り (大きなテーブルで sequential scan が走る):**
 
 ```sql
--- No index on customer_id causes full table scan
+-- customer_id にインデックスがないためフルテーブルスキャンになる
 select * from orders where customer_id = 123;
 
--- EXPLAIN shows: Seq Scan on orders (cost=0.00..25000.00 rows=100 width=85)
+-- EXPLAIN: Seq Scan on orders (cost=0.00..25000.00 rows=100 width=85)
 ```
 
-**Correct (index scan):**
+**正しい例 (インデックススキャン):**
 
 ```sql
--- Create index on frequently filtered column
+-- 頻繁にフィルタするカラムにインデックスを作成する
 create index orders_customer_id_idx on orders (customer_id);
 
 select * from orders where customer_id = 123;
 
--- EXPLAIN shows: Index Scan using orders_customer_id_idx (cost=0.42..8.44 rows=100 width=85)
+-- EXPLAIN: Index Scan using orders_customer_id_idx (cost=0.42..8.44 rows=100 width=85)
 ```
 
-For JOIN columns, always index the foreign key side:
+JOIN するカラム、特に foreign key 側には必ずインデックスを張る:
 
 ```sql
--- Index the referencing column
+-- 参照する側のカラムにインデックスを張る
 create index orders_customer_id_idx on orders (customer_id);
 
 select c.name, o.total

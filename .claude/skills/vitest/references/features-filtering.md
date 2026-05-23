@@ -1,62 +1,62 @@
 ---
 name: test-filtering
-description: Filter tests by name, file patterns, and tags
+description: 名前、ファイルパターン、タグでテストを絞り込む
 ---
 
-# Test Filtering
+# テストの絞り込み
 
-## CLI Filtering
+## CLI でのフィルタリング
 
-### By File Path
+### ファイルパスで絞り込む
 
 ```bash
-# Run files containing "user"
+# "user" を含むファイルを実行
 vitest user
 
-# Multiple patterns
+# 複数パターン
 vitest user auth
 
-# Specific file
+# 特定のファイル
 vitest src/user.test.ts
 
-# By line number
+# 行番号で指定
 vitest src/user.test.ts:25
 ```
 
-### By Test Name
+### テスト名で絞り込む
 
 ```bash
-# Tests matching pattern
+# パターンに一致するテスト
 vitest -t "login"
 vitest --testNamePattern "should.*work"
 
-# Regex patterns
+# 正規表現パターン
 vitest -t "/user|auth/"
 ```
 
-## Changed Files
+## 変更ファイル
 
 ```bash
-# Uncommitted changes
+# 未コミットの変更
 vitest --changed
 
-# Since specific commit
+# 特定のコミット以降
 vitest --changed HEAD~1
 vitest --changed abc123
 
-# Since branch
+# 特定のブランチ以降
 vitest --changed origin/main
 ```
 
-## Related Files
+## 関連ファイル
 
-Run tests that import specific files:
+特定のファイルを import しているテストを実行する:
 
 ```bash
 vitest related src/utils.ts src/api.ts --run
 ```
 
-Useful with lint-staged:
+lint-staged と組み合わせると便利:
 
 ```js
 // .lintstagedrc.js
@@ -65,7 +65,7 @@ export default {
 }
 ```
 
-## Focus Tests (.only)
+## Focus テスト (.only)
 
 ```ts
 test.only('only this runs', () => {})
@@ -75,41 +75,41 @@ describe.only('only this suite', () => {
 })
 ```
 
-In CI, `.only` throws error unless configured:
+CI では設定しない限り `.only` は例外を投げる:
 
 ```ts
 defineConfig({
   test: {
-    allowOnly: true, // Allow .only in CI
+    allowOnly: true, // CI でも .only を許可
   },
 })
 ```
 
-## Skip Tests
+## Skip テスト
 
 ```ts
 test.skip('skipped', () => {})
 
-// Conditional
+// 条件付き
 test.skipIf(process.env.CI)('not in CI', () => {})
 test.runIf(!process.env.CI)('local only', () => {})
 
-// Dynamic skip
+// 動的 skip
 test('dynamic', ({ skip }) => {
   skip(someCondition, 'reason')
 })
 ```
 
-## Tags
+## タグ
 
-Filter by custom tags:
+カスタムタグで絞り込む:
 
 ```ts
 test('database test', { tags: ['db'] }, () => {})
 test('slow test', { tags: ['slow', 'integration'] }, () => {})
 ```
 
-Run tagged tests:
+タグ付きのテストを実行:
 
 ```bash
 vitest --tags db
@@ -117,56 +117,56 @@ vitest --tags "db,slow"      # OR
 vitest --tags db --tags slow # OR
 ```
 
-Configure allowed tags:
+許可するタグを設定する:
 
 ```ts
 defineConfig({
   test: {
     tags: ['db', 'slow', 'integration'],
-    strictTags: true, // Fail on unknown tags
+    strictTags: true, // 未知のタグで失敗させる
   },
 })
 ```
 
-## Include/Exclude Patterns
+## include / exclude パターン
 
 ```ts
 defineConfig({
   test: {
-    // Test file patterns
+    // テストファイルのパターン
     include: ['**/*.{test,spec}.{ts,tsx}'],
     
-    // Exclude patterns
+    // 除外パターン
     exclude: [
       '**/node_modules/**',
       '**/e2e/**',
       '**/*.skip.test.ts',
     ],
     
-    // Include source for in-source testing
+    // in-source testing 用の source 指定
     includeSource: ['src/**/*.ts'],
   },
 })
 ```
 
-## Watch Mode Filtering
+## watch モードでの絞り込み
 
-In watch mode, press:
-- `p` - Filter by filename pattern
-- `t` - Filter by test name pattern
-- `a` - Run all tests
-- `f` - Run only failed tests
+watch モード中にキーを押す:
+- `p` - ファイル名パターンで絞り込み
+- `t` - テスト名パターンで絞り込み
+- `a` - 全テストを実行
+- `f` - 失敗したテストだけを実行
 
-## Projects Filtering
+## プロジェクトでの絞り込み
 
-Run specific project:
+特定の project を実行する:
 
 ```bash
 vitest --project unit
 vitest --project integration --project e2e
 ```
 
-## Environment-based Filtering
+## 環境による絞り込み
 
 ```ts
 const isDev = process.env.NODE_ENV === 'development'
@@ -176,33 +176,33 @@ describe.skipIf(isCI)('local only tests', () => {})
 describe.runIf(isDev)('dev tests', () => {})
 ```
 
-## Combining Filters
+## フィルタの組み合わせ
 
 ```bash
-# File pattern + test name + changed
+# ファイルパターン + テスト名 + 変更
 vitest user -t "login" --changed
 
-# Related files + run mode
+# 関連ファイル + run モード
 vitest related src/auth.ts --run
 ```
 
-## List Tests Without Running
+## 実行せずに一覧表示
 
 ```bash
-vitest list                 # Show all test names
-vitest list -t "user"       # Filter by name
-vitest list --filesOnly     # Show only file paths
-vitest list --json          # JSON output
+vitest list                 # 全テスト名を表示
+vitest list -t "user"       # 名前で絞り込み
+vitest list --filesOnly     # ファイルパスのみ表示
+vitest list --json          # JSON 出力
 ```
 
-## Key Points
+## 要点
 
-- Use `-t` for test name pattern filtering
-- `--changed` runs only tests affected by changes
-- `--related` runs tests importing specific files
-- Tags provide semantic test grouping
-- Use `.only` for debugging, but configure CI to reject it
-- Watch mode has interactive filtering
+- テスト名パターンの絞り込みには `-t` を使う
+- `--changed` は変更の影響を受けるテストのみを実行する
+- `--related` は特定のファイルを import するテストを実行する
+- タグは意味のある単位でテストをグループ化する
+- デバッグ用途には `.only` を使い、CI では拒否する設定にする
+- watch モードでは対話的に絞り込める
 
 <!-- 
 Source references:

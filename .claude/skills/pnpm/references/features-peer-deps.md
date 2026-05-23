@@ -1,39 +1,39 @@
 ---
 name: pnpm-peer-dependencies
-description: Handling peer dependencies with auto-install and resolution rules
+description: 自動インストールと解決ルールによる peer dependency の取り扱い
 ---
 
-# pnpm Peer Dependencies
+# pnpm の Peer Dependencies
 
-pnpm has strict peer dependency handling by default. It provides configuration options to control how peer dependencies are resolved and reported.
+pnpm はデフォルトで peer dependency を厳格に扱う。解決方法や警告の出し方を制御する設定を提供している。
 
-## Auto-Install Peer Dependencies
+## Peer dependency の自動インストール
 
-By default, pnpm automatically installs peer dependencies:
+デフォルトでは、pnpm は peer dependency を自動的にインストールする。
 
 ```ini
-# .npmrc (default is true since pnpm v8)
+# .npmrc (pnpm v8 以降のデフォルトは true)
 auto-install-peers=true
 ```
 
-When enabled, pnpm automatically adds missing peer dependencies based on the best matching version.
+有効な場合、不足している peer dependency をベストマッチのバージョンで自動的に追加する。
 
-## Strict Peer Dependencies
+## Strict な peer dependency
 
-Control whether peer dependency issues cause errors:
+peer dependency の問題でエラーにするかどうかを制御する。
 
 ```ini
-# Fail on peer dependency issues (default: false)
+# peer dependency の問題で失敗させる (デフォルト: false)
 strict-peer-dependencies=true
 ```
 
-When strict, pnpm will fail if:
-- Peer dependency is missing
-- Installed version doesn't match required range
+strict にすると、次の場合に失敗する。
+- peer dependency が不足している
+- インストール済みバージョンが要求範囲に合わない
 
-## Peer Dependency Rules
+## Peer dependency のルール
 
-Configure peer dependency behavior in `package.json`:
+`package.json` で peer dependency の挙動を設定する。
 
 ```json
 {
@@ -51,7 +51,7 @@ Configure peer dependency behavior in `package.json`:
 
 ### ignoreMissing
 
-Suppress warnings for missing peer dependencies:
+不足している peer dependency の警告を抑制する。
 
 ```json
 {
@@ -67,14 +67,14 @@ Suppress warnings for missing peer dependencies:
 }
 ```
 
-Use patterns:
-- `"react"` - exact package name
-- `"@babel/*"` - all packages in scope
-- `"*"` - all packages (not recommended)
+利用可能なパターン:
+- `"react"` — パッケージ名の完全一致
+- `"@babel/*"` — スコープ配下のすべてのパッケージ
+- `"*"` — すべてのパッケージ (非推奨)
 
 ### allowedVersions
 
-Allow specific versions that would otherwise cause warnings:
+警告対象になる特定バージョンを許可する。
 
 ```json
 {
@@ -92,7 +92,7 @@ Allow specific versions that would otherwise cause warnings:
 
 ### allowAny
 
-Allow any version for specified peer dependencies:
+指定の peer dependency に対して任意のバージョンを許可する。
 
 ```json
 {
@@ -104,14 +104,14 @@ Allow any version for specified peer dependencies:
 }
 ```
 
-## Adding Peer Dependencies via Hooks
+## Hook で peer dependency を追加
 
-Use `.pnpmfile.cjs` to add missing peer dependencies:
+`.pnpmfile.cjs` で不足する peer dependency を補える。
 
 ```js
 // .pnpmfile.cjs
 function readPackage(pkg, context) {
-  // Add missing peer dependency
+  // 不足する peer dependency を追加
   if (pkg.name === 'problematic-package') {
     pkg.peerDependencies = {
       ...pkg.peerDependencies,
@@ -128,9 +128,9 @@ module.exports = {
 }
 ```
 
-## Peer Dependencies in Workspaces
+## Workspaces における peer dependency
 
-Workspace packages can satisfy peer dependencies:
+workspace パッケージ自身が peer dependency を満たせる。
 
 ```json
 // packages/app/package.json
@@ -141,7 +141,7 @@ Workspace packages can satisfy peer dependencies:
   }
 }
 
-// packages/components/package.json  
+// packages/components/package.json
 {
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0"
@@ -149,11 +149,11 @@ Workspace packages can satisfy peer dependencies:
 }
 ```
 
-The workspace `app` provides `react` which satisfies `components`' peer dependency.
+workspace の `app` が `react` を提供することで、`components` の peer dependency を満たす。
 
-## Common Scenarios
+## よくあるシナリオ
 
-### Monorepo with Shared React
+### Monorepo で React を共有
 
 ```yaml
 # pnpm-workspace.yaml
@@ -181,7 +181,7 @@ catalog:
 }
 ```
 
-### Suppress ESLint Plugin Warnings
+### ESLint プラグインの警告を抑制
 
 ```json
 {
@@ -196,7 +196,7 @@ catalog:
 }
 ```
 
-### Allow Multiple Major Versions
+### 複数のメジャーバージョンを許容
 
 ```json
 {
@@ -211,28 +211,28 @@ catalog:
 }
 ```
 
-## Debugging Peer Dependencies
+## Peer dependency のデバッグ
 
 ```bash
-# See why a package is installed
+# パッケージがインストールされている理由を確認
 pnpm why <package>
 
-# List all peer dependency warnings
+# すべての peer dependency 警告を列挙
 pnpm install --reporter=append-only 2>&1 | grep -i peer
 
-# Check dependency tree
+# 依存ツリーを確認
 pnpm list --depth=Infinity
 ```
 
-## Best Practices
+## ベストプラクティス
 
-1. **Enable auto-install-peers** for convenience (default in pnpm v8+)
+1. **`auto-install-peers` を有効化する**: 利便性が高い (pnpm v8 以降のデフォルト)
 
-2. **Use peerDependencyRules** instead of ignoring all warnings
+2. **`peerDependencyRules` を使う**: すべての警告を握りつぶすのではなく、ルールで制御する
 
-3. **Document suppressed warnings** explaining why they're safe
+3. **抑制した警告は文書化する**: なぜ安全なのかを説明する
 
-4. **Keep peer deps ranges wide** in libraries:
+4. **ライブラリでは peer dependency の範囲を広く保つ**:
    ```json
    {
      "peerDependencies": {
@@ -241,9 +241,9 @@ pnpm list --depth=Infinity
    }
    ```
 
-5. **Test with different peer versions** if you support multiple majors
+5. **複数のメジャーをサポートする場合は実際に複数で検証する**
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/package_json#pnpmpeerdependencyrules
 - https://pnpm.io/npmrc#auto-install-peers

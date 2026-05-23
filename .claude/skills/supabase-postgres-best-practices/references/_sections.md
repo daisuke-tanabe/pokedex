@@ -1,39 +1,39 @@
-# Section Definitions
+# セクション定義
 
-This file defines the rule categories for Postgres best practices. Rules are automatically assigned to sections based on their filename prefix.
+このファイルでは Postgres ベストプラクティスのルールカテゴリを定義する。各ルールは、ファイル名のプレフィックスをもとに自動的にセクションへ割り当てられる。
 
-Take the examples below as pure demonstrative. Replace each section with the actual rule categories for Postgres best practices.
+以下の例はあくまでデモ用なので、各セクションは Postgres ベストプラクティスの実際のルールカテゴリで置き換えること。
 
 ---
 
 ## 1. Query Performance (query)
-**Impact:** CRITICAL
-**Description:** Slow queries, missing indexes, inefficient query plans. The most common source of Postgres performance issues.
+**影響度:** CRITICAL
+**説明:** クエリの遅さ、欠落したインデックス、非効率なクエリプラン。Postgres のパフォーマンス問題で最も一般的な原因。
 
 ## 2. Connection Management (conn)
-**Impact:** CRITICAL
-**Description:** Connection pooling, limits, and serverless strategies. Critical for applications with high concurrency or serverless deployments.
+**影響度:** CRITICAL
+**説明:** connection pool、接続数上限、サーバーレス向け戦略。高並列なアプリケーションやサーバーレスデプロイで特に重要。
 
 ## 3. Security & RLS (security)
-**Impact:** CRITICAL
-**Description:** Row-Level Security policies, privilege management, and authentication patterns.
+**影響度:** CRITICAL
+**説明:** Row-Level Security ポリシー、権限管理、認証パターン。
 
 ## 4. Schema Design (schema)
-**Impact:** HIGH
-**Description:** Table design, index strategies, partitioning, and data type selection. Foundation for long-term performance.
+**影響度:** HIGH
+**説明:** テーブル設計、インデックス戦略、partitioning、データ型の選定。長期的なパフォーマンスの基盤となる領域。
 
 ## 5. Concurrency & Locking (lock)
-**Impact:** MEDIUM-HIGH
-**Description:** Transaction management, isolation levels, deadlock prevention, and lock contention patterns.
+**影響度:** MEDIUM-HIGH
+**説明:** トランザクション管理、隔離レベル、deadlock の防止、ロック競合のパターン。
 
 ## 6. Data Access Patterns (data)
-**Impact:** MEDIUM
-**Description:** N+1 query elimination, batch operations, cursor-based pagination, and efficient data fetching.
+**影響度:** MEDIUM
+**説明:** N+1 クエリの解消、バッチ処理、cursor ベースのページネーション、効率的なデータ取得。
 
 ## 7. Monitoring & Diagnostics (monitor)
-**Impact:** LOW-MEDIUM
-**Description:** Using pg_stat_statements, EXPLAIN ANALYZE, metrics collection, and performance diagnostics.
+**影響度:** LOW-MEDIUM
+**説明:** pg_stat_statements、EXPLAIN ANALYZE、メトリクス収集、パフォーマンス診断の活用。
 
 ## 8. Advanced Features (advanced)
-**Impact:** LOW
-**Description:** Full-text search, JSONB optimization, PostGIS, extensions, and advanced Postgres features.
+**影響度:** LOW
+**説明:** full text search、JSONB の最適化、PostGIS、拡張機能、その他 Postgres の発展的な機能。

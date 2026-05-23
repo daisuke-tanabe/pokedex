@@ -1,55 +1,55 @@
-# File Conventions
+# ファイル規約
 
-Next.js App Router uses file-based routing with special file conventions.
+Next.js App Router はファイルベースのルーティングと特殊なファイル規約を採用している。
 
-## Project Structure
+## プロジェクト構成
 
-Reference: https://nextjs.org/docs/app/getting-started/project-structure
+参考: https://nextjs.org/docs/app/getting-started/project-structure
 
 ```
 app/
-├── layout.tsx          # Root layout (required)
-├── page.tsx            # Home page (/)
-├── loading.tsx         # Loading UI
-├── error.tsx           # Error UI
+├── layout.tsx          # ルートレイアウト（必須）
+├── page.tsx            # ホームページ (/)
+├── loading.tsx         # ローディング UI
+├── error.tsx           # エラー UI
 ├── not-found.tsx       # 404 UI
-├── global-error.tsx    # Global error UI
-├── route.ts            # API endpoint
-├── template.tsx        # Re-rendered layout
-├── default.tsx         # Parallel route fallback
+├── global-error.tsx    # グローバルエラー UI
+├── route.ts            # API エンドポイント
+├── template.tsx        # 再レンダリングされるレイアウト
+├── default.tsx         # 並列ルートのフォールバック
 ├── blog/
 │   ├── page.tsx        # /blog
 │   └── [slug]/
 │       └── page.tsx    # /blog/:slug
-└── (group)/            # Route group (no URL impact)
+└── (group)/            # ルートグループ（URL には影響しない）
     └── page.tsx
 ```
 
-## Special Files
+## 特殊ファイル
 
-| File | Purpose |
+| ファイル | 用途 |
 |------|---------|
-| `page.tsx` | UI for a route segment |
-| `layout.tsx` | Shared UI for segment and children |
-| `loading.tsx` | Loading UI (Suspense boundary) |
-| `error.tsx` | Error UI (Error boundary) |
+| `page.tsx` | ルートセグメントの UI |
+| `layout.tsx` | セグメントとその子で共有される UI |
+| `loading.tsx` | ローディング UI（Suspense 境界） |
+| `error.tsx` | エラー UI（Error 境界） |
 | `not-found.tsx` | 404 UI |
-| `route.ts` | API endpoint |
-| `template.tsx` | Like layout but re-renders on navigation |
-| `default.tsx` | Fallback for parallel routes |
+| `route.ts` | API エンドポイント |
+| `template.tsx` | layout と似ているがナビゲーション時に再レンダリングされる |
+| `default.tsx` | 並列ルートのフォールバック |
 
-## Route Segments
+## ルートセグメント
 
 ```
 app/
-├── blog/               # Static segment: /blog
-├── [slug]/             # Dynamic segment: /:slug
-├── [...slug]/          # Catch-all: /a/b/c
-├── [[...slug]]/        # Optional catch-all: / or /a/b/c
-└── (marketing)/        # Route group (ignored in URL)
+├── blog/               # 静的セグメント: /blog
+├── [slug]/             # 動的セグメント: /:slug
+├── [...slug]/          # catch-all: /a/b/c
+├── [[...slug]]/        # オプショナル catch-all: / または /a/b/c
+└── (marketing)/        # ルートグループ（URL では無視される）
 ```
 
-## Parallel Routes
+## 並列ルート
 
 ```
 app/
@@ -57,50 +57,50 @@ app/
 │   └── page.tsx
 ├── @sidebar/
 │   └── page.tsx
-└── layout.tsx          # Receives { analytics, sidebar } as props
+└── layout.tsx          # props として { analytics, sidebar } を受け取る
 ```
 
-## Intercepting Routes
+## インターセプトルート
 
 ```
 app/
 ├── feed/
 │   └── page.tsx
 ├── @modal/
-│   └── (.)photo/[id]/  # Intercepts /photo/[id] from /feed
+│   └── (.)photo/[id]/  # /feed から /photo/[id] をインターセプト
 │       └── page.tsx
 └── photo/[id]/
     └── page.tsx
 ```
 
-Conventions:
-- `(.)` - same level
-- `(..)` - one level up
-- `(..)(..)` - two levels up
-- `(...)` - from root
+規約:
+- `(.)` - 同じ階層
+- `(..)` - 1 つ上の階層
+- `(..)(..)` - 2 つ上の階層
+- `(...)` - ルートから
 
-## Private Folders
+## プライベートフォルダ
 
 ```
 app/
-├── _components/        # Private folder (not a route)
+├── _components/        # プライベートフォルダ（ルートではない）
 │   └── Button.tsx
 └── page.tsx
 ```
 
-Prefix with `_` to exclude from routing.
+`_` をプレフィックスにすることでルーティング対象から除外できる。
 
 ## Middleware / Proxy
 
 ### Next.js 14-15: `middleware.ts`
 
 ```ts
-// middleware.ts (root of project)
+// middleware.ts（プロジェクトルート）
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // Auth, redirects, rewrites, etc.
+  // 認証、リダイレクト、リライトなど
   return NextResponse.next();
 }
 
@@ -111,15 +111,15 @@ export const config = {
 
 ### Next.js 16+: `proxy.ts`
 
-Renamed for clarity - same capabilities, different names:
+意味を明確にするためにリネームされた。機能は同じで、名前だけが変わる。
 
 ```ts
-// proxy.ts (root of project)
+// proxy.ts（プロジェクトルート）
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
-  // Same logic as middleware
+  // middleware と同じロジック
   return NextResponse.next();
 }
 
@@ -128,13 +128,13 @@ export const config = {
 };
 ```
 
-| Version | File | Export | Config |
+| バージョン | ファイル | エクスポート | Config |
 |---------|------|--------|--------|
 | v14-15 | `middleware.ts` | `middleware()` | `config` |
 | v16+ | `proxy.ts` | `proxy()` | `config` |
 
-**Migration**: Run `npx @next/codemod@latest upgrade` to auto-rename.
+**マイグレーション**: `npx @next/codemod@latest upgrade` を実行すると自動でリネームされる。
 
-## File Conventions Reference
+## ファイル規約リファレンス
 
-Reference: https://nextjs.org/docs/app/api-reference/file-conventions
+参考: https://nextjs.org/docs/app/api-reference/file-conventions

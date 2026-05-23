@@ -1,13 +1,13 @@
 ---
 name: next-cache-components
-description: Next.js 16 Cache Components - PPR, use cache directive, cacheLife, cacheTag, updateTag
+description: Next.js 16 の Cache Components - PPR、use cache ディレクティブ、cacheLife、cacheTag、updateTag
 ---
 
 # Cache Components (Next.js 16+)
 
-Cache Components enable Partial Prerendering (PPR) - mix static, cached, and dynamic content in a single route.
+Cache Components を使うと Partial Prerendering (PPR) が有効になり、1 つのルート内で静的・キャッシュ・動的なコンテンツを混在させられる。
 
-## Enable Cache Components
+## Cache Components を有効化する
 
 ```ts
 // next.config.ts
@@ -20,32 +20,32 @@ const nextConfig: NextConfig = {
 export default nextConfig
 ```
 
-This replaces the old `experimental.ppr` flag.
+これは従来の `experimental.ppr` フラグを置き換える。
 
 ---
 
-## Three Content Types
+## 3 種類のコンテンツタイプ
 
-With Cache Components enabled, content falls into three categories:
+Cache Components を有効化すると、コンテンツは以下の 3 つに分類される。
 
-### 1. Static (Auto-Prerendered)
+### 1. 静的（自動プリレンダリング）
 
-Synchronous code, imports, pure computations - prerendered at build time:
+同期コード、import、純粋計算などはビルド時にプリレンダリングされる。
 
 ```tsx
 export default function Page() {
   return (
     <header>
-      <h1>Our Blog</h1>  {/* Static - instant */}
+      <h1>Our Blog</h1>  {/* 静的 - 即時表示 */}
       <nav>...</nav>
     </header>
   )
 }
 ```
 
-### 2. Cached (`use cache`)
+### 2. キャッシュ（`use cache`）
 
-Async data that doesn't need fresh fetches every request:
+毎リクエスト最新化が不要な非同期データ。
 
 ```tsx
 async function BlogPosts() {
@@ -57,9 +57,9 @@ async function BlogPosts() {
 }
 ```
 
-### 3. Dynamic (Suspense)
+### 3. 動的（Suspense）
 
-Runtime data that must be fresh - wrap in Suspense:
+常に最新が必要なランタイムデータは Suspense で包む。
 
 ```tsx
 import { Suspense } from 'react'
@@ -67,10 +67,10 @@ import { Suspense } from 'react'
 export default function Page() {
   return (
     <>
-      <BlogPosts />  {/* Cached */}
+      <BlogPosts />  {/* キャッシュ */}
 
       <Suspense fallback={<p>Loading...</p>}>
-        <UserPreferences />  {/* Dynamic - streams in */}
+        <UserPreferences />  {/* 動的 - ストリーミング配信 */}
       </Suspense>
     </>
   )
@@ -84,21 +84,21 @@ async function UserPreferences() {
 
 ---
 
-## `use cache` Directive
+## `use cache` ディレクティブ
 
-### File Level
+### ファイル単位
 
 ```tsx
 'use cache'
 
 export default async function Page() {
-  // Entire page is cached
+  // ページ全体がキャッシュされる
   const data = await fetchData()
   return <div>{data}</div>
 }
 ```
 
-### Component Level
+### コンポーネント単位
 
 ```tsx
 export async function CachedComponent() {
@@ -108,7 +108,7 @@ export async function CachedComponent() {
 }
 ```
 
-### Function Level
+### 関数単位
 
 ```tsx
 export async function getData() {
@@ -119,45 +119,45 @@ export async function getData() {
 
 ---
 
-## Cache Profiles
+## キャッシュプロファイル
 
-### Built-in Profiles
+### 組み込みプロファイル
 
 ```tsx
-'use cache'                    // Default: 5m stale, 15m revalidate
+'use cache'                    // デフォルト: stale 5 分、revalidate 15 分
 ```
 
 ```tsx
-'use cache: remote'           // Platform-provided cache (Redis, KV)
+'use cache: remote'           // プラットフォーム提供のキャッシュ（Redis、KV）
 ```
 
 ```tsx
-'use cache: private'          // For compliance, allows runtime APIs
+'use cache: private'          // コンプライアンス用途。ランタイム API の利用を許可
 ```
 
-### `cacheLife()` - Custom Lifetime
+### `cacheLife()` - 寿命をカスタマイズ
 
 ```tsx
 import { cacheLife } from 'next/cache'
 
 async function getData() {
   'use cache'
-  cacheLife('hours')  // Built-in profile
+  cacheLife('hours')  // 組み込みプロファイル
   return fetch('/api/data')
 }
 ```
 
-Built-in profiles: `'default'`, `'minutes'`, `'hours'`, `'days'`, `'weeks'`, `'max'`
+組み込みプロファイル: `'default'`, `'minutes'`, `'hours'`, `'days'`, `'weeks'`, `'max'`
 
-### Inline Configuration
+### インライン設定
 
 ```tsx
 async function getData() {
   'use cache'
   cacheLife({
-    stale: 3600,      // 1 hour - serve stale while revalidating
-    revalidate: 7200, // 2 hours - background revalidation interval
-    expire: 86400,    // 1 day - hard expiration
+    stale: 3600,      // 1 時間 - 再検証中も stale を返す
+    revalidate: 7200, // 2 時間 - バックグラウンド再検証の間隔
+    expire: 86400,    // 1 日 - ハード期限
   })
   return fetch('/api/data')
 }
@@ -165,9 +165,9 @@ async function getData() {
 
 ---
 
-## Cache Invalidation
+## キャッシュ無効化
 
-### `cacheTag()` - Tag Cached Content
+### `cacheTag()` - キャッシュにタグを付ける
 
 ```tsx
 import { cacheTag } from 'next/cache'
@@ -185,9 +185,9 @@ async function getProduct(id: string) {
 }
 ```
 
-### `updateTag()` - Immediate Invalidation
+### `updateTag()` - 即時無効化
 
-Use when you need the cache refreshed within the same request:
+同一リクエスト内でキャッシュを更新したい場合に使う。
 
 ```tsx
 'use server'
@@ -196,13 +196,13 @@ import { updateTag } from 'next/cache'
 
 export async function updateProduct(id: string, data: FormData) {
   await db.products.update({ where: { id }, data })
-  updateTag(`product-${id}`)  // Immediate - same request sees fresh data
+  updateTag(`product-${id}`)  // 即時 - 同一リクエスト内で最新データが見える
 }
 ```
 
-### `revalidateTag()` - Background Revalidation
+### `revalidateTag()` - バックグラウンド再検証
 
-Use for stale-while-revalidate behavior:
+stale-while-revalidate 動作に使う。
 
 ```tsx
 'use server'
@@ -211,27 +211,27 @@ import { revalidateTag } from 'next/cache'
 
 export async function createPost(data: FormData) {
   await db.posts.create({ data })
-  revalidateTag('posts')  // Background - next request sees fresh data
+  revalidateTag('posts')  // バックグラウンド - 次のリクエストから最新データが見える
 }
 ```
 
 ---
 
-## Runtime Data Constraint
+## ランタイムデータの制約
 
-**Cannot** access `cookies()`, `headers()`, or `searchParams` inside `use cache`.
+`use cache` 内では `cookies()`、`headers()`、`searchParams` に**アクセスできない**。
 
-### Solution: Pass as Arguments
+### 解決策: 引数として渡す
 
 ```tsx
-// Wrong - runtime API inside use cache
+// 誤り - use cache 内でランタイム API を使っている
 async function CachedProfile() {
   'use cache'
-  const session = (await cookies()).get('session')?.value  // Error!
+  const session = (await cookies()).get('session')?.value  // エラー！
   return <div>{session}</div>
 }
 
-// Correct - extract outside, pass as argument
+// 正しい - 外側で取得し、引数として渡す
 async function ProfilePage() {
   const session = (await cookies()).get('session')?.value
   return <CachedProfile sessionId={session} />
@@ -239,39 +239,40 @@ async function ProfilePage() {
 
 async function CachedProfile({ sessionId }: { sessionId: string }) {
   'use cache'
-  // sessionId becomes part of cache key automatically
+  // sessionId は自動的にキャッシュキーの一部になる
   const data = await fetchUserData(sessionId)
   return <div>{data.name}</div>
 }
 ```
 
-### Exception: `use cache: private`
+### 例外: `use cache: private`
 
-For compliance requirements when you can't refactor:
+リファクタリングできないコンプライアンス要件向け。
 
 ```tsx
 async function getData() {
   'use cache: private'
-  const session = (await cookies()).get('session')?.value  // Allowed
+  const session = (await cookies()).get('session')?.value  // 許可される
   return fetchData(session)
 }
 ```
 
 ---
 
-## Cache Key Generation
+## キャッシュキーの生成
 
-Cache keys are automatic based on:
-- **Build ID** - invalidates all caches on deploy
-- **Function ID** - hash of function location
-- **Serializable arguments** - props become part of key
-- **Closure variables** - outer scope values included
+キャッシュキーは以下から自動的に生成される。
+
+- **ビルド ID** - デプロイ時にすべてのキャッシュを無効化する
+- **関数 ID** - 関数の位置のハッシュ
+- **シリアライズ可能な引数** - props がキーの一部になる
+- **クロージャ変数** - 外側スコープの値も含まれる
 
 ```tsx
 async function Component({ userId }: { userId: string }) {
   const getData = async (filter: string) => {
     'use cache'
-    // Cache key = userId (closure) + filter (argument)
+    // キャッシュキー = userId（クロージャ） + filter（引数）
     return fetch(`/api/users/${userId}?filter=${filter}`)
   }
   return getData('active')
@@ -280,7 +281,7 @@ async function Component({ userId }: { userId: string }) {
 
 ---
 
-## Complete Example
+## 完全な例
 
 ```tsx
 import { Suspense } from 'react'
@@ -290,14 +291,14 @@ import { cacheLife, cacheTag } from 'next/cache'
 export default function DashboardPage() {
   return (
     <>
-      {/* Static shell - instant from CDN */}
+      {/* 静的シェル - CDN から即時配信 */}
       <header><h1>Dashboard</h1></header>
       <nav>...</nav>
 
-      {/* Cached - fast, revalidates hourly */}
+      {/* キャッシュ - 高速、1 時間ごとに再検証 */}
       <Stats />
 
-      {/* Dynamic - streams in with fresh data */}
+      {/* 動的 - 最新データをストリーミング */}
       <Suspense fallback={<NotificationsSkeleton />}>
         <Notifications />
       </Suspense>
@@ -325,21 +326,21 @@ async function Notifications() {
 
 ---
 
-## Migration from Previous Versions
+## 旧バージョンからの移行
 
-| Old Config | Replacement |
+| 旧設定 | 置き換え先 |
 |-----------|-------------|
 | `experimental.ppr` | `cacheComponents: true` |
-| `dynamic = 'force-dynamic'` | Remove (default behavior) |
+| `dynamic = 'force-dynamic'` | 削除（デフォルト動作） |
 | `dynamic = 'force-static'` | `'use cache'` + `cacheLife('max')` |
 | `revalidate = N` | `cacheLife({ revalidate: N })` |
-| `unstable_cache()` | `'use cache'` directive |
+| `unstable_cache()` | `'use cache'` ディレクティブ |
 
-### Migrating `unstable_cache` to `use cache`
+### `unstable_cache` から `use cache` への移行
 
-`unstable_cache` has been replaced by the `use cache` directive in Next.js 16. When `cacheComponents` is enabled, convert `unstable_cache` calls to `use cache` functions:
+Next.js 16 では `unstable_cache` は `use cache` ディレクティブに置き換えられた。`cacheComponents` を有効化している場合、`unstable_cache` の呼び出しを `use cache` 関数に変換する。
 
-**Before (`unstable_cache`):**
+**変更前 (`unstable_cache`):**
 
 ```tsx
 import { unstable_cache } from 'next/cache'
@@ -360,7 +361,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 }
 ```
 
-**After (`use cache`):**
+**変更後 (`use cache`):**
 
 ```tsx
 import { cacheLife, cacheTag } from 'next/cache'
@@ -379,33 +380,35 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 }
 ```
 
-Key differences:
-- **No manual cache keys** - `use cache` generates keys automatically from function arguments and closures. The `keyParts` array from `unstable_cache` is no longer needed.
-- **Tags** - Replace `options.tags` with `cacheTag()` calls inside the function.
-- **Revalidation** - Replace `options.revalidate` with `cacheLife({ revalidate: N })` or a built-in profile like `cacheLife('minutes')`.
-- **Dynamic data** - `unstable_cache` did not support `cookies()` or `headers()` inside the callback. The same restriction applies to `use cache`, but you can use `'use cache: private'` if needed.
+主な違い:
+
+- **手動キャッシュキー不要** - `use cache` は関数の引数とクロージャから自動的にキーを生成する。`unstable_cache` の `keyParts` 配列はもう必要ない。
+- **タグ** - `options.tags` を関数内の `cacheTag()` 呼び出しに置き換える。
+- **再検証** - `options.revalidate` を `cacheLife({ revalidate: N })` または `cacheLife('minutes')` のような組み込みプロファイルに置き換える。
+- **動的データ** - `unstable_cache` はコールバック内での `cookies()` や `headers()` をサポートしていなかった。`use cache` でも同じ制約があるが、必要であれば `'use cache: private'` を使える。
 
 ---
 
-## Limitations
+## 制限事項
 
-- **Edge runtime not supported** - requires Node.js
-- **Static export not supported** - needs server
-- **Non-deterministic values** (`Math.random()`, `Date.now()`) execute once at build time inside `use cache`
+- **Edge ランタイム非対応** - Node.js が必要
+- **静的エクスポート非対応** - サーバーが必要
+- **非決定的な値**（`Math.random()`、`Date.now()`）は `use cache` 内ではビルド時に 1 度だけ実行される
 
-For request-time randomness outside cache:
+キャッシュ外でリクエスト時のランダム性が必要な場合:
 
 ```tsx
 import { connection } from 'next/server'
 
 async function DynamicContent() {
-  await connection()  // Defer to request time
-  const id = crypto.randomUUID()  // Different per request
+  await connection()  // リクエスト時まで遅延
+  const id = crypto.randomUUID()  // リクエストごとに異なる
   return <div>{id}</div>
 }
 ```
 
-Sources:
+参考リンク:
+
 - [Cache Components Guide](https://nextjs.org/docs/app/getting-started/cache-components)
 - [use cache Directive](https://nextjs.org/docs/app/api-reference/directives/use-cache)
 - [unstable_cache (legacy)](https://nextjs.org/docs/app/api-reference/functions/unstable_cache)

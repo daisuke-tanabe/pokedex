@@ -7,9 +7,9 @@ tags: javascript, regexp, optimization, memoization
 
 ## Hoist RegExp Creation
 
-Don't create RegExp inside render. Hoist to module scope or memoize with `useMemo()`.
+render 内で RegExp を作らない。モジュールスコープに巻き上げるか `useMemo()` で memo 化する。
 
-**Incorrect (new RegExp every render):**
+**Incorrect (毎レンダーで new RegExp):**
 
 ```tsx
 function Highlighter({ text, query }: Props) {
@@ -19,7 +19,7 @@ function Highlighter({ text, query }: Props) {
 }
 ```
 
-**Correct (memoize or hoist):**
+**Correct (memo 化または hoist する):**
 
 ```tsx
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -34,12 +34,12 @@ function Highlighter({ text, query }: Props) {
 }
 ```
 
-**Warning (global regex has mutable state):**
+**注意 (グローバルフラグ付き regex は可変状態を持つ):**
 
-Global regex (`/g`) has mutable `lastIndex` state:
+グローバル regex (`/g`) は `lastIndex` の状態を持ち、書き換わる:
 
 ```typescript
 const regex = /foo/g
-regex.test('foo')  // true, lastIndex = 3
-regex.test('foo')  // false, lastIndex = 0
+regex.test('foo')  // true、lastIndex = 3
+regex.test('foo')  // false、lastIndex = 0
 ```

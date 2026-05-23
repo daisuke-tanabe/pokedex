@@ -1,22 +1,22 @@
-# Styling & Customization
+# Styling と Customization
 
-See [customization.md](../customization.md) for theming, CSS variables, and adding custom colors.
+テーマ、CSS 変数、カスタムカラーの追加については [customization.md](../customization.md) を参照。
 
-## Contents
+## 目次
 
-- Semantic colors
-- Built-in variants first
-- className for layout only
-- No space-x-* / space-y-*
-- Prefer size-* over w-* h-* when equal
-- Prefer truncate shorthand
-- No manual dark: color overrides
-- Use cn() for conditional classes
-- No manual z-index on overlay components
+- セマンティックカラー
+- 組み込み variant を優先
+- className はレイアウトのみ
+- space-x-* / space-y-* を使わない
+- 幅と高さが等しい場合は w-* h-* より size-* を使う
+- truncate ショートハンドを優先
+- dark: の手動カラー上書きをしない
+- 条件付きクラスには cn() を使う
+- オーバーレイ系コンポーネントに手動 z-index を付けない
 
 ---
 
-## Semantic colors
+## セマンティックカラー
 
 **Incorrect:**
 
@@ -36,9 +36,9 @@ See [customization.md](../customization.md) for theming, CSS variables, and addi
 
 ---
 
-## No raw color values for status/state indicators
+## ステータス/状態表示に生のカラー値を使わない
 
-For positive, negative, or status indicators, use Badge variants, semantic tokens like `text-destructive`, or define custom CSS variables — don't reach for raw Tailwind colors.
+ポジティブ・ネガティブ・ステータスのインジケータには、Badge の variant、`text-destructive` のようなセマンティックトークン、もしくはカスタム CSS 変数を使う — 生の Tailwind カラーに手を伸ばさない。
 
 **Incorrect:**
 
@@ -56,11 +56,11 @@ For positive, negative, or status indicators, use Badge variants, semantic token
 <span className="text-destructive">-3.2%</span>
 ```
 
-If you need a success/positive color that doesn't exist as a semantic token, use a Badge variant or ask the user about adding a custom CSS variable to the theme (see [customization.md](../customization.md)).
+セマンティックトークンとして存在しない成功/ポジティブカラーが必要な場合は、Badge の variant を使うか、テーマにカスタム CSS 変数を追加するかをユーザーに確認する ([customization.md](../customization.md) を参照)。
 
 ---
 
-## Built-in variants first
+## 組み込み variant を優先
 
 **Incorrect:**
 
@@ -78,9 +78,9 @@ If you need a success/positive color that doesn't exist as a semantic token, use
 
 ---
 
-## className for layout only
+## className はレイアウトのみ
 
-Use `className` for layout (e.g. `max-w-md`, `mx-auto`, `mt-4`), **not** for overriding component colors or typography. To change colors, use semantic tokens, built-in variants, or CSS variables.
+`className` はレイアウト (例: `max-w-md`、`mx-auto`、`mt-4`) のために使う。**コンポーネントの色や typography を上書きするためには使わない**。色を変えたい場合はセマンティックトークン、組み込み variant、CSS 変数を使う。
 
 **Incorrect:**
 
@@ -98,16 +98,16 @@ Use `className` for layout (e.g. `max-w-md`, `mx-auto`, `mt-4`), **not** for ove
 </Card>
 ```
 
-To customize a component's appearance, prefer these approaches in order:
-1. **Built-in variants** — `variant="outline"`, `variant="destructive"`, etc.
-2. **Semantic color tokens** — `bg-primary`, `text-muted-foreground`.
-3. **CSS variables** — define custom colors in the global CSS file (see [customization.md](../customization.md)).
+コンポーネントの見た目をカスタマイズするには、以下の順で優先する。
+1. **組み込み variant** — `variant="outline"`、`variant="destructive"` など。
+2. **セマンティックなカラートークン** — `bg-primary`、`text-muted-foreground`。
+3. **CSS 変数** — グローバル CSS ファイルでカスタムカラーを定義 ([customization.md](../customization.md) を参照)。
 
 ---
 
-## No space-x-* / space-y-*
+## space-x-* / space-y-* を使わない
 
-Use `gap-*` instead. `space-y-4` → `flex flex-col gap-4`. `space-x-2` → `flex gap-2`.
+代わりに `gap-*` を使う。`space-y-4` → `flex flex-col gap-4`。`space-x-2` → `flex gap-2`。
 
 ```tsx
 <div className="flex flex-col gap-4">
@@ -119,27 +119,27 @@ Use `gap-*` instead. `space-y-4` → `flex flex-col gap-4`. `space-x-2` → `fle
 
 ---
 
-## Prefer size-* over w-* h-* when equal
+## 幅と高さが等しい場合は w-* h-* より size-* を使う
 
-`size-10` not `w-10 h-10`. Applies to icons, avatars, skeletons, etc.
-
----
-
-## Prefer truncate shorthand
-
-`truncate` not `overflow-hidden text-ellipsis whitespace-nowrap`.
+`w-10 h-10` ではなく `size-10`。アイコン、Avatar、Skeleton などに当てはまる。
 
 ---
 
-## No manual dark: color overrides
+## truncate ショートハンドを優先
 
-Use semantic tokens — they handle light/dark via CSS variables. `bg-background text-foreground` not `bg-white dark:bg-gray-950`.
+`overflow-hidden text-ellipsis whitespace-nowrap` ではなく `truncate` を使う。
 
 ---
 
-## Use cn() for conditional classes
+## dark: の手動カラー上書きをしない
 
-Use the `cn()` utility from the project for conditional or merged class names. Don't write manual ternaries in className strings.
+セマンティックトークンを使う — CSS 変数経由でライト/ダークが扱われる。`bg-white dark:bg-gray-950` ではなく `bg-background text-foreground` を使う。
+
+---
+
+## 条件付きクラスには cn() を使う
+
+条件付きやマージされたクラス名にはプロジェクトの `cn()` ユーティリティを使う。className 文字列内に三項演算を手書きしない。
 
 **Incorrect:**
 
@@ -157,6 +157,6 @@ import { cn } from "@/lib/utils"
 
 ---
 
-## No manual z-index on overlay components
+## オーバーレイ系コンポーネントに手動 z-index を付けない
 
-`Dialog`, `Sheet`, `Drawer`, `AlertDialog`, `DropdownMenu`, `Popover`, `Tooltip`, `HoverCard` handle their own stacking. Never add `z-50` or `z-[999]`.
+`Dialog`、`Sheet`、`Drawer`、`AlertDialog`、`DropdownMenu`、`Popover`、`Tooltip`、`HoverCard` は自前で重なり順を扱う。`z-50` や `z-[999]` を付けない。

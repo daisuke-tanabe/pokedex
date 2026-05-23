@@ -1,19 +1,19 @@
-# Forms & Inputs
+# Forms と Inputs
 
-## Contents
+## 目次
 
-- Forms use FieldGroup + Field
-- InputGroup requires InputGroupInput/InputGroupTextarea
-- Buttons inside inputs use InputGroup + InputGroupAddon
-- Option sets (2–7 choices) use ToggleGroup
-- FieldSet + FieldLegend for grouping related fields
-- Field validation and disabled states
+- フォームは `FieldGroup` + `Field` を使う
+- `InputGroup` は `InputGroupInput`/`InputGroupTextarea` が必須
+- 入力内のボタンは `InputGroup` + `InputGroupAddon` を使う
+- 2〜7 個の選択肢は `ToggleGroup` を使う
+- 関連するフィールドのグループ化には `FieldSet` + `FieldLegend`
+- フィールドのバリデーションと無効状態
 
 ---
 
-## Forms use FieldGroup + Field
+## フォームは FieldGroup + Field を使う
 
-Always use `FieldGroup` + `Field` — never raw `div` with `space-y-*`:
+常に `FieldGroup` + `Field` を使う。生の `div` + `space-y-*` は使わない。
 
 ```tsx
 <FieldGroup>
@@ -28,25 +28,25 @@ Always use `FieldGroup` + `Field` — never raw `div` with `space-y-*`:
 </FieldGroup>
 ```
 
-Use `Field orientation="horizontal"` for settings pages. Use `FieldLabel className="sr-only"` for visually hidden labels.
+設定ページでは `Field orientation="horizontal"` を使う。視覚的に隠したラベルには `FieldLabel className="sr-only"` を使う。
 
-**Choosing form controls:**
+**フォームコントロールの選び方:**
 
-- Simple text input → `Input`
-- Dropdown with predefined options → `Select`
-- Searchable dropdown → `Combobox`
-- Native HTML select (no JS) → `native-select`
-- Boolean toggle → `Switch` (for settings) or `Checkbox` (for forms)
-- Single choice from few options → `RadioGroup`
-- Toggle between 2–5 options → `ToggleGroup` + `ToggleGroupItem`
-- OTP/verification code → `InputOTP`
-- Multi-line text → `Textarea`
+- シンプルなテキスト入力 → `Input`
+- 既定の選択肢を持つドロップダウン → `Select`
+- 検索可能なドロップダウン → `Combobox`
+- ネイティブ HTML select (JS なし) → `native-select`
+- 真偽のトグル → `Switch` (設定向け) または `Checkbox` (フォーム向け)
+- 少数選択肢からの単一選択 → `RadioGroup`
+- 2〜5 個の選択肢のトグル → `ToggleGroup` + `ToggleGroupItem`
+- OTP/認証コード → `InputOTP`
+- 複数行テキスト → `Textarea`
 
 ---
 
-## InputGroup requires InputGroupInput/InputGroupTextarea
+## InputGroup は InputGroupInput/InputGroupTextarea が必須
 
-Never use raw `Input` or `Textarea` inside an `InputGroup`.
+`InputGroup` の中で生の `Input` や `Textarea` を使わない。
 
 **Incorrect:**
 
@@ -68,9 +68,9 @@ import { InputGroup, InputGroupInput } from "@/components/ui/input-group"
 
 ---
 
-## Buttons inside inputs use InputGroup + InputGroupAddon
+## 入力内のボタンは InputGroup + InputGroupAddon を使う
 
-Never place a `Button` directly inside or adjacent to an `Input` with custom positioning.
+`Button` を `Input` の中や隣に独自に配置しない。
 
 **Incorrect:**
 
@@ -100,9 +100,9 @@ import { InputGroup, InputGroupInput, InputGroupAddon } from "@/components/ui/in
 
 ---
 
-## Option sets (2–7 choices) use ToggleGroup
+## 2〜7 個の選択肢は ToggleGroup を使う
 
-Don't manually loop `Button` components with active state.
+`Button` コンポーネントを手でループしてアクティブ状態を管理しない。
 
 **Incorrect:**
 
@@ -134,7 +134,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 </ToggleGroup>
 ```
 
-Combine with `Field` for labelled toggle groups:
+ラベル付きの toggle group には `Field` と組み合わせる。
 
 ```tsx
 <Field orientation="horizontal">
@@ -147,13 +147,13 @@ Combine with `Field` for labelled toggle groups:
 </Field>
 ```
 
-> **Note:** `defaultValue` and `type`/`multiple` props differ between base and radix. See [base-vs-radix.md](./base-vs-radix.md#togglegroup).
+> **注:** `defaultValue` と `type`/`multiple` の props は base と radix で異なる。[base-vs-radix.md](./base-vs-radix.md#togglegroup) を参照。
 
 ---
 
-## FieldSet + FieldLegend for grouping related fields
+## 関連するフィールドのグループ化には FieldSet + FieldLegend
 
-Use `FieldSet` + `FieldLegend` for related checkboxes, radios, or switches — not `div` with a heading:
+関連するチェックボックス・ラジオ・スイッチをまとめる場合は `FieldSet` + `FieldLegend` を使う。見出し付きの `div` は使わない。
 
 ```tsx
 <FieldSet>
@@ -170,9 +170,9 @@ Use `FieldSet` + `FieldLegend` for related checkboxes, radios, or switches — n
 
 ---
 
-## Field validation and disabled states
+## フィールドのバリデーションと無効状態
 
-Both attributes are needed — `data-invalid`/`data-disabled` styles the field (label, description), while `aria-invalid`/`disabled` styles the control.
+両方の属性が必要 — `data-invalid`/`data-disabled` はフィールド (ラベル、説明) のスタイリング、`aria-invalid`/`disabled` はコントロールのスタイリングに使う。
 
 ```tsx
 // Invalid.
@@ -189,4 +189,4 @@ Both attributes are needed — `data-invalid`/`data-disabled` styles the field (
 </Field>
 ```
 
-Works for all controls: `Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroupItem`, `Switch`, `Slider`, `NativeSelect`, `InputOTP`.
+すべてのコントロールに適用できる: `Input`、`Textarea`、`Select`、`Checkbox`、`RadioGroupItem`、`Switch`、`Slider`、`NativeSelect`、`InputOTP`。

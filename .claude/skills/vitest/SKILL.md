@@ -1,52 +1,52 @@
 ---
 name: vitest
-description: Vitest fast unit testing framework powered by Vite with Jest-compatible API. Use when writing tests, mocking, configuring coverage, or working with test filtering and fixtures.
+description: Vite を基盤とした高速ユニットテストフレームワーク Vitest。Jest 互換 API を備える。テストの記述、モック、coverage の設定、テストの絞り込みや fixtures を扱う際に使用する。
 metadata:
   author: Anthony Fu
   version: "2026.1.28"
   source: Generated from https://github.com/vitest-dev/vitest, scripts located at https://github.com/antfu/skills
 ---
 
-Vitest is a next-generation testing framework powered by Vite. It provides a Jest-compatible API with native ESM, TypeScript, and JSX support out of the box. Vitest shares the same config, transformers, resolvers, and plugins with your Vite app.
+Vitest は Vite を基盤とする次世代テストフレームワークである。ネイティブな ESM・TypeScript・JSX サポートを標準で備えながら、Jest 互換 API を提供する。Vitest は Vite アプリと同じ config・transformer・resolver・plugin を共有する。
 
-**Key Features:**
-- Vite-native: Uses Vite's transformation pipeline for fast HMR-like test updates
-- Jest-compatible: Drop-in replacement for most Jest test suites
-- Smart watch mode: Only reruns affected tests based on module graph
-- Native ESM, TypeScript, JSX support without configuration
-- Multi-threaded workers for parallel test execution
-- Built-in coverage via V8 or Istanbul
-- Snapshot testing, mocking, and spy utilities
+**主な特徴:**
+- Vite ネイティブ: Vite の変換パイプラインを利用し、HMR のように高速なテスト更新を実現
+- Jest 互換: 多くの Jest テストスイートをそのまま置き換え可能
+- スマート watch モード: モジュールグラフに基づき、影響を受けるテストだけを再実行
+- 設定不要でネイティブ ESM・TypeScript・JSX をサポート
+- マルチスレッドワーカーによる並列テスト実行
+- V8 または Istanbul を用いたカバレッジを標準搭載
+- スナップショットテスト、モック、スパイユーティリティを提供
 
-> The skill is based on Vitest 3.x, generated at 2026-01-28.
+> 本スキルは Vitest 3.x をベースとしており、2026-01-28 に生成された。
 
-## Core
+## コア
 
-| Topic | Description | Reference |
+| トピック | 説明 | リファレンス |
 |-------|-------------|-----------|
-| Configuration | Vitest and Vite config integration, defineConfig usage | [core-config](references/core-config.md) |
-| CLI | Command line interface, commands and options | [core-cli](references/core-cli.md) |
-| Test API | test/it function, modifiers like skip, only, concurrent | [core-test-api](references/core-test-api.md) |
-| Describe API | describe/suite for grouping tests and nested suites | [core-describe](references/core-describe.md) |
-| Expect API | Assertions with toBe, toEqual, matchers and asymmetric matchers | [core-expect](references/core-expect.md) |
-| Hooks | beforeEach, afterEach, beforeAll, afterAll, aroundEach | [core-hooks](references/core-hooks.md) |
+| Configuration | Vitest と Vite の config 統合、defineConfig の使い方 | [core-config](references/core-config.md) |
+| CLI | コマンドラインインターフェース、コマンドとオプション | [core-cli](references/core-cli.md) |
+| Test API | test / it 関数、skip・only・concurrent などの修飾子 | [core-test-api](references/core-test-api.md) |
+| Describe API | describe / suite によるテストのグループ化とネストされたスイート | [core-describe](references/core-describe.md) |
+| Expect API | toBe・toEqual・各種 matcher・非対称 matcher を用いたアサーション | [core-expect](references/core-expect.md) |
+| Hooks | beforeEach、afterEach、beforeAll、afterAll、aroundEach | [core-hooks](references/core-hooks.md) |
 
-## Features
+## 機能
 
-| Topic | Description | Reference |
+| トピック | 説明 | リファレンス |
 |-------|-------------|-----------|
-| Mocking | Mock functions, modules, timers, dates with vi utilities | [features-mocking](references/features-mocking.md) |
-| Snapshots | Snapshot testing with toMatchSnapshot and inline snapshots | [features-snapshots](references/features-snapshots.md) |
-| Coverage | Code coverage with V8 or Istanbul providers | [features-coverage](references/features-coverage.md) |
-| Test Context | Test fixtures, context.expect, test.extend for custom fixtures | [features-context](references/features-context.md) |
-| Concurrency | Concurrent tests, parallel execution, sharding | [features-concurrency](references/features-concurrency.md) |
-| Filtering | Filter tests by name, file patterns, tags | [features-filtering](references/features-filtering.md) |
+| Mocking | vi ユーティリティを使った関数・モジュール・タイマー・日時のモック | [features-mocking](references/features-mocking.md) |
+| Snapshots | toMatchSnapshot や inline snapshot を用いたスナップショットテスト | [features-snapshots](references/features-snapshots.md) |
+| Coverage | V8 または Istanbul プロバイダーによるコードカバレッジ | [features-coverage](references/features-coverage.md) |
+| Test Context | test fixtures、context.expect、test.extend によるカスタム fixture | [features-context](references/features-context.md) |
+| Concurrency | concurrent テスト、並列実行、シャーディング | [features-concurrency](references/features-concurrency.md) |
+| Filtering | 名前・ファイルパターン・タグによるテストの絞り込み | [features-filtering](references/features-filtering.md) |
 
-## Advanced
+## 応用
 
-| Topic | Description | Reference |
+| トピック | 説明 | リファレンス |
 |-------|-------------|-----------|
-| Vi Utilities | vi helper: mock, spyOn, fake timers, hoisted, waitFor | [advanced-vi](references/advanced-vi.md) |
-| Environments | Test environments: node, jsdom, happy-dom, custom | [advanced-environments](references/advanced-environments.md) |
-| Type Testing | Type-level testing with expectTypeOf and assertType | [advanced-type-testing](references/advanced-type-testing.md) |
-| Projects | Multi-project workspaces, different configs per project | [advanced-projects](references/advanced-projects.md) |
+| Vi Utilities | vi ヘルパー: mock、spyOn、fake timers、hoisted、waitFor | [advanced-vi](references/advanced-vi.md) |
+| Environments | テスト環境: node、jsdom、happy-dom、カスタム | [advanced-environments](references/advanced-environments.md) |
+| Type Testing | expectTypeOf と assertType による型レベルのテスト | [advanced-type-testing](references/advanced-type-testing.md) |
+| Projects | マルチプロジェクトの workspace、プロジェクトごとに異なる config | [advanced-projects](references/advanced-projects.md) |

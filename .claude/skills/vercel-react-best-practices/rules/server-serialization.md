@@ -7,23 +7,23 @@ tags: server, rsc, serialization, props
 
 ## Minimize Serialization at RSC Boundaries
 
-The React Server/Client boundary serializes all object properties into strings and embeds them in the HTML response and subsequent RSC requests. This serialized data directly impacts page weight and load time, so **size matters a lot**. Only pass fields that the client actually uses.
+React の Server/Client 境界では、オブジェクトの全プロパティが文字列にシリアライズされ、HTML レスポンスや後続の RSC リクエストに埋め込まれる。このシリアライズデータはページの重さとロード時間に直結するため、**サイズが大きく影響する**。クライアントが実際に使うフィールドだけを渡す。
 
-**Incorrect (serializes all 50 fields):**
+**Incorrect (50 フィールドすべてをシリアライズする):**
 
 ```tsx
 async function Page() {
-  const user = await fetchUser()  // 50 fields
+  const user = await fetchUser()  // 50 フィールド
   return <Profile user={user} />
 }
 
 'use client'
 function Profile({ user }: { user: User }) {
-  return <div>{user.name}</div>  // uses 1 field
+  return <div>{user.name}</div>  // 使うのは 1 フィールド
 }
 ```
 
-**Correct (serializes only 1 field):**
+**Correct (1 フィールドだけをシリアライズする):**
 
 ```tsx
 async function Page() {

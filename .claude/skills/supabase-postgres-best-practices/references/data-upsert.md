@@ -1,36 +1,36 @@
 ---
 title: Use UPSERT for Insert-or-Update Operations
 impact: MEDIUM
-impactDescription: Atomic operation, eliminates race conditions
+impactDescription: アトミックに動作し、競合状態を排除できる
 tags: upsert, on-conflict, insert, update
 ---
 
 ## Use UPSERT for Insert-or-Update Operations
 
-Using separate SELECT-then-INSERT/UPDATE creates race conditions. Use INSERT ... ON CONFLICT for atomic upserts.
+SELECT してから INSERT/UPDATE する方式は競合状態を生む。アトミックな upsert として INSERT ... ON CONFLICT を使う。
 
-**Incorrect (check-then-insert race condition):**
+**誤り (チェックしてから insert する競合状態):**
 
 ```sql
--- Race condition: two requests check simultaneously
+-- 競合状態: 2 つのリクエストが同時にチェックする
 select * from settings where user_id = 123 and key = 'theme';
--- Both find nothing
+-- どちらも見つからないという結果になる
 
--- Both try to insert
+-- 双方が insert を試みる
 insert into settings (user_id, key, value) values (123, 'theme', 'dark');
--- One succeeds, one fails with duplicate key error!
+-- 一方は成功するが、もう一方は duplicate key エラーで失敗!
 ```
 
-**Correct (atomic UPSERT):**
+**正しい例 (アトミックな UPSERT):**
 
 ```sql
--- Single atomic operation
+-- 単一のアトミック処理
 insert into settings (user_id, key, value)
 values (123, 'theme', 'dark')
 on conflict (user_id, key)
 do update set value = excluded.value, updated_at = now();
 
--- Returns the inserted/updated row
+-- insert / update された行を返す
 insert into settings (user_id, key, value)
 values (123, 'theme', 'dark')
 on conflict (user_id, key)
@@ -38,10 +38,10 @@ do update set value = excluded.value
 returning *;
 ```
 
-Insert-or-ignore pattern:
+「存在しなければ insert する」パターン:
 
 ```sql
--- Insert only if not exists (no update)
+-- 存在しないときだけ insert する (update しない)
 insert into page_views (page_id, user_id)
 values (1, 123)
 on conflict (page_id, user_id) do nothing;

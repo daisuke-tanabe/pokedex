@@ -1,46 +1,46 @@
 ---
 title: Use Prepared Statements Correctly with Pooling
 impact: HIGH
-impactDescription: Avoid prepared statement conflicts in pooled environments
+impactDescription: pooling 環境での prepared statement 衝突を回避する
 tags: prepared-statements, connection-pooling, transaction-mode
 ---
 
 ## Use Prepared Statements Correctly with Pooling
 
-Prepared statements are tied to individual database connections. In transaction-mode pooling, connections are shared, causing conflicts.
+prepared statement は個別のデータベース接続に紐づく。transaction mode pooling では接続が共有されるため衝突が発生する。
 
-**Incorrect (named prepared statements with transaction pooling):**
+**誤り (transaction pooling で named prepared statement を使う):**
 
 ```sql
--- Named prepared statement
+-- named prepared statement
 prepare get_user as select * from users where id = $1;
 
--- In transaction mode pooling, next request may get different connection
+-- transaction mode pooling では次のリクエストで別の接続に割り当てられる可能性がある
 execute get_user(123);
 -- ERROR: prepared statement "get_user" does not exist
 ```
 
-**Correct (use unnamed statements or session mode):**
+**正しい例 (匿名 prepared statement を使うか session mode を選ぶ):**
 
 ```sql
--- Option 1: Use unnamed prepared statements (most ORMs do this automatically)
--- The query is prepared and executed in a single protocol message
+-- 選択肢 1: 匿名の prepared statement を使う (多くの ORM は自動的にこの方式)
+-- 1 つのプロトコルメッセージで準備と実行をまとめて行う
 
--- Option 2: Deallocate after use in transaction mode
+-- 選択肢 2: transaction mode を使う場合は使用後に deallocate する
 prepare get_user as select * from users where id = $1;
 execute get_user(123);
 deallocate get_user;
 
--- Option 3: Use session mode pooling (port 5432 vs 6543)
--- Connection is held for entire session, prepared statements persist
+-- 選択肢 3: session mode pooling を使う (port 6543 ではなく 5432)
+-- セッション中ずっと接続を保持するので prepared statement が維持される
 ```
 
-Check your driver settings:
+ドライバの設定を確認する:
 
 ```sql
--- Many drivers use prepared statements by default
--- Node.js pg: { prepare: false } to disable
--- JDBC: prepareThreshold=0 to disable
+-- 多くのドライバはデフォルトで prepared statement を使う
+-- Node.js pg: { prepare: false } で無効化
+-- JDBC: prepareThreshold=0 で無効化
 ```
 
 Reference: [Prepared Statements with Pooling](https://supabase.com/docs/guides/database/connecting-to-postgres#connection-pool-modes)

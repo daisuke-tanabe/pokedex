@@ -1,23 +1,23 @@
 ---
 name: projects-workspaces
-description: Multi-project configuration for monorepos and different test types
+description: モノレポやテスト種別ごとのマルチプロジェクト設定
 ---
 
 # Projects
 
-Run different test configurations in the same Vitest process.
+同じ Vitest プロセス内で異なるテスト設定を実行する。
 
-## Basic Projects Setup
+## 基本のセットアップ
 
 ```ts
 // vitest.config.ts
 defineConfig({
   test: {
     projects: [
-      // Glob patterns for config files
+      // 設定ファイル向けの glob パターン
       'packages/*',
       
-      // Inline config
+      // インライン設定
       {
         test: {
           name: 'unit',
@@ -37,13 +37,13 @@ defineConfig({
 })
 ```
 
-## Monorepo Pattern
+## モノレポのパターン
 
 ```ts
 defineConfig({
   test: {
     projects: [
-      // Each package has its own vitest.config.ts
+      // 各パッケージが個別の vitest.config.ts を持つ
       'packages/core',
       'packages/cli',
       'packages/utils',
@@ -52,7 +52,7 @@ defineConfig({
 })
 ```
 
-Package config:
+パッケージ側の設定:
 
 ```ts
 // packages/core/vitest.config.ts
@@ -67,9 +67,9 @@ export default defineConfig({
 })
 ```
 
-## Different Environments
+## 異なる環境
 
-Run same tests in different environments:
+同じテストを異なる環境で実行する:
 
 ```ts
 defineConfig({
@@ -96,7 +96,7 @@ defineConfig({
 })
 ```
 
-## Browser + Node Projects
+## Browser + Node の project
 
 ```ts
 defineConfig({
@@ -125,7 +125,7 @@ defineConfig({
 })
 ```
 
-## Shared Configuration
+## 共通設定の共有
 
 ```ts
 // vitest.shared.ts
@@ -159,9 +159,9 @@ defineConfig({
 })
 ```
 
-## Project-Specific Dependencies
+## project ごとの依存
 
-Each project can have different dependencies inlined:
+project ごとに inline する依存を変えられる:
 
 ```ts
 defineConfig({
@@ -182,23 +182,23 @@ defineConfig({
 })
 ```
 
-## Running Specific Projects
+## 特定の project を実行
 
 ```bash
-# Run specific project
+# 特定の project を実行
 vitest --project unit
 vitest --project integration
 
-# Multiple projects
+# 複数 project
 vitest --project unit --project e2e
 
-# Exclude project
+# project を除外
 vitest --project.ignore browser
 ```
 
-## Providing Values to Projects
+## project に値を提供する
 
-Share values from config to tests:
+設定からテストに値を共有する:
 
 ```ts
 // vitest.config.ts
@@ -227,7 +227,7 @@ defineConfig({
   },
 })
 
-// In tests, use inject
+// テスト内では inject で取り出す
 import { inject } from 'vitest'
 
 test('uses correct api', () => {
@@ -236,7 +236,7 @@ test('uses correct api', () => {
 })
 ```
 
-## With Fixtures
+## fixture との併用
 
 ```ts
 const test = base.extend({
@@ -244,13 +244,13 @@ const test = base.extend({
 })
 
 test('uses injected url', ({ apiUrl }) => {
-  // apiUrl comes from project's provide config
+  // apiUrl は project の provide 設定から渡される
 })
 ```
 
-## Project Isolation
+## project の隔離
 
-Each project runs in its own thread pool by default:
+各 project はデフォルトで独自のスレッドプールで実行される:
 
 ```ts
 defineConfig({
@@ -259,7 +259,7 @@ defineConfig({
       {
         test: {
           name: 'isolated',
-          isolate: true, // Full isolation
+          isolate: true, // 完全隔離
           pool: 'forks',
         },
       },
@@ -268,7 +268,7 @@ defineConfig({
 })
 ```
 
-## Global Setup per Project
+## project ごとのグローバル setup
 
 ```ts
 defineConfig({
@@ -285,14 +285,14 @@ defineConfig({
 })
 ```
 
-## Key Points
+## 要点
 
-- Projects run in same Vitest process
-- Each project can have different environment, config
-- Use glob patterns for monorepo packages
-- Run specific projects with `--project` flag
-- Use `provide` to inject config values into tests
-- Projects inherit from root config unless overridden
+- project は同一の Vitest プロセスで実行される
+- 各 project ごとに環境や設定を変えられる
+- モノレポのパッケージには glob パターンを使う
+- 特定の project を実行するには `--project` フラグを使う
+- `provide` でテストに設定値を注入する
+- project は明示的に上書きしない限りルート設定を継承する
 
 <!-- 
 Source references:

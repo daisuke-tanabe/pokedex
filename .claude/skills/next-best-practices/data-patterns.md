@@ -1,38 +1,38 @@
-# Data Patterns
+# データパターン
 
-Choose the right data fetching pattern for each use case.
+ユースケースに合ったデータ取得パターンを選ぶ。
 
-## Decision Tree
+## 決定ツリー
 
 ```
-Need to fetch data?
-├── From a Server Component?
-│   └── Use: Fetch directly (no API needed)
+データを取得する必要がある？
+├── Server Component から？
+│   └── 使う: 直接 fetch（API は不要）
 │
-├── From a Client Component?
-│   ├── Is it a mutation (POST/PUT/DELETE)?
-│   │   └── Use: Server Action
-│   └── Is it a read (GET)?
-│       └── Use: Route Handler OR pass from Server Component
+├── Client Component から？
+│   ├── mutation か（POST/PUT/DELETE）？
+│   │   └── 使う: Server Action
+│   └── read か（GET）？
+│       └── 使う: Route Handler または Server Component から props で渡す
 │
-├── Need external API access (webhooks, third parties)?
-│   └── Use: Route Handler
+├── 外部 API アクセスが必要（webhook、サードパーティ）？
+│   └── 使う: Route Handler
 │
-└── Need REST API for mobile app / external clients?
-    └── Use: Route Handler
+└── モバイルアプリ / 外部クライアント向けの REST API が必要？
+    └── 使う: Route Handler
 ```
 
-## Pattern 1: Server Components (Preferred for Reads)
+## パターン 1: Server Component（読み取りには第一候補）
 
-Fetch data directly in Server Components - no API layer needed.
+Server Component で直接データを取得する。API レイヤーは不要。
 
 ```tsx
 // app/users/page.tsx
 async function UsersPage() {
-  // Direct database access - no API round-trip
+  // データベースに直接アクセス - API ラウンドトリップなし
   const users = await db.user.findMany();
 
-  // Or fetch from external API
+  // 外部 API から取得することもできる
   const posts = await fetch('https://api.example.com/posts').then(r => r.json());
 
   return (
@@ -43,15 +43,16 @@ async function UsersPage() {
 }
 ```
 
-**Benefits**:
-- No API to maintain
-- No client-server waterfall
-- Secrets stay on server
-- Direct database access
+**メリット**:
 
-## Pattern 2: Server Actions (Preferred for Mutations)
+- 維持すべき API がない
+- client / server 間のウォーターフォールがない
+- secret が server 側に留まる
+- DB に直接アクセスできる
 
-Server Actions are the recommended way to handle mutations.
+## パターン 2: Server Actions（変更操作には第一候補）
+
+mutation の処理には Server Actions を使う。
 
 ```tsx
 // app/actions.ts
@@ -88,32 +89,34 @@ export default function NewPost() {
 }
 ```
 
-**Benefits**:
-- End-to-end type safety
-- Progressive enhancement (works without JS)
-- Automatic request handling
-- Integrated with React transitions
+**メリット**:
 
-**Constraints**:
-- POST only (no GET caching semantics)
-- Internal use only (no external access)
-- Cannot return non-serializable data
+- エンドツーエンドの型安全性
+- プログレッシブエンハンスメント（JS なしでも動く）
+- リクエスト処理を自動化
+- React の transition と統合される
 
-## Pattern 3: Route Handlers (APIs)
+**制約**:
 
-Use Route Handlers when you need a REST API.
+- POST 限定（GET のキャッシュセマンティクスは持たない）
+- 内部用途のみ（外部からは呼べない）
+- シリアライズ不能なデータは返せない
+
+## パターン 3: Route Handlers（API）
+
+REST API が必要な場合は Route Handlers を使う。
 
 ```tsx
 // app/api/posts/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
-// GET is cacheable
+// GET はキャッシュ可能
 export async function GET(request: NextRequest) {
   const posts = await db.post.findMany();
   return NextResponse.json(posts);
 }
 
-// POST for mutations
+// POST は mutation 用
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const post = await db.post.create({ data: body });
@@ -121,35 +124,37 @@ export async function POST(request: NextRequest) {
 }
 ```
 
-**When to use**:
-- External API access (mobile apps, third parties)
-- Webhooks from external services
-- GET endpoints that need HTTP caching
-- OpenAPI/Swagger documentation needed
+**使うべきケース**:
 
-**When NOT to use**:
-- Internal data fetching (use Server Components)
-- Mutations from your UI (use Server Actions)
+- 外部からの API アクセス（モバイルアプリ、サードパーティ）
+- 外部サービスからの webhook
+- HTTP キャッシュが必要な GET エンドポイント
+- OpenAPI / Swagger ドキュメントが必要
 
-## Avoiding Data Waterfalls
+**使わないケース**:
 
-### Problem: Sequential Fetches
+- アプリ内部のデータ取得（Server Components を使う）
+- 自前 UI からの mutation（Server Actions を使う）
+
+## データウォーターフォールを避ける
+
+### 問題: 逐次 fetch
 
 ```tsx
-// Bad: Sequential waterfalls
+// Bad: 逐次的なウォーターフォール
 async function Dashboard() {
-  const user = await getUser();        // Wait...
-  const posts = await getPosts();      // Then wait...
-  const comments = await getComments(); // Then wait...
+  const user = await getUser();        // 待つ...
+  const posts = await getPosts();      // また待つ...
+  const comments = await getComments(); // また待つ...
 
   return <div>...</div>;
 }
 ```
 
-### Solution 1: Parallel Fetching with Promise.all
+### 解決策 1: Promise.all で並列に取得
 
 ```tsx
-// Good: Parallel fetching
+// Good: 並列 fetch
 async function Dashboard() {
   const [user, posts, comments] = await Promise.all([
     getUser(),
@@ -161,10 +166,10 @@ async function Dashboard() {
 }
 ```
 
-### Solution 2: Streaming with Suspense
+### 解決策 2: Suspense でストリーミング
 
 ```tsx
-// Good: Show content progressively
+// Good: コンテンツを段階的に表示する
 import { Suspense } from 'react';
 
 async function Dashboard() {
@@ -181,17 +186,17 @@ async function Dashboard() {
 }
 
 async function UserSection() {
-  const user = await getUser(); // Fetches independently
+  const user = await getUser(); // 個別に fetch
   return <div>{user.name}</div>;
 }
 
 async function PostsSection() {
-  const posts = await getPosts(); // Fetches independently
+  const posts = await getPosts(); // 個別に fetch
   return <PostList posts={posts} />;
 }
 ```
 
-### Solution 3: Preload Pattern
+### 解決策 3: preload パターン
 
 ```tsx
 // lib/data.ts
@@ -202,7 +207,7 @@ export const getUser = cache(async (id: string) => {
 });
 
 export const preloadUser = (id: string) => {
-  void getUser(id); // Fire and forget
+  void getUser(id); // 投げっぱなしで先行起動
 };
 ```
 
@@ -213,22 +218,22 @@ import { getUser, preloadUser } from '@/lib/data';
 export default async function UserPage({ params }) {
   const { id } = await params;
 
-  // Start fetching early
+  // 早めに取得を開始する
   preloadUser(id);
 
-  // Do other work...
+  // 他の処理を実行...
 
-  // Data likely ready by now
+  // この時点ではデータが揃っている可能性が高い
   const user = await getUser(id);
   return <div>{user.name}</div>;
 }
 ```
 
-## Client Component Data Fetching
+## Client Component でのデータ取得
 
-When Client Components need data:
+Client Component でデータが必要なときの選択肢:
 
-### Option 1: Pass from Server Component (Preferred)
+### 選択肢 1: Server Component から渡す（推奨）
 
 ```tsx
 // Server Component
@@ -245,7 +250,7 @@ function ClientComponent({ initialData }) {
 }
 ```
 
-### Option 2: Fetch on Mount (When Necessary)
+### 選択肢 2: マウント時に fetch（必要な場合）
 
 ```tsx
 'use client';
@@ -265,9 +270,9 @@ function ClientComponent() {
 }
 ```
 
-### Option 3: Server Action for Reads (Works But Not Ideal)
+### 選択肢 3: read のために Server Action を使う（動くが本来の用途ではない）
 
-Server Actions can be called from Client Components for reads, but this is not their intended purpose:
+Server Actions は Client Component から read 目的で呼ぶこともできるが、本来の用途ではない:
 
 ```tsx
 'use client';
@@ -285,13 +290,13 @@ function ClientComponent() {
 }
 ```
 
-**Note**: Server Actions always use POST, so no HTTP caching. Prefer Route Handlers for cacheable reads.
+**Note**: Server Actions は常に POST なので HTTP キャッシュは効かない。キャッシュ可能な read には Route Handlers を選ぶ。
 
-## Quick Reference
+## クイックリファレンス
 
-| Pattern | Use Case | HTTP Method | Caching |
+| パターン | ユースケース | HTTP メソッド | キャッシュ |
 |---------|----------|-------------|---------|
-| Server Component fetch | Internal reads | Any | Full Next.js caching |
-| Server Action | Mutations, form submissions | POST only | No |
-| Route Handler | External APIs, webhooks | Any | GET can be cached |
-| Client fetch to API | Client-side reads | Any | HTTP cache headers |
+| Server Component の fetch | 内部 read | 任意 | Next.js の完全なキャッシュ |
+| Server Action | mutation、フォーム送信 | POST のみ | なし |
+| Route Handler | 外部 API、webhook | 任意 | GET はキャッシュ可能 |
+| Client から API への fetch | client 側の read | 任意 | HTTP キャッシュヘッダ |

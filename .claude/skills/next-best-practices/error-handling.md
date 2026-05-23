@@ -1,14 +1,14 @@
-# Error Handling
+# エラー処理
 
-Handle errors gracefully in Next.js applications.
+Next.js アプリケーションでエラーを丁寧に扱う方法。
 
-Reference: https://nextjs.org/docs/app/getting-started/error-handling
+参考: https://nextjs.org/docs/app/getting-started/error-handling
 
-## Error Boundaries
+## エラー境界
 
 ### `error.tsx`
 
-Catches errors in a route segment and its children:
+ルートセグメントとその子で発生したエラーを捕捉する。
 
 ```tsx
 'use client'
@@ -29,11 +29,11 @@ export default function Error({
 }
 ```
 
-**Important:** `error.tsx` must be a Client Component.
+**重要:** `error.tsx` は Client Component でなければならない。
 
 ### `global-error.tsx`
 
-Catches errors in root layout:
+ルートレイアウトで発生したエラーを捕捉する。
 
 ```tsx
 'use client'
@@ -56,13 +56,13 @@ export default function GlobalError({
 }
 ```
 
-**Important:** Must include `<html>` and `<body>` tags.
+**重要:** `<html>` と `<body>` タグを必ず含める。
 
-## Server Actions: Navigation API Gotcha
+## Server Actions: ナビゲーション API の落とし穴
 
-**Do NOT wrap navigation APIs in try-catch.** They throw special errors that Next.js handles internally.
+**ナビゲーション API を try-catch で囲んではいけない。** これらは Next.js が内部で処理する特殊なエラーを投げる。
 
-Reference: https://nextjs.org/docs/app/api-reference/functions/redirect#behavior
+参考: https://nextjs.org/docs/app/api-reference/functions/redirect#behavior
 
 ```tsx
 'use server'
@@ -70,18 +70,18 @@ Reference: https://nextjs.org/docs/app/api-reference/functions/redirect#behavior
 import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
 
-// Bad: try-catch catches the navigation "error"
+// Bad: try-catch がナビゲーションの「エラー」を捕まえてしまう
 async function createPost(formData: FormData) {
   try {
     const post = await db.post.create({ ... })
-    redirect(`/posts/${post.id}`)  // This throws!
+    redirect(`/posts/${post.id}`)  // ここで throw される!
   } catch (error) {
-    // redirect() throw is caught here - navigation fails!
+    // redirect() による throw がここで捕まり、ナビゲーションに失敗する
     return { error: 'Failed to create post' }
   }
 }
 
-// Good: Call navigation APIs outside try-catch
+// Good: ナビゲーション API は try-catch の外で呼ぶ
 async function createPost(formData: FormData) {
   let post
   try {
@@ -89,31 +89,32 @@ async function createPost(formData: FormData) {
   } catch (error) {
     return { error: 'Failed to create post' }
   }
-  redirect(`/posts/${post.id}`)  // Outside try-catch
+  redirect(`/posts/${post.id}`)  // try-catch の外
 }
 
-// Good: Re-throw navigation errors
+// Good: ナビゲーションのエラーは再 throw する
 async function createPost(formData: FormData) {
   try {
     const post = await db.post.create({ ... })
     redirect(`/posts/${post.id}`)
   } catch (error) {
     if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
-      throw error  // Re-throw navigation errors
+      throw error  // ナビゲーション系エラーは再 throw する
     }
     return { error: 'Failed to create post' }
   }
 }
 ```
 
-Same applies to:
-- `redirect()` - 307 temporary redirect
-- `permanentRedirect()` - 308 permanent redirect
+以下にも同じ注意が当てはまる:
+
+- `redirect()` - 307 一時リダイレクト
+- `permanentRedirect()` - 308 永続リダイレクト
 - `notFound()` - 404 not found
 - `forbidden()` - 403 forbidden
 - `unauthorized()` - 401 unauthorized
 
-Use `unstable_rethrow()` to re-throw these errors in catch blocks:
+catch ブロックの中でこれらのエラーを再 throw するには `unstable_rethrow()` を使う。
 
 ```tsx
 import { unstable_rethrow } from 'next/navigation'
@@ -123,27 +124,27 @@ async function action() {
     // ...
     redirect('/success')
   } catch (error) {
-    unstable_rethrow(error) // Re-throws Next.js internal errors
+    unstable_rethrow(error) // Next.js 内部のエラーを再 throw する
     return { error: 'Something went wrong' }
   }
 }
 ```
 
-## Redirects
+## リダイレクト
 
 ```tsx
 import { redirect, permanentRedirect } from 'next/navigation'
 
-// 307 Temporary - use for most cases
+// 307 一時リダイレクト - 大半のケースで使う
 redirect('/new-path')
 
-// 308 Permanent - use for URL migrations (cached by browsers)
+// 308 永続リダイレクト - URL の移行時に使う（ブラウザにキャッシュされる）
 permanentRedirect('/new-url')
 ```
 
-## Auth Errors
+## 認証エラー
 
-Trigger auth-related error pages:
+認証関連のエラーページを発火させる。
 
 ```tsx
 import { forbidden, unauthorized } from 'next/navigation'
@@ -152,18 +153,18 @@ async function Page() {
   const session = await getSession()
 
   if (!session) {
-    unauthorized() // Renders unauthorized.tsx (401)
+    unauthorized() // unauthorized.tsx をレンダリング（401）
   }
 
   if (!session.hasAccess) {
-    forbidden() // Renders forbidden.tsx (403)
+    forbidden() // forbidden.tsx をレンダリング（403）
   }
 
   return <Dashboard />
 }
 ```
 
-Create corresponding error pages:
+対応するエラーページを作る:
 
 ```tsx
 // app/forbidden.tsx
@@ -181,7 +182,7 @@ export default function Unauthorized() {
 
 ### `not-found.tsx`
 
-Custom 404 page for a route segment:
+ルートセグメント用のカスタム 404 ページ。
 
 ```tsx
 export default function NotFound() {
@@ -194,7 +195,7 @@ export default function NotFound() {
 }
 ```
 
-### Triggering Not Found
+### Not Found を発火させる
 
 ```tsx
 import { notFound } from 'next/navigation'
@@ -204,24 +205,24 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const post = await getPost(id)
 
   if (!post) {
-    notFound()  // Renders closest not-found.tsx
+    notFound()  // 最も近い not-found.tsx をレンダリング
   }
 
   return <div>{post.title}</div>
 }
 ```
 
-## Error Hierarchy
+## エラーの階層
 
-Errors bubble up to the nearest error boundary:
+エラーは最も近いエラー境界へバブルアップする。
 
 ```
 app/
-├── error.tsx           # Catches errors from all children
+├── error.tsx           # 配下すべての子のエラーを捕捉
 ├── blog/
-│   ├── error.tsx       # Catches errors in /blog/*
+│   ├── error.tsx       # /blog/* 配下のエラーを捕捉
 │   └── [slug]/
-│       ├── error.tsx   # Catches errors in /blog/[slug]
+│       ├── error.tsx   # /blog/[slug] のエラーを捕捉
 │       └── page.tsx
-└── layout.tsx          # Errors here go to global-error.tsx
+└── layout.tsx          # ここでのエラーは global-error.tsx に流れる
 ```

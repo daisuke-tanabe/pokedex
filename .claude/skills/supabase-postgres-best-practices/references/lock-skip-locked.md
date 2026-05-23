@@ -1,27 +1,27 @@
 ---
 title: Use SKIP LOCKED for Non-Blocking Queue Processing
 impact: MEDIUM-HIGH
-impactDescription: 10x throughput for worker queues
+impactDescription: ワーカーキューのスループットが 10 倍に向上
 tags: skip-locked, queue, workers, concurrency
 ---
 
 ## Use SKIP LOCKED for Non-Blocking Queue Processing
 
-When multiple workers process a queue, SKIP LOCKED allows workers to process different rows without waiting.
+複数のワーカーがキューを処理する際、SKIP LOCKED を使うと待たずに別々の行を処理できる。
 
-**Incorrect (workers block each other):**
+**誤り (ワーカー同士が互いをブロックする):**
 
 ```sql
--- Worker 1 and Worker 2 both try to get next job
+-- Worker 1 と Worker 2 が両方とも次のジョブを取得しようとする
 begin;
 select * from jobs where status = 'pending' order by created_at limit 1 for update;
--- Worker 2 waits for Worker 1's lock to release!
+-- Worker 2 は Worker 1 のロックが解放されるのを待つ羽目になる!
 ```
 
-**Correct (SKIP LOCKED for parallel processing):**
+**正しい例 (SKIP LOCKED で並列に処理する):**
 
 ```sql
--- Each worker skips locked rows and gets the next available
+-- 各ワーカーはロック済みの行をスキップして、次に利用可能な行を取得する
 begin;
 select * from jobs
 where status = 'pending'
@@ -29,16 +29,16 @@ order by created_at
 limit 1
 for update skip locked;
 
--- Worker 1 gets job 1, Worker 2 gets job 2 (no waiting)
+-- Worker 1 はジョブ 1 を、Worker 2 はジョブ 2 を取得 (待ち時間なし)
 
 update jobs set status = 'processing' where id = $1;
 commit;
 ```
 
-Complete queue pattern:
+完全なキュー処理パターン:
 
 ```sql
--- Atomic claim-and-update in one statement
+-- 取得と更新を 1 文でアトミックに行う
 update jobs
 set status = 'processing', worker_id = $1, started_at = now()
 where id = (

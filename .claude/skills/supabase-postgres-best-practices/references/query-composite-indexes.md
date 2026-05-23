@@ -1,44 +1,44 @@
 ---
 title: Create Composite Indexes for Multi-Column Queries
 impact: HIGH
-impactDescription: 5-10x faster multi-column queries
+impactDescription: 複数カラム条件のクエリが 5〜10 倍高速化
 tags: indexes, composite-index, multi-column, query-optimization
 ---
 
 ## Create Composite Indexes for Multi-Column Queries
 
-When queries filter on multiple columns, a composite index is more efficient than separate single-column indexes.
+複数カラムで絞り込むクエリでは、単一カラムのインデックスを別々に張るよりも composite index の方が効率的になる。
 
-**Incorrect (separate indexes require bitmap scan):**
+**誤り (別々のインデックスは bitmap scan が必要になる):**
 
 ```sql
--- Two separate indexes
+-- 2 つの個別インデックス
 create index orders_status_idx on orders (status);
 create index orders_created_idx on orders (created_at);
 
--- Query must combine both indexes (slower)
+-- 両方のインデックスを組み合わせる必要があり遅い
 select * from orders where status = 'pending' and created_at > '2024-01-01';
 ```
 
-**Correct (composite index):**
+**正しい例 (composite index):**
 
 ```sql
--- Single composite index (leftmost column first for equality checks)
+-- composite index (等価判定のカラムを左端に置く)
 create index orders_status_created_idx on orders (status, created_at);
 
--- Query uses one efficient index scan
+-- 1 回の効率的なインデックススキャンで済む
 select * from orders where status = 'pending' and created_at > '2024-01-01';
 ```
 
-**Column order matters** - place equality columns first, range columns last:
+**カラム順序が重要** - 等価判定のカラムを先、範囲指定のカラムを後ろに置く。
 
 ```sql
--- Good: status (=) before created_at (>)
+-- 良い: status (=) を先、created_at (>) を後
 create index idx on orders (status, created_at);
 
--- Works for: WHERE status = 'pending'
--- Works for: WHERE status = 'pending' AND created_at > '2024-01-01'
--- Does NOT work for: WHERE created_at > '2024-01-01' (leftmost prefix rule)
+-- 動く例: WHERE status = 'pending'
+-- 動く例: WHERE status = 'pending' AND created_at > '2024-01-01'
+-- 動かない例: WHERE created_at > '2024-01-01' (左端プレフィックスのルール)
 ```
 
 Reference: [Multicolumn Indexes](https://www.postgresql.org/docs/current/indexes-multicolumn.html)

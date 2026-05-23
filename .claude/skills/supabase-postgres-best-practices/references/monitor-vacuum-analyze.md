@@ -1,34 +1,34 @@
 ---
 title: Maintain Table Statistics with VACUUM and ANALYZE
 impact: MEDIUM
-impactDescription: 2-10x better query plans with accurate statistics
+impactDescription: 統計が正確だとクエリプランが 2〜10 倍改善する
 tags: vacuum, analyze, statistics, maintenance, autovacuum
 ---
 
 ## Maintain Table Statistics with VACUUM and ANALYZE
 
-Outdated statistics cause the query planner to make poor decisions. VACUUM reclaims space, ANALYZE updates statistics.
+統計が古いままだとクエリプランナが誤った判断を下す。VACUUM は領域を回収し、ANALYZE は統計を更新する。
 
-**Incorrect (stale statistics):**
+**誤り (古い統計のまま):**
 
 ```sql
--- Table has 1M rows but stats say 1000
--- Query planner chooses wrong strategy
+-- テーブルには 1M 行あるのに、統計上は 1000 行と認識されている
+-- クエリプランナが誤った戦略を選ぶ
 explain select * from orders where status = 'pending';
--- Shows: Seq Scan (because stats show small table)
--- Actually: Index Scan would be much faster
+-- 結果: Seq Scan (統計が小さいテーブルだと示しているため)
+-- 実際は: Index Scan の方がずっと速い
 ```
 
-**Correct (maintain fresh statistics):**
+**正しい例 (統計を最新に保つ):**
 
 ```sql
--- Manually analyze after large data changes
+-- 大量のデータ変更があった後に手動で analyze する
 analyze orders;
 
--- Analyze specific columns used in WHERE clauses
+-- WHERE 句で利用するカラムを指定して analyze する
 analyze orders (status, created_at);
 
--- Check when tables were last analyzed
+-- 各テーブルが最後に analyze された時刻を確認する
 select
   relname,
   last_vacuum,
@@ -39,16 +39,16 @@ from pg_stat_user_tables
 order by last_analyze nulls first;
 ```
 
-Autovacuum tuning for busy tables:
+頻繁に更新されるテーブル向けの autovacuum チューニング:
 
 ```sql
--- Increase frequency for high-churn tables
+-- 更新頻度が高いテーブルはより頻繁に autovacuum を実行する
 alter table orders set (
-  autovacuum_vacuum_scale_factor = 0.05,     -- Vacuum at 5% dead tuples (default 20%)
-  autovacuum_analyze_scale_factor = 0.02     -- Analyze at 2% changes (default 10%)
+  autovacuum_vacuum_scale_factor = 0.05,     -- dead tuple が 5% に達したら vacuum (デフォルト 20%)
+  autovacuum_analyze_scale_factor = 0.02     -- 2% の変更で analyze (デフォルト 10%)
 );
 
--- Check autovacuum status
+-- autovacuum の進捗を確認する
 select * from pg_stat_progress_vacuum;
 ```
 

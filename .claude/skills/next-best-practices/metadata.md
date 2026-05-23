@@ -1,17 +1,18 @@
-# Metadata
+# メタデータ
 
-Add SEO metadata to Next.js pages using the Metadata API.
+Metadata API を使って Next.js のページに SEO 用のメタデータを追加する。
 
-## Important: Server Components Only
+## 重要: Server Component でしか使えない
 
-The `metadata` object and `generateMetadata` function are **only supported in Server Components**. They cannot be used in Client Components.
+`metadata` オブジェクトと `generateMetadata` 関数は **Server Component でのみサポート** される。Client Component では使えない。
 
-If the target page has `'use client'`:
-1. Remove `'use client'` if possible, move client logic to child components
-2. Or extract metadata to a parent Server Component layout
-3. Or split the file: Server Component with metadata imports Client Components
+対象ページに `'use client'` が付いている場合は、次のいずれかで対処する。
 
-## Static Metadata
+1. 可能なら `'use client'` を外し、client 側のロジックを子コンポーネントに移す
+2. メタデータを親の Server Component の layout に抽出する
+3. ファイルを分割する: Server Component がメタデータを持ち、Client Component を import する
+
+## 静的メタデータ
 
 ```tsx
 import type { Metadata } from 'next'
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 }
 ```
 
-## Dynamic Metadata
+## 動的メタデータ
 
 ```tsx
 import type { Metadata } from 'next'
@@ -36,9 +37,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 ```
 
-## Avoid Duplicate Fetches
+## 重複した fetch を避ける
 
-Use React `cache()` when the same data is needed for both metadata and page:
+メタデータとページで同じデータを使う場合は React の `cache()` を活用する。
 
 ```tsx
 import { cache } from 'react'
@@ -50,7 +51,7 @@ export const getPost = cache(async (slug: string) => {
 
 ## Viewport
 
-Separate from metadata for streaming support:
+ストリーミングをサポートするため、メタデータとは別に定義する。
 
 ```tsx
 import type { Viewport } from 'next'
@@ -61,15 +62,15 @@ export const viewport: Viewport = {
   themeColor: '#000000',
 }
 
-// Or dynamic
+// 動的に生成する場合
 export function generateViewport({ params }): Viewport {
   return { themeColor: getThemeColor(params) }
 }
 ```
 
-## Title Templates
+## タイトルテンプレート
 
-In root layout for consistent naming:
+サイト全体で命名を統一するため、ルートレイアウトで設定する。
 
 ```tsx
 export const metadata: Metadata = {
@@ -77,52 +78,53 @@ export const metadata: Metadata = {
 }
 ```
 
-## Metadata File Conventions
+## メタデータファイル規約
 
-Reference: https://nextjs.org/docs/app/getting-started/project-structure#metadata-file-conventions
+参考: https://nextjs.org/docs/app/getting-started/project-structure#metadata-file-conventions
 
-Place these files in `app/` directory (or route segments):
+`app/` ディレクトリ（または各ルートセグメント）に以下のファイルを配置する。
 
-| File | Purpose |
+| ファイル | 用途 |
 |------|---------|
-| `favicon.ico` | Favicon |
-| `icon.png` / `icon.svg` | App icon |
-| `apple-icon.png` | Apple app icon |
+| `favicon.ico` | favicon |
+| `icon.png` / `icon.svg` | アプリアイコン |
+| `apple-icon.png` | Apple のアプリアイコン |
 | `opengraph-image.png` | OG image |
-| `twitter-image.png` | Twitter card image |
-| `sitemap.ts` / `sitemap.xml` | Sitemap (use `generateSitemaps` for multiple) |
-| `robots.ts` / `robots.txt` | Robots directives |
-| `manifest.ts` / `manifest.json` | Web app manifest |
+| `twitter-image.png` | Twitter カード画像 |
+| `sitemap.ts` / `sitemap.xml` | sitemap（複数生成する場合は `generateSitemaps` を使う） |
+| `robots.ts` / `robots.txt` | robots ディレクティブ |
+| `manifest.ts` / `manifest.json` | Web App Manifest |
 
-## SEO Best Practice: Static Files Are Often Enough
+## SEO のベストプラクティス: 静的ファイルだけで十分なことが多い
 
-For most sites, **static metadata files provide excellent SEO coverage**:
+ほとんどのサイトでは、**静的なメタデータファイルだけで SEO は十分カバーできる**。
 
 ```
 app/
 ├── favicon.ico
-├── opengraph-image.png     # Works for both OG and Twitter
+├── opengraph-image.png     # OG と Twitter の両方で機能する
 ├── sitemap.ts
 ├── robots.ts
-└── layout.tsx              # With title/description metadata
+└── layout.tsx              # title / description を含むメタデータ
 ```
 
 **Tips:**
-- A single `opengraph-image.png` covers both Open Graph and Twitter (Twitter falls back to OG)
-- Static `title` and `description` in layout metadata is sufficient for most pages
-- Only use dynamic `generateMetadata` when content varies per page
+
+- `opengraph-image.png` を 1 枚用意すれば、Open Graph と Twitter の両方をカバーできる（Twitter は OG にフォールバックする）
+- layout のメタデータに静的な `title` と `description` があれば、ほとんどのページで足りる
+- ページごとに内容が変わる場合のみ、動的な `generateMetadata` を使う
 
 ---
 
-# OG Image Generation
+# OG image の生成
 
-Generate dynamic Open Graph images using `next/og`.
+`next/og` を使って動的な Open Graph 画像を生成する。
 
-## Important Rules
+## 重要なルール
 
-1. **Use `next/og`** - not `@vercel/og` (it's built into Next.js)
-2. **No searchParams** - OG images can't access search params, use route params instead
-3. **Avoid Edge runtime** - Use default Node.js runtime
+1. **`next/og` を使う** - `@vercel/og` ではない（Next.js に組み込まれている）
+2. **searchParams は使えない** - OG image から search params にアクセスできない。ルートパラメータを使う
+3. **Edge ランタイムは避ける** - 既定の Node.js ランタイムを使う
 
 ```tsx
 // Good
@@ -133,7 +135,7 @@ import { ImageResponse } from 'next/og'
 // export const runtime = 'edge'
 ```
 
-## Basic OG Image
+## 基本的な OG image
 
 ```tsx
 // app/opengraph-image.tsx
@@ -165,7 +167,7 @@ export default function Image() {
 }
 ```
 
-## Dynamic OG Image
+## 動的な OG image
 
 ```tsx
 // app/blog/[slug]/opengraph-image.tsx
@@ -206,7 +208,7 @@ export default async function Image({ params }: Props) {
 }
 ```
 
-## Custom Fonts
+## カスタムフォント
 
 ```tsx
 import { ImageResponse } from 'next/og'
@@ -232,21 +234,22 @@ export default async function Image() {
 }
 ```
 
-## File Naming
+## ファイル名
 
-- `opengraph-image.tsx` - Open Graph (Facebook, LinkedIn)
-- `twitter-image.tsx` - Twitter/X cards (optional, falls back to OG)
+- `opengraph-image.tsx` - Open Graph（Facebook、LinkedIn）
+- `twitter-image.tsx` - Twitter/X カード（任意。OG にフォールバックされる）
 
-## Styling Notes
+## スタイリングに関する注意
 
-ImageResponse uses Flexbox layout:
-- Use `display: 'flex'`
-- No CSS Grid support
-- Styles must be inline objects
+ImageResponse は Flexbox レイアウトを使う。
 
-## Multiple OG Images
+- `display: 'flex'` を使う
+- CSS Grid はサポートされない
+- スタイルはインラインオブジェクトで指定する
 
-Use `generateImageMetadata` for multiple images per route:
+## 複数の OG image
+
+ルートあたり複数の image を持たせる場合は `generateImageMetadata` を使う。
 
 ```tsx
 // app/blog/[slug]/opengraph-image.tsx
@@ -269,16 +272,16 @@ export default async function Image({ params, id }) {
 }
 ```
 
-## Multiple Sitemaps
+## 複数の sitemap
 
-Use `generateSitemaps` for large sites:
+大規模サイトでは `generateSitemaps` を使う。
 
 ```tsx
 // app/sitemap.ts
 import type { MetadataRoute } from 'next'
 
 export async function generateSitemaps() {
-  // Return array of sitemap IDs
+  // sitemap の ID 配列を返す
   return [{ id: 0 }, { id: 1 }, { id: 2 }]
 }
 
@@ -298,4 +301,4 @@ export default async function sitemap({
 }
 ```
 
-Generates `/sitemap/0.xml`, `/sitemap/1.xml`, etc.
+`/sitemap/0.xml`、`/sitemap/1.xml` といった URL が生成される。

@@ -7,11 +7,11 @@ tags: server, rsc, ssr, concurrency, security, state
 
 ## Avoid Shared Module State for Request Data
 
-For React Server Components and client components rendered during SSR, avoid using mutable module-level variables to share request-scoped data. Server renders can run concurrently in the same process. If one render writes to shared module state and another render reads it, you can get race conditions, cross-request contamination, and security bugs where one user's data appears in another user's response.
+React Server Components や SSR 中にレンダリングされる client コンポーネントでは、リクエストスコープのデータを共有する目的で、書き換え可能なモジュールレベル変数を使わない。サーバーのレンダリングは同一プロセス上で並行して走り得る。あるレンダーが共有モジュール状態に書き込み、別のレンダーがそれを読むと、競合状態、リクエスト間の汚染、別のユーザーのデータが他のユーザーのレスポンスに混入するセキュリティバグが発生する。
 
-Treat module scope on the server as process-wide shared memory, not request-local state.
+サーバー側のモジュールスコープは、リクエストローカルではなくプロセス全体で共有されたメモリと捉える。
 
-**Incorrect (request data leaks across concurrent renders):**
+**Incorrect (リクエストデータが並行レンダー間で漏れる):**
 
 ```tsx
 let currentUser: User | null = null
@@ -26,9 +26,9 @@ async function Dashboard() {
 }
 ```
 
-If two requests overlap, request A can set `currentUser`, then request B overwrites it before request A finishes rendering `Dashboard`.
+リクエストが 2 つ重なると、リクエスト A が `currentUser` をセットし、リクエスト B が上書きして、リクエスト A が `Dashboard` のレンダリングを終える前に値が変わってしまう。
 
-**Correct (keep request data local to the render tree):**
+**Correct (リクエストデータをレンダーツリー内に閉じ込める):**
 
 ```tsx
 export default async function Page() {
@@ -41,10 +41,10 @@ function Dashboard({ user }: { user: User | null }) {
 }
 ```
 
-Safe exceptions:
+安全な例外:
 
-- Immutable static assets or config loaded once at module scope
-- Shared caches intentionally designed for cross-request reuse and keyed correctly
-- Process-wide singletons that do not store request- or user-specific mutable data
+- モジュールスコープに 1 回だけ読み込まれたイミュータブルな静的アセットや設定
+- リクエストをまたいで再利用する目的で意図的に設計され、適切に key 付けされた共有キャッシュ
+- リクエスト固有・ユーザー固有の書き換え可能データを持たないプロセス全体のシングルトン
 
-For static assets and config, see [Hoist Static I/O to Module Level](./server-hoist-static-io.md).
+静的アセットや設定については [Hoist Static I/O to Module Level](./server-hoist-static-io.md) を参照。

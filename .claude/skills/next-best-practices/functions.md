@@ -1,68 +1,68 @@
-# Functions
+# 関数
 
-Next.js function APIs.
+Next.js の関数 API。
 
-Reference: https://nextjs.org/docs/app/api-reference/functions
+参考: https://nextjs.org/docs/app/api-reference/functions
 
-## Navigation Hooks (Client)
+## ナビゲーションフック（Client）
 
-| Hook | Purpose | Reference |
+| Hook | 用途 | Reference |
 |------|---------|-----------|
-| `useRouter` | Programmatic navigation (`push`, `replace`, `back`, `refresh`) | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-router) |
-| `usePathname` | Get current pathname | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-pathname) |
-| `useSearchParams` | Read URL search parameters | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-search-params) |
-| `useParams` | Access dynamic route parameters | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-params) |
-| `useSelectedLayoutSegment` | Active child segment (one level) | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segment) |
-| `useSelectedLayoutSegments` | All active segments below layout | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segments) |
-| `useLinkStatus` | Check link prefetch status | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-link-status) |
-| `useReportWebVitals` | Report Core Web Vitals metrics | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-report-web-vitals) |
+| `useRouter` | プログラマブルなナビゲーション（`push`、`replace`、`back`、`refresh`） | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-router) |
+| `usePathname` | 現在の pathname を取得 | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-pathname) |
+| `useSearchParams` | URL の search パラメータを読む | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-search-params) |
+| `useParams` | 動的ルートのパラメータにアクセス | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-params) |
+| `useSelectedLayoutSegment` | アクティブな子セグメント（1 階層） | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segment) |
+| `useSelectedLayoutSegments` | layout より下のアクティブな全セグメント | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segments) |
+| `useLinkStatus` | リンクのプリフェッチ状況を確認 | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-link-status) |
+| `useReportWebVitals` | Core Web Vitals のメトリクスを送信 | [Docs](https://nextjs.org/docs/app/api-reference/functions/use-report-web-vitals) |
 
-## Server Functions
+## サーバー関数
 
-| Function | Purpose | Reference |
+| Function | 用途 | Reference |
 |----------|---------|-----------|
-| `cookies` | Read/write cookies | [Docs](https://nextjs.org/docs/app/api-reference/functions/cookies) |
-| `headers` | Read request headers | [Docs](https://nextjs.org/docs/app/api-reference/functions/headers) |
-| `draftMode` | Enable preview of unpublished CMS content | [Docs](https://nextjs.org/docs/app/api-reference/functions/draft-mode) |
-| `after` | Run code after response finishes streaming | [Docs](https://nextjs.org/docs/app/api-reference/functions/after) |
-| `connection` | Wait for connection before dynamic rendering | [Docs](https://nextjs.org/docs/app/api-reference/functions/connection) |
-| `userAgent` | Parse User-Agent header | [Docs](https://nextjs.org/docs/app/api-reference/functions/userAgent) |
+| `cookies` | cookie の読み書き | [Docs](https://nextjs.org/docs/app/api-reference/functions/cookies) |
+| `headers` | リクエストヘッダの読み取り | [Docs](https://nextjs.org/docs/app/api-reference/functions/headers) |
+| `draftMode` | CMS の未公開コンテンツのプレビューを有効化 | [Docs](https://nextjs.org/docs/app/api-reference/functions/draft-mode) |
+| `after` | レスポンスのストリーミング完了後にコードを実行 | [Docs](https://nextjs.org/docs/app/api-reference/functions/after) |
+| `connection` | 動的レンダリングの前に接続を待機 | [Docs](https://nextjs.org/docs/app/api-reference/functions/connection) |
+| `userAgent` | User-Agent ヘッダのパース | [Docs](https://nextjs.org/docs/app/api-reference/functions/userAgent) |
 
-## Generate Functions
+## Generate 関数
 
-| Function | Purpose | Reference |
+| Function | 用途 | Reference |
 |----------|---------|-----------|
-| `generateStaticParams` | Pre-render dynamic routes at build time | [Docs](https://nextjs.org/docs/app/api-reference/functions/generate-static-params) |
-| `generateMetadata` | Dynamic metadata | [Docs](https://nextjs.org/docs/app/api-reference/functions/generate-metadata) |
-| `generateViewport` | Dynamic viewport config | [Docs](https://nextjs.org/docs/app/api-reference/functions/generate-viewport) |
-| `generateSitemaps` | Multiple sitemaps for large sites | [Docs](https://nextjs.org/docs/app/api-reference/functions/generate-sitemaps) |
-| `generateImageMetadata` | Multiple OG images per route | [Docs](https://nextjs.org/docs/app/api-reference/functions/generate-image-metadata) |
+| `generateStaticParams` | ビルド時に動的ルートを事前生成 | [Docs](https://nextjs.org/docs/app/api-reference/functions/generate-static-params) |
+| `generateMetadata` | 動的なメタデータ | [Docs](https://nextjs.org/docs/app/api-reference/functions/generate-metadata) |
+| `generateViewport` | 動的な viewport 設定 | [Docs](https://nextjs.org/docs/app/api-reference/functions/generate-viewport) |
+| `generateSitemaps` | 大規模サイト向けの複数 sitemap | [Docs](https://nextjs.org/docs/app/api-reference/functions/generate-sitemaps) |
+| `generateImageMetadata` | ルートごとに複数の OG image を持つ | [Docs](https://nextjs.org/docs/app/api-reference/functions/generate-image-metadata) |
 
-## Request/Response
+## Request / Response
 
-| Function | Purpose | Reference |
+| Function | 用途 | Reference |
 |----------|---------|-----------|
-| `NextRequest` | Extended Request with helpers | [Docs](https://nextjs.org/docs/app/api-reference/functions/next-request) |
-| `NextResponse` | Extended Response with helpers | [Docs](https://nextjs.org/docs/app/api-reference/functions/next-response) |
-| `ImageResponse` | Generate OG images | [Docs](https://nextjs.org/docs/app/api-reference/functions/image-response) |
+| `NextRequest` | ヘルパー付きの拡張 Request | [Docs](https://nextjs.org/docs/app/api-reference/functions/next-request) |
+| `NextResponse` | ヘルパー付きの拡張 Response | [Docs](https://nextjs.org/docs/app/api-reference/functions/next-response) |
+| `ImageResponse` | OG image の生成 | [Docs](https://nextjs.org/docs/app/api-reference/functions/image-response) |
 
-## Common Examples
+## よく使う例
 
-### Navigation
+### ナビゲーション
 
-Use `next/link` for internal navigation instead of `<a>` tags.
+内部リンクには `<a>` ではなく `next/link` を使う。
 
 ```tsx
-// Bad: Plain anchor tag
+// Bad: 素の anchor タグ
 <a href="/about">About</a>
 
-// Good: Next.js Link
+// Good: Next.js の Link
 import Link from 'next/link'
 
 <Link href="/about">About</Link>
 ```
 
-Active link styling:
+アクティブリンクのスタイリング:
 
 ```tsx
 'use client'
@@ -81,7 +81,7 @@ export function NavLink({ href, children }) {
 }
 ```
 
-### Static Generation
+### 静的生成
 
 ```tsx
 // app/blog/[slug]/page.tsx
@@ -91,7 +91,7 @@ export async function generateStaticParams() {
 }
 ```
 
-### After Response
+### レスポンス後
 
 ```tsx
 import { after } from 'next/server'

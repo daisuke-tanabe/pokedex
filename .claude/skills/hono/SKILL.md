@@ -1,17 +1,17 @@
 ---
 name: hono
-description: Use when building Hono web applications or when the user asks about Hono APIs, routing, middleware, JSX, validation, testing, or streaming. TRIGGER when code imports from 'hono' or 'hono/*', or user mentions Hono. Use `npx hono request` to test endpoints.
+description: Hono ウェブアプリケーションを構築する際、または Hono の API・ルーティング・middleware・JSX・バリデーション・テスト・ストリーミングについて質問された際に使用する。コードが 'hono' または 'hono/*' からインポートしているとき、ユーザーが Hono に言及したときにトリガーする。エンドポイントのテストには `npx hono request` を利用する。
 ---
 
 # Hono Skill
 
-Build Hono web applications. This skill provides inline API knowledge for AI. Use `npx hono request` to test endpoints. If the `hono-docs` MCP server is configured, prefer its tools for the latest documentation over the inline reference.
+Hono ウェブアプリケーションを構築するためのスキル。このスキルは AI 向けにインラインの API 知識を提供する。エンドポイントのテストには `npx hono request` を利用する。`hono-docs` MCP サーバーが設定されている場合は、インラインのリファレンスよりもそのツールから最新ドキュメントを取得することを優先する。
 
 ## Hono CLI Usage
 
 ### Request Testing
 
-Test endpoints without starting an HTTP server. Uses `app.request()` internally.
+HTTP サーバーを起動せずにエンドポイントをテストする。内部的に `app.request()` を利用する。
 
 ```bash
 # GET request
@@ -21,7 +21,7 @@ npx hono request [file] -P /path
 npx hono request [file] -X POST -P /api/users -d '{"name": "test"}'
 ```
 
-**Note:** Do not pass credentials directly in CLI arguments. Use environment variables for sensitive values. `hono request` does not support Cloudflare Workers bindings (KV, D1, R2, etc.). When bindings are required, use `workers-fetch` instead:
+**注意:** 認証情報を CLI 引数で直接渡してはならない。機密値には環境変数を利用すること。`hono request` は Cloudflare Workers のバインディング (KV, D1, R2 など) をサポートしていない。バインディングが必要な場合は代わりに `workers-fetch` を使用する。
 
 ```bash
 npx workers-fetch /path
@@ -143,7 +143,7 @@ c.header('X-Custom', 'value')
 c.header('Cache-Control', 'no-store')
 ```
 
-### Variables (request-scoped data)
+### Variables (リクエストスコープのデータ)
 
 ```ts
 // In middleware
@@ -216,7 +216,7 @@ c.req.raw // underlying Request object
 
 ## Middleware
 
-### Using Built-in Middleware
+### 組み込み Middleware の利用
 
 ```ts
 import { cors } from 'hono/cors'
@@ -244,7 +244,7 @@ app.use('/api/*', cors()) // specific path
 app.post('/api/*', basicAuth({ username: 'admin', password: 'secret' }))
 ```
 
-### Custom Middleware
+### カスタム Middleware
 
 ```ts
 // Inline
@@ -267,9 +267,9 @@ const auth = createMiddleware(async (c, next) => {
 app.use('/api/*', auth)
 ```
 
-### Middleware Execution Order
+### Middleware の実行順序
 
-Middleware executes in registration order. `await next()` calls the next middleware/handler, and code after `next()` runs on the way back:
+Middleware は登録された順に実行される。`await next()` で次の middleware またはハンドラーを呼び出し、`next()` の後ろのコードは戻りの経路で実行される。
 
 ```
 Request → mw1 before → mw2 before → handler → mw2 after → mw1 after → Response
@@ -287,7 +287,7 @@ app.use(async (c, next) => {
 
 ## Validation
 
-Validation targets: `json`, `form`, `query`, `header`, `param`, `cookie`.
+バリデーションの対象: `json`, `form`, `query`, `header`, `param`, `cookie`。
 
 ### Zod Validator
 
@@ -324,9 +324,9 @@ app.post('/users', sValidator('json', schema), (c) => {
 
 ## JSX
 
-### Setup
+### セットアップ
 
-In `tsconfig.json`:
+`tsconfig.json` に以下を設定する。
 
 ```json
 {
@@ -337,9 +337,9 @@ In `tsconfig.json`:
 }
 ```
 
-Or use pragma: `/** @jsxImportSource hono/jsx */`
+もしくは pragma を利用する: `/** @jsxImportSource hono/jsx */`
 
-**Important:** Files using JSX must have a `.tsx` extension. Rename `.ts` to `.tsx` or the compiler will fail.
+**重要:** JSX を使用するファイルは `.tsx` 拡張子にする必要がある。`.ts` のままだとコンパイルに失敗するため、`.tsx` にリネームすること。
 
 ### Components
 
@@ -372,9 +372,9 @@ app.get('/', (c) => {
 
 ### jsxRenderer Middleware
 
-Use `jsxRenderer` middleware for layouts. See `npx hono docs /docs/middleware/builtin/jsx-renderer` for details.
+レイアウトには `jsxRenderer` middleware を利用する。詳細は `npx hono docs /docs/middleware/builtin/jsx-renderer` を参照。
 
-### Async Components
+### 非同期コンポーネント
 
 ```tsx
 const UserList = async () => {
@@ -443,9 +443,9 @@ app.get('/sse', (c) => {
 
 ---
 
-## Testing with app.request()
+## app.request() を使ったテスト
 
-Test endpoints without starting an HTTP server:
+HTTP サーバーを起動せずにエンドポイントをテストする。
 
 ```ts
 // GET
@@ -477,9 +477,9 @@ const res = await app.request(req)
 
 ## Hono Client (RPC)
 
-Type-safe API client using shared types between server and client.
+サーバーとクライアント間で型を共有することで、型安全な API クライアントを構築できる。
 
-**IMPORTANT: Routes MUST be chained for type inference to work. Without chaining, the client cannot infer route types.**
+**重要: 型推論を効かせるためにルートはチェーンで定義する必要がある。チェーンしないとクライアント側でルートの型を推論できない。**
 
 ```ts
 // Server: routes MUST be chained to preserve types
@@ -501,7 +501,7 @@ const res = await client.posts.$post({ json: { title: 'Hello' } })
 const data = await res.json() // fully typed
 ```
 
-Type utilities:
+型ユーティリティ:
 
 ```ts
 import type { InferRequestType, InferResponseType } from 'hono/client'
@@ -514,7 +514,7 @@ type ResType = InferResponseType<typeof client.posts.$post, 200>
 
 ## Helpers
 
-Helpers are utility functions imported from `hono/<helper-name>`:
+ヘルパーは `hono/<helper-name>` からインポートして利用するユーティリティ関数群である。
 
 ```ts
 import { getConnInfo } from 'hono/conninfo'
@@ -527,13 +527,13 @@ import { testClient } from 'hono/testing'
 import { upgradeWebSocket } from 'hono/cloudflare-workers' // or other adapter
 ```
 
-Available helpers: Accepts, Adapter, ConnInfo, Cookie, css, Dev, Factory, html, JWT, Proxy, Route, SSG, Streaming, Testing, WebSocket.
+利用可能なヘルパー: Accepts, Adapter, ConnInfo, Cookie, css, Dev, Factory, html, JWT, Proxy, Route, SSG, Streaming, Testing, WebSocket。
 
-For details, use `npx hono docs /docs/helpers/<helper-name>`.
+詳細は `npx hono docs /docs/helpers/<helper-name>` を参照。
 
 ### Factory
 
-Use `createFactory` to define `Env` once and share it across app, middleware, and handlers:
+`createFactory` を利用すると、`Env` 型を一度だけ定義してアプリ・middleware・ハンドラー間で共有できる。
 
 ```ts
 import { createFactory } from 'hono/factory'
@@ -557,17 +557,17 @@ app.get('/api', ...handlers)
 
 ## Best Practices
 
-- Write handlers inline in route definitions for proper type inference of path params.
-- Use `app.route()` to organize large apps by feature, not Rails-style controllers.
-- Use `createFactory()` to share Env type across app, middleware, and handlers.
-- Use `c.set()`/`c.get()` to pass data between middleware and handlers.
-- Chain validators for multiple request parts (param + query + json).
-- Export app type for RPC: `export type AppType = typeof routes`
-- Use `app.request()` for testing — no server startup needed.
+- パスパラメータの型推論を効かせるため、ハンドラーはルート定義内にインラインで記述する。
+- 大規模なアプリは Rails 風のコントローラーではなく、機能単位で `app.route()` を使って整理する。
+- アプリ・middleware・ハンドラー間で Env 型を共有するには `createFactory()` を使う。
+- middleware とハンドラー間でデータを受け渡すには `c.set()` / `c.get()` を使う。
+- 複数のリクエスト部分 (param + query + json) を扱う場合はバリデーターをチェーンする。
+- RPC 用にアプリの型をエクスポートする: `export type AppType = typeof routes`
+- テストには `app.request()` を使う。サーバーの起動は不要。
 
 ## Adapters
 
-Hono runs on multiple runtimes. The default export works for Cloudflare Workers, Deno, and Bun. For Node.js, use the Node adapter:
+Hono は複数のランタイムで動作する。デフォルトのエクスポートは Cloudflare Workers、Deno、Bun で利用できる。Node.js 向けには Node アダプターを使う。
 
 ```ts
 // Cloudflare Workers / Deno / Bun

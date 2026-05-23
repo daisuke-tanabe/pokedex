@@ -1,79 +1,79 @@
 # shadcn MCP Server
 
-The CLI includes an MCP server that lets AI assistants search, browse, view, and install components from registries.
+CLI には MCP サーバーが同梱されており、AI アシスタントが registry からコンポーネントを検索・閲覧・表示・インストールできるようになる。
 
 ---
 
-## Setup
+## セットアップ
 
 ```bash
-shadcn mcp        # start the MCP server (stdio)
-shadcn mcp init   # write config for your editor
+shadcn mcp        # MCP サーバーを起動する (stdio)
+shadcn mcp init   # 利用しているエディタ用の設定を書き出す
 ```
 
-Editor config files:
+エディタごとの設定ファイル:
 
-| Editor | Config file |
+| エディタ | 設定ファイル |
 |--------|------------|
 | Claude Code | `.mcp.json` |
 | Cursor | `.cursor/mcp.json` |
 | VS Code | `.vscode/mcp.json` |
 | OpenCode | `opencode.json` |
-| Codex | `~/.codex/config.toml` (manual) |
+| Codex | `~/.codex/config.toml` (手動) |
 
 ---
 
-## Tools
+## ツール
 
-> **Tip:** MCP tools handle registry operations (search, view, install). For project configuration (aliases, framework, Tailwind version), use `npx shadcn@latest info` — there is no MCP equivalent.
+> **ヒント:** MCP ツールは registry 操作 (検索・閲覧・インストール) を扱う。プロジェクト設定 (alias、framework、Tailwind バージョン) は `npx shadcn@latest info` を使う — これに相当する MCP ツールはない。
 
 ### `shadcn:get_project_registries`
 
-Returns registry names from `components.json`. Errors if no `components.json` exists.
+`components.json` から registry 名を返す。`components.json` が存在しない場合はエラーになる。
 
-**Input:** none
+**入力:** なし
 
 ### `shadcn:list_items_in_registries`
 
-Lists all items from one or more registries.
+1 つ以上の registry のすべてのアイテムを一覧する。
 
-**Input:** `registries` (string[]), `limit` (number, optional), `offset` (number, optional)
+**入力:** `registries` (string[])、`limit` (number、省略可)、`offset` (number、省略可)
 
 ### `shadcn:search_items_in_registries`
 
-Fuzzy search across registries.
+registry 横断のファジー検索を行う。
 
-**Input:** `registries` (string[]), `query` (string), `limit` (number, optional), `offset` (number, optional)
+**入力:** `registries` (string[])、`query` (string)、`limit` (number、省略可)、`offset` (number、省略可)
 
 ### `shadcn:view_items_in_registries`
 
-View item details including full file contents.
+アイテムの詳細をファイル内容も含めて表示する。
 
-**Input:** `items` (string[]) — e.g. `["@shadcn/button", "@shadcn/card"]`
+**入力:** `items` (string[]) — 例: `["@shadcn/button", "@shadcn/card"]`
 
 ### `shadcn:get_item_examples_from_registries`
 
-Find usage examples and demos with source code.
+利用例やデモをソースコード付きで探す。
 
-**Input:** `registries` (string[]), `query` (string) — e.g. `"accordion-demo"`, `"button example"`
+**入力:** `registries` (string[])、`query` (string) — 例: `"accordion-demo"`、`"button example"`
 
 ### `shadcn:get_add_command_for_items`
 
-Returns the CLI install command.
+CLI のインストールコマンドを返す。
 
-**Input:** `items` (string[]) — e.g. `["@shadcn/button"]`
+**入力:** `items` (string[]) — 例: `["@shadcn/button"]`
 
 ### `shadcn:get_audit_checklist`
 
-Returns a checklist for verifying components (imports, deps, lint, TypeScript).
+コンポーネント検証用のチェックリスト (imports、deps、lint、TypeScript) を返す。
 
-**Input:** none
+**入力:** なし
 
 ---
 
-## Configuring Registries
+## registry の設定
 
-Registries are set in `components.json`. The `@shadcn` registry is always built-in.
+registry は `components.json` で設定する。`@shadcn` registry は常に組み込みで使える。
 
 ```json
 {
@@ -87,8 +87,8 @@ Registries are set in `components.json`. The `@shadcn` registry is always built-
 }
 ```
 
-- Names must start with `@`.
-- URLs must contain `{name}`.
-- `${VAR}` references are resolved from environment variables.
+- 名前は `@` で始める必要がある。
+- URL には `{name}` を含める必要がある。
+- `${VAR}` 形式は環境変数から解決される。
 
-Community registry index: `https://ui.shadcn.com/r/registries.json`
+コミュニティ registry のインデックス: `https://ui.shadcn.com/r/registries.json`

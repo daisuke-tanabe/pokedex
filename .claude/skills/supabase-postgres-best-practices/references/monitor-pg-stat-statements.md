@@ -1,28 +1,28 @@
 ---
 title: Enable pg_stat_statements for Query Analysis
 impact: LOW-MEDIUM
-impactDescription: Identify top resource-consuming queries
+impactDescription: 最も負荷の高いクエリを特定できる
 tags: pg-stat-statements, monitoring, statistics, performance
 ---
 
 ## Enable pg_stat_statements for Query Analysis
 
-pg_stat_statements tracks execution statistics for all queries, helping identify slow and frequent queries.
+pg_stat_statements はすべてのクエリの実行統計を記録し、遅いクエリや頻発するクエリの特定に役立つ。
 
-**Incorrect (no visibility into query patterns):**
+**誤り (クエリの傾向が分からない):**
 
 ```sql
--- Database is slow, but which queries are the problem?
--- No way to know without pg_stat_statements
+-- データベースが遅いが、どのクエリが問題か分からない
+-- pg_stat_statements がないと判断できない
 ```
 
-**Correct (enable and query pg_stat_statements):**
+**正しい例 (pg_stat_statements を有効化して問い合わせる):**
 
 ```sql
--- Enable the extension
+-- 拡張を有効化
 create extension if not exists pg_stat_statements;
 
--- Find slowest queries by total time
+-- 累積実行時間が最大のクエリを取得
 select
   calls,
   round(total_exec_time::numeric, 2) as total_time_ms,
@@ -32,23 +32,23 @@ from pg_stat_statements
 order by total_exec_time desc
 limit 10;
 
--- Find most frequent queries
+-- 呼び出し回数が多いクエリを取得
 select calls, query
 from pg_stat_statements
 order by calls desc
 limit 10;
 
--- Reset statistics after optimization
+-- 最適化後に統計をリセット
 select pg_stat_statements_reset();
 ```
 
-Key metrics to monitor:
+監視すべき主要メトリクス:
 
 ```sql
--- Queries with high mean time (candidates for optimization)
+-- 平均実行時間が長いクエリ (最適化候補)
 select query, mean_exec_time, calls
 from pg_stat_statements
-where mean_exec_time > 100  -- > 100ms average
+where mean_exec_time > 100  -- 平均 100ms 超
 order by mean_exec_time desc;
 ```
 

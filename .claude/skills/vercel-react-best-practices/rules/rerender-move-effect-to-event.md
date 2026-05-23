@@ -7,9 +7,9 @@ tags: rerender, useEffect, events, side-effects, dependencies
 
 ## Put Interaction Logic in Event Handlers
 
-If a side effect is triggered by a specific user action (submit, click, drag), run it in that event handler. Do not model the action as state + effect; it makes effects re-run on unrelated changes and can duplicate the action.
+ある副作用が特定のユーザー操作 (送信、クリック、ドラッグ) によって発火するなら、そのイベントハンドラの中で実行する。state + effect として表現してはならない。関係のない変更で effect が再実行され、操作が重複する可能性がある。
 
-**Incorrect (event modeled as state + effect):**
+**Incorrect (イベントを state + effect でモデル化している):**
 
 ```tsx
 function Form() {
@@ -27,7 +27,7 @@ function Form() {
 }
 ```
 
-**Correct (do it in the handler):**
+**Correct (ハンドラの中で処理する):**
 
 ```tsx
 function Form() {

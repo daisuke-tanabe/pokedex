@@ -1,15 +1,15 @@
 ---
 title: Index Foreign Key Columns
 impact: HIGH
-impactDescription: 10-100x faster JOINs and CASCADE operations
+impactDescription: JOIN や CASCADE が 10〜100 倍高速化
 tags: foreign-key, indexes, joins, schema
 ---
 
 ## Index Foreign Key Columns
 
-Postgres does not automatically index foreign key columns. Missing indexes cause slow JOINs and CASCADE operations.
+Postgres は foreign key のカラムに自動でインデックスを張らない。インデックスがないと JOIN や CASCADE 処理が遅くなる。
 
-**Incorrect (unindexed foreign key):**
+**誤り (foreign key にインデックスがない):**
 
 ```sql
 create table orders (
@@ -18,13 +18,13 @@ create table orders (
   total numeric(10,2)
 );
 
--- No index on customer_id!
--- JOINs and ON DELETE CASCADE both require full table scan
+-- customer_id にインデックスがない!
+-- JOIN も ON DELETE CASCADE もフルテーブルスキャンになる
 select * from orders where customer_id = 123;  -- Seq Scan
-delete from customers where id = 123;          -- Locks table, scans all orders
+delete from customers where id = 123;          -- テーブルをロックし、orders を全件スキャン
 ```
 
-**Correct (indexed foreign key):**
+**正しい例 (foreign key にインデックスを張る):**
 
 ```sql
 create table orders (
@@ -33,15 +33,15 @@ create table orders (
   total numeric(10,2)
 );
 
--- Always index the FK column
+-- foreign key のカラムには必ずインデックスを張る
 create index orders_customer_id_idx on orders (customer_id);
 
--- Now JOINs and cascades are fast
+-- JOIN も cascade も高速になる
 select * from orders where customer_id = 123;  -- Index Scan
-delete from customers where id = 123;          -- Uses index, fast cascade
+delete from customers where id = 123;          -- インデックスを使った高速 cascade
 ```
 
-Find missing FK indexes:
+インデックスが不足している foreign key を探す:
 
 ```sql
 select

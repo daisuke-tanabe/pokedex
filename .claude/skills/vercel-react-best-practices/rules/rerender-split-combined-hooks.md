@@ -7,9 +7,9 @@ tags: rerender, useMemo, useEffect, dependencies, optimization
 
 ## Split Combined Hook Computations
 
-When a hook contains multiple independent tasks with different dependencies, split them into separate hooks. A combined hook reruns all tasks when any dependency changes, even if some tasks don't use the changed value.
+1 つの hook に依存関係の異なる複数の独立したタスクが含まれている場合は、別々の hook に分割する。1 つにまとめると、依存のいずれかが変わったときに、変更された値を使っていないタスクまで再計算されてしまう。
 
-**Incorrect (changing `sortOrder` recomputes filtering):**
+**Incorrect (`sortOrder` を変えるとフィルタリングまで再計算される):**
 
 ```tsx
 const sortedProducts = useMemo(() => {
@@ -21,7 +21,7 @@ const sortedProducts = useMemo(() => {
 }, [products, category, sortOrder])
 ```
 
-**Correct (filtering only recomputes when products or category change):**
+**Correct (products か category が変わったときだけフィルタリングを再計算する):**
 
 ```tsx
 const filteredProducts = useMemo(
@@ -38,9 +38,9 @@ const sortedProducts = useMemo(
 )
 ```
 
-This pattern also applies to `useEffect` when combining unrelated side effects:
+無関係な副作用を 1 つにまとめている場合も、`useEffect` で同様のパターンが適用される:
 
-**Incorrect (both effects run when either dependency changes):**
+**Incorrect (どちらかの依存が変わるだけで両方の処理が走る):**
 
 ```tsx
 useEffect(() => {
@@ -49,7 +49,7 @@ useEffect(() => {
 }, [pathname, pageTitle])
 ```
 
-**Correct (effects run independently):**
+**Correct (各 effect が独立して走る):**
 
 ```tsx
 useEffect(() => {
@@ -61,4 +61,4 @@ useEffect(() => {
 }, [pageTitle])
 ```
 
-**Note:** If your project has [React Compiler](https://react.dev/learn/react-compiler) enabled, it automatically optimizes dependency tracking and may handle some of these cases for you.
+**注意:** プロジェクトで [React Compiler](https://react.dev/learn/react-compiler) が有効化されている場合、依存追跡が自動で最適化され、このようなケースを処理してくれることもある。

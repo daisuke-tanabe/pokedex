@@ -1,44 +1,44 @@
 # Scripts
 
-Loading third-party scripts in Next.js.
+Next.js でサードパーティスクリプトを読み込む方法。
 
-## Use next/script
+## next/script を使う
 
-Always use `next/script` instead of native `<script>` tags for better performance.
+ネイティブの `<script>` タグではなく、必ず `next/script` を使ってパフォーマンスを最適化する。
 
 ```tsx
-// Bad: Native script tag
+// Bad: ネイティブの script タグ
 <script src="https://example.com/script.js"></script>
 
-// Good: Next.js Script component
+// Good: Next.js の Script コンポーネント
 import Script from 'next/script'
 
 <Script src="https://example.com/script.js" />
 ```
 
-## Inline Scripts Need ID
+## インラインスクリプトには id が必要
 
-Inline scripts require an `id` attribute for Next.js to track them.
+インラインスクリプトには、Next.js が追跡できるように `id` 属性を付ける。
 
 ```tsx
-// Bad: Missing id
+// Bad: id がない
 <Script dangerouslySetInnerHTML={{ __html: 'console.log("hi")' }} />
 
-// Good: Has id
+// Good: id がある
 <Script id="my-script" dangerouslySetInnerHTML={{ __html: 'console.log("hi")' }} />
 
-// Good: Inline with id
+// Good: id 付きインライン
 <Script id="show-banner">
   {`document.getElementById('banner').classList.remove('hidden')`}
 </Script>
 ```
 
-## Don't Put Script in Head
+## Script を Head に入れない
 
-`next/script` should not be placed inside `next/head`. It handles its own positioning.
+`next/script` は `next/head` の内部に置かない。自身で配置を制御する。
 
 ```tsx
-// Bad: Script inside Head
+// Bad: Head の中に Script を置いている
 import Head from 'next/head'
 import Script from 'next/script'
 
@@ -46,36 +46,36 @@ import Script from 'next/script'
   <Script src="/analytics.js" />
 </Head>
 
-// Good: Script outside Head
+// Good: Script は Head の外
 <Head>
   <title>Page</title>
 </Head>
 <Script src="/analytics.js" />
 ```
 
-## Loading Strategies
+## ロード戦略
 
 ```tsx
-// afterInteractive (default) - Load after page is interactive
+// afterInteractive（既定） - ページがインタラクティブになった後にロード
 <Script src="/analytics.js" strategy="afterInteractive" />
 
-// lazyOnload - Load during idle time
+// lazyOnload - アイドル時間にロード
 <Script src="/widget.js" strategy="lazyOnload" />
 
-// beforeInteractive - Load before page is interactive (use sparingly)
-// Only works in app/layout.tsx or pages/_document.js
+// beforeInteractive - ページがインタラクティブになる前にロード（使用は最小限に）
+// app/layout.tsx または pages/_document.js でのみ機能する
 <Script src="/critical.js" strategy="beforeInteractive" />
 
-// worker - Load in web worker (experimental)
+// worker - Web Worker でロード（experimental）
 <Script src="/heavy.js" strategy="worker" />
 ```
 
 ## Google Analytics
 
-Use `@next/third-parties` instead of inline GA scripts.
+インラインの GA スクリプトではなく `@next/third-parties` を使う。
 
 ```tsx
-// Bad: Inline GA script
+// Bad: インラインの GA スクリプト
 <Script src="https://www.googletagmanager.com/gtag/js?id=G-XXXXX" />
 <Script id="ga-init">
   {`window.dataLayer = window.dataLayer || [];
@@ -84,7 +84,7 @@ Use `@next/third-parties` instead of inline GA scripts.
     gtag('config', 'G-XXXXX');`}
 </Script>
 
-// Good: Next.js component
+// Good: Next.js のコンポーネント
 import { GoogleAnalytics } from '@next/third-parties/google'
 
 export default function Layout({ children }) {
@@ -112,10 +112,10 @@ export default function Layout({ children }) {
 }
 ```
 
-## Other Third-Party Scripts
+## その他のサードパーティスクリプト
 
 ```tsx
-// YouTube embed
+// YouTube の埋め込み
 import { YouTubeEmbed } from '@next/third-parties/google'
 
 <YouTubeEmbed videoid="dQw4w9WgXcQ" />
@@ -130,12 +130,12 @@ import { GoogleMapsEmbed } from '@next/third-parties/google'
 />
 ```
 
-## Quick Reference
+## クイックリファレンス
 
-| Pattern | Issue | Fix |
+| パターン | 問題 | 対処 |
 |---------|-------|-----|
-| `<script src="...">` | No optimization | Use `next/script` |
-| `<Script>` without id | Can't track inline scripts | Add `id` attribute |
-| `<Script>` inside `<Head>` | Wrong placement | Move outside Head |
-| Inline GA/GTM scripts | No optimization | Use `@next/third-parties` |
-| `strategy="beforeInteractive"` outside layout | Won't work | Only use in root layout |
+| `<script src="...">` | 最適化されない | `next/script` を使う |
+| `<Script>` に id がない | インラインスクリプトを追跡できない | `id` 属性を追加する |
+| `<Script>` を `<Head>` 内に置く | 配置が誤り | Head の外に出す |
+| GA/GTM のインラインスクリプト | 最適化されない | `@next/third-parties` を使う |
+| `strategy="beforeInteractive"` を layout 以外で使う | 動作しない | ルートレイアウトでのみ使う |

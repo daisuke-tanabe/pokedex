@@ -1,13 +1,13 @@
-# Suspense Boundaries
+# Suspense 境界
 
-Client hooks that cause CSR bailout without Suspense boundaries.
+Suspense 境界が無いと CSR bailout を引き起こすクライアントフック。
 
 ## useSearchParams
 
-Always requires Suspense boundary in static routes. Without it, the entire page becomes client-side rendered.
+静的ルートでは必ず Suspense 境界が必要。Suspense 境界がないとページ全体が client side rendering になる。
 
 ```tsx
-// Bad: Entire page becomes CSR
+// Bad: ページ全体が CSR になる
 'use client'
 
 import { useSearchParams } from 'next/navigation'
@@ -19,7 +19,7 @@ export default function SearchBar() {
 ```
 
 ```tsx
-// Good: Wrap in Suspense
+// Good: Suspense で包む
 import { Suspense } from 'react'
 import SearchBar from './search-bar'
 
@@ -34,11 +34,11 @@ export default function Page() {
 
 ## usePathname
 
-Requires Suspense boundary when route has dynamic parameters.
+ルートに動的パラメータが含まれる場合は Suspense 境界が必要。
 
 ```tsx
-// In dynamic route [slug]
-// Bad: No Suspense
+// 動的ルート [slug] で使う
+// Bad: Suspense なし
 'use client'
 import { usePathname } from 'next/navigation'
 
@@ -49,19 +49,19 @@ export function Breadcrumb() {
 ```
 
 ```tsx
-// Good: Wrap in Suspense
+// Good: Suspense で包む
 <Suspense fallback={<BreadcrumbSkeleton />}>
   <Breadcrumb />
 </Suspense>
 ```
 
-If you use `generateStaticParams`, Suspense is optional.
+`generateStaticParams` を使っているなら、Suspense は任意。
 
-## Quick Reference
+## クイックリファレンス
 
-| Hook | Suspense Required |
+| Hook | Suspense が必須か |
 |------|-------------------|
 | `useSearchParams()` | Yes |
-| `usePathname()` | Yes (dynamic routes) |
+| `usePathname()` | Yes（動的ルート） |
 | `useParams()` | No |
 | `useRouter()` | No |

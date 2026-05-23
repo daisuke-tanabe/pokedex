@@ -1,15 +1,15 @@
 ---
 name: pnpm-ci-cd-setup
-description: Optimizing pnpm for continuous integration and deployment workflows
+description: 継続的インテグレーション・デプロイのワークフロー向けに pnpm を最適化する
 ---
 
-# pnpm CI/CD Setup
+# pnpm の CI/CD セットアップ
 
-Best practices for using pnpm in CI/CD environments for fast, reliable builds.
+CI/CD 環境で pnpm を高速かつ信頼できる形で使うためのベストプラクティスをまとめる。
 
 ## GitHub Actions
 
-### Basic Setup
+### 基本セットアップ
 
 ```yaml
 name: CI
@@ -21,24 +21,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: pnpm/action-setup@v4
         with:
           version: 9
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
-      
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
       - run: pnpm build
 ```
 
-### With Store Caching
+### Store キャッシュを併用
 
-For larger projects, cache the pnpm store:
+規模の大きいプロジェクトでは pnpm の store をキャッシュする。
 
 ```yaml
 - uses: pnpm/action-setup@v4
@@ -61,7 +61,7 @@ For larger projects, cache the pnpm store:
 - run: pnpm install --frozen-lockfile
 ```
 
-### Matrix Testing
+### マトリクスでのテスト
 
 ```yaml
 jobs:
@@ -124,29 +124,29 @@ build:
 
 ## Docker
 
-### Multi-Stage Build
+### マルチステージビルド
 
 ```dockerfile
-# Build stage
+# ビルドステージ
 FROM node:20-slim AS builder
 
-# Enable corepack for pnpm
+# pnpm を使うため corepack を有効化
 RUN corepack enable
 
 WORKDIR /app
 
-# Copy package files first for layer caching
+# レイヤーキャッシュのため、package ファイルを先にコピー
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/*/package.json ./packages/
 
-# Install dependencies
+# 依存をインストール
 RUN pnpm install --frozen-lockfile
 
-# Copy source and build
+# ソースをコピーしてビルド
 COPY . .
 RUN pnpm build
 
-# Production stage
+# 本番ステージ
 FROM node:20-slim AS runner
 
 RUN corepack enable
@@ -156,41 +156,41 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/pnpm-lock.yaml ./
 
-# Production install
+# 本番向けインストール
 RUN pnpm install --frozen-lockfile --prod
 
 CMD ["node", "dist/index.js"]
 ```
 
-### Optimized for Monorepos
+### Monorepo に最適化した構成
 
 ```dockerfile
 FROM node:20-slim AS builder
 RUN corepack enable
 WORKDIR /app
 
-# Copy workspace config
+# workspace 設定をコピー
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy all package.json files maintaining structure
+# 構造を保ったまま package.json をコピー
 COPY packages/core/package.json ./packages/core/
 COPY packages/api/package.json ./packages/api/
 
-# Install all dependencies
+# すべての依存をインストール
 RUN pnpm install --frozen-lockfile
 
-# Copy source
+# ソースをコピー
 COPY . .
 
-# Build specific package
+# 特定パッケージのみビルド
 RUN pnpm --filter @myorg/api build
 ```
 
-## Key CI Flags
+## CI で重要なフラグ
 
 ### --frozen-lockfile
 
-**Always use in CI.** Fails if `pnpm-lock.yaml` needs updates:
+**CI では必ず使う。** `pnpm-lock.yaml` が更新されないと失敗する。
 
 ```bash
 pnpm install --frozen-lockfile
@@ -198,7 +198,7 @@ pnpm install --frozen-lockfile
 
 ### --prefer-offline
 
-Use cached packages when available:
+利用可能ならキャッシュ済みパッケージを使う。
 
 ```bash
 pnpm install --frozen-lockfile --prefer-offline
@@ -206,15 +206,15 @@ pnpm install --frozen-lockfile --prefer-offline
 
 ### --ignore-scripts
 
-Skip lifecycle scripts for faster installs (use cautiously):
+ライフサイクルスクリプトをスキップしてインストールを高速化する (慎重に)。
 
 ```bash
 pnpm install --frozen-lockfile --ignore-scripts
 ```
 
-## Corepack Integration
+## Corepack との連携
 
-Use Corepack to manage pnpm version:
+Corepack を使って pnpm のバージョンを管理する。
 
 ```json
 // package.json
@@ -229,9 +229,9 @@ Use Corepack to manage pnpm version:
 - run: pnpm install --frozen-lockfile
 ```
 
-## Monorepo CI Strategies
+## Monorepo の CI 戦略
 
-### Build Changed Packages Only
+### 変更されたパッケージのみビルド
 
 ```yaml
 - name: Build changed packages
@@ -239,7 +239,7 @@ Use Corepack to manage pnpm version:
     pnpm --filter "...[origin/main]" build
 ```
 
-### Parallel Jobs per Package
+### パッケージごとに並列ジョブ
 
 ```yaml
 jobs:
@@ -269,16 +269,16 @@ jobs:
       - run: pnpm --filter ${{ matrix.package }} test
 ```
 
-## Best Practices Summary
+## ベストプラクティスまとめ
 
-1. **Always use `--frozen-lockfile`** in CI
-2. **Cache the pnpm store** for faster installs
-3. **Use Corepack** for consistent pnpm versions
-4. **Specify `packageManager`** in package.json
-5. **Use `--filter`** in monorepos to build only what changed
-6. **Multi-stage Docker builds** for smaller images
+1. **CI では必ず `--frozen-lockfile` を使う**
+2. **pnpm の store をキャッシュ**して高速化する
+3. **Corepack を使う**ことで pnpm のバージョンを揃える
+4. **package.json の `packageManager` を指定**する
+5. **monorepo では `--filter` を使う**ことで変更箇所のみビルドする
+6. **Docker のマルチステージビルド**でイメージサイズを抑える
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/continuous-integration
 - https://github.com/pnpm/action-setup

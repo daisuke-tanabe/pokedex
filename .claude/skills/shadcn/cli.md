@@ -1,160 +1,160 @@
-# shadcn CLI Reference
+# shadcn CLI リファレンス
 
-Configuration is read from `components.json`.
+設定は `components.json` から読み込まれる。
 
-> **IMPORTANT:** Always run commands using the project's package runner: `npx shadcn@latest`, `pnpm dlx shadcn@latest`, or `bunx --bun shadcn@latest`. Check `packageManager` from project context to choose the right one. Examples below use `npx shadcn@latest` but substitute the correct runner for the project.
+> **重要:** コマンドは必ずプロジェクトの package runner で実行する: `npx shadcn@latest`、`pnpm dlx shadcn@latest`、`bunx --bun shadcn@latest`。どれを使うかは、プロジェクトコンテキストの `packageManager` を確認して選ぶ。以下の例では `npx shadcn@latest` を使っているが、プロジェクトに合った runner に置き換えること。
 
-> **IMPORTANT:** Only use the flags documented below. Do not invent or guess flags — if a flag isn't listed here, it doesn't exist. The CLI auto-detects the package manager from the project's lockfile; there is no `--package-manager` flag.
+> **重要:** 使うフラグは下記に記載のあるものだけにする。フラグを推測したり捏造したりしない — ここに載っていないフラグは存在しない。CLI はプロジェクトの lockfile から package manager を自動検出する。`--package-manager` フラグは存在しない。
 
-## Contents
+## 目次
 
-- Commands: init, apply, add (dry-run, smart merge), search, view, docs, info, build
-- Templates: next, vite, start, react-router, astro
-- Presets: named, code, URL formats and fields
-- Switching presets
+- コマンド: init、apply、add (dry-run、smart merge)、search、view、docs、info、build
+- テンプレート: next、vite、start、react-router、astro
+- preset: named、code、URL のフォーマットとフィールド
+- preset の切り替え
 
 ---
 
-## Commands
+## コマンド
 
-### `init` — Initialize or create a project
+### `init` — プロジェクトの初期化または新規作成
 
 ```bash
 npx shadcn@latest init [components...] [options]
 ```
 
-Initializes shadcn/ui in an existing project or creates a new project (when `--name` is provided). Optionally installs components in the same step.
+既存プロジェクトに shadcn/ui を初期化するか、`--name` が指定されたときは新規プロジェクトを作成する。任意で同じステップでコンポーネントもインストールできる。
 
-| Flag                    | Short | Description                                               | Default |
-| ----------------------- | ----- | --------------------------------------------------------- | ------- |
-| `--template <template>` | `-t`  | Template (next, start, vite, next-monorepo, react-router) | —       |
-| `--preset [name]`       | `-p`  | Preset configuration (named, code, or URL)                | —       |
-| `--yes`                 | `-y`  | Skip confirmation prompt                                  | `true`  |
-| `--defaults`            | `-d`  | Use defaults (`--template=next --preset=base-nova`)       | `false` |
-| `--force`               | `-f`  | Force overwrite existing configuration                    | `false` |
-| `--cwd <cwd>`           | `-c`  | Working directory                                         | current |
-| `--name <name>`         | `-n`  | Name for new project                                      | —       |
-| `--silent`              | `-s`  | Mute output                                               | `false` |
-| `--rtl`                 |       | Enable RTL support                                        | —       |
-| `--reinstall`           |       | Re-install existing UI components                         | `false` |
-| `--monorepo`            |       | Scaffold a monorepo project                               | —       |
-| `--no-monorepo`         |       | Skip the monorepo prompt                                  | —       |
+| フラグ                  | 短縮 | 説明                                                          | デフォルト |
+| ----------------------- | ---- | ------------------------------------------------------------- | ---------- |
+| `--template <template>` | `-t` | テンプレート (next、start、vite、next-monorepo、react-router) | —          |
+| `--preset [name]`       | `-p` | preset 設定 (名前、コード、URL)                               | —          |
+| `--yes`                 | `-y` | 確認プロンプトをスキップ                                      | `true`     |
+| `--defaults`            | `-d` | デフォルトを使う (`--template=next --preset=base-nova`)       | `false`    |
+| `--force`               | `-f` | 既存の設定を強制的に上書き                                    | `false`    |
+| `--cwd <cwd>`           | `-c` | 作業ディレクトリ                                              | カレント   |
+| `--name <name>`         | `-n` | 新規プロジェクト名                                            | —          |
+| `--silent`              | `-s` | 出力を抑制                                                    | `false`    |
+| `--rtl`                 |      | RTL サポートを有効化                                          | —          |
+| `--reinstall`           |      | 既存 UI コンポーネントを再インストール                        | `false`    |
+| `--monorepo`            |      | monorepo プロジェクトを scaffold                              | —          |
+| `--no-monorepo`         |      | monorepo プロンプトをスキップ                                 | —          |
 
-`npx shadcn@latest create` is an alias for `npx shadcn@latest init`.
+`npx shadcn@latest create` は `npx shadcn@latest init` のエイリアス。
 
-### `apply` — Apply a preset to an existing project
+### `apply` — 既存プロジェクトに preset を適用
 
 ```bash
 npx shadcn@latest apply [preset] [options]
 ```
 
-Applies a preset to an existing project, overwriting preset-driven config, fonts, CSS variables, and detected UI components.
+既存プロジェクトに preset を適用し、preset 由来の設定、フォント、CSS 変数、検出された UI コンポーネントを上書きする。
 
-| Flag                | Short | Description                                | Default |
-| ------------------- | ----- | ------------------------------------------ | ------- |
-| `--preset <preset>` | —     | Preset configuration (named, code, or URL) | —       |
-| `--yes`             | `-y`  | Skip confirmation prompt                   | `false` |
-| `--cwd <cwd>`       | `-c`  | Working directory                          | current |
-| `--silent`          | `-s`  | Mute output                                | `false` |
+| フラグ              | 短縮 | 説明                            | デフォルト |
+| ------------------- | ---- | ------------------------------- | ---------- |
+| `--preset <preset>` | —    | preset 設定 (名前、コード、URL) | —          |
+| `--yes`             | `-y` | 確認プロンプトをスキップ        | `false`    |
+| `--cwd <cwd>`       | `-c` | 作業ディレクトリ                | カレント   |
+| `--silent`          | `-s` | 出力を抑制                      | `false`    |
 
-`[preset]` is a shorthand for `--preset <preset>`. If both are provided, they must match.
-If no preset is provided, the CLI offers to open the custom preset builder on `ui.shadcn.com/create`.
+`[preset]` は `--preset <preset>` の省略形。両方指定する場合は一致している必要がある。
+preset を指定しない場合、CLI は `ui.shadcn.com/create` のカスタム preset builder を開くか確認する。
 
-### `add` — Add components
+### `add` — コンポーネントの追加
 
-> **IMPORTANT:** To compare local components against upstream or to preview changes, ALWAYS use `npx shadcn@latest add <component> --dry-run`, `--diff`, or `--view`. NEVER fetch raw files from GitHub or other sources manually. The CLI handles registry resolution, file paths, and CSS diffing automatically.
+> **重要:** ローカルのコンポーネントをアップストリームと比較したり変更をプレビューしたりするときは、必ず `npx shadcn@latest add <component> --dry-run`、`--diff`、`--view` を使う。GitHub などから生ファイルを手動で取得してはいけない。CLI が registry 解決、ファイルパス、CSS diff を自動で処理する。
 
 ```bash
 npx shadcn@latest add [components...] [options]
 ```
 
-Accepts component names, registry-prefixed names (`@magicui/shimmer-button`), URLs, or local paths.
+コンポーネント名、registry プレフィックス付きの名前 (`@magicui/shimmer-button`)、URL、ローカルパスを受け付ける。
 
-| Flag            | Short | Description                                                                                                          | Default |
-| --------------- | ----- | -------------------------------------------------------------------------------------------------------------------- | ------- |
-| `--yes`         | `-y`  | Skip confirmation prompt                                                                                             | `false` |
-| `--overwrite`   | `-o`  | Overwrite existing files                                                                                             | `false` |
-| `--cwd <cwd>`   | `-c`  | Working directory                                                                                                    | current |
-| `--all`         | `-a`  | Add all available components                                                                                         | `false` |
-| `--path <path>` | `-p`  | Target path for the component                                                                                        | —       |
-| `--silent`      | `-s`  | Mute output                                                                                                          | `false` |
-| `--dry-run`     |       | Preview all changes without writing files                                                                            | `false` |
-| `--diff [path]` |       | Show diffs. Without a path, shows the first 5 files. With a path, shows that file only (implies `--dry-run`)         | —       |
-| `--view [path]` |       | Show file contents. Without a path, shows the first 5 files. With a path, shows that file only (implies `--dry-run`) | —       |
+| フラグ          | 短縮 | 説明                                                                                                                  | デフォルト |
+| --------------- | ---- | --------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `--yes`         | `-y` | 確認プロンプトをスキップ                                                                                              | `false`    |
+| `--overwrite`   | `-o` | 既存ファイルを上書き                                                                                                  | `false`    |
+| `--cwd <cwd>`   | `-c` | 作業ディレクトリ                                                                                                      | カレント   |
+| `--all`         | `-a` | 利用可能なコンポーネントをすべて追加                                                                                  | `false`    |
+| `--path <path>` | `-p` | コンポーネントの出力パス                                                                                              | —          |
+| `--silent`      | `-s` | 出力を抑制                                                                                                            | `false`    |
+| `--dry-run`     |      | ファイルを書き込まずにすべての変更をプレビュー                                                                        | `false`    |
+| `--diff [path]` |      | diff を表示。パスなしなら先頭 5 ファイル、パス指定でそのファイルのみ (`--dry-run` を含む)                             | —          |
+| `--view [path]` |      | ファイル内容を表示。パスなしなら先頭 5 ファイル、パス指定でそのファイルのみ (`--dry-run` を含む)                      | —          |
 
-#### Dry-Run Mode
+#### Dry-Run モード
 
-Use `--dry-run` to preview what `add` would do without writing any files. `--diff` and `--view` both imply `--dry-run`.
+`--dry-run` を使うと、`add` が何をするかをファイルを書き込まずにプレビューできる。`--diff` と `--view` はどちらも `--dry-run` を含意する。
 
 ```bash
-# Preview all changes.
+# すべての変更をプレビュー。
 npx shadcn@latest add button --dry-run
 
-# Show diffs for all files (top 5).
+# 全ファイルの diff を表示 (先頭 5 件)。
 npx shadcn@latest add button --diff
 
-# Show the diff for a specific file.
+# 特定ファイルの diff を表示。
 npx shadcn@latest add button --diff button.tsx
 
-# Show contents for all files (top 5).
+# 全ファイルの内容を表示 (先頭 5 件)。
 npx shadcn@latest add button --view
 
-# Show the full content of a specific file.
+# 特定ファイルのフル内容を表示。
 npx shadcn@latest add button --view button.tsx
 
-# Works with URLs too.
+# URL でも動作する。
 npx shadcn@latest add https://api.npoint.io/abc123 --dry-run
 
-# CSS diffs.
+# CSS の diff。
 npx shadcn@latest add button --diff globals.css
 ```
 
-**When to use dry-run:**
+**dry-run を使うタイミング:**
 
-- When the user asks "what files will this add?" or "what will this change?" — use `--dry-run`.
-- Before overwriting existing components — use `--diff` to preview the changes first.
-- When the user wants to inspect component source code without installing — use `--view`.
-- When checking what CSS changes would be made to `globals.css` — use `--diff globals.css`.
-- When the user asks to review or audit third-party registry code before installing — use `--view` to inspect the source.
+- ユーザーから「どんなファイルが追加される?」「何が変わる?」と聞かれた場合 — `--dry-run` を使う。
+- 既存コンポーネントを上書きする前 — 先に `--diff` で変更を確認する。
+- インストールせずにコンポーネントのソースコードを確認したい場合 — `--view` を使う。
+- `globals.css` への CSS 変更を確認したい場合 — `--diff globals.css` を使う。
+- サードパーティ registry のコードをインストール前にレビュー・監査したい場合 — `--view` でソースを確認する。
 
-> **`npx shadcn@latest add --dry-run` vs `npx shadcn@latest view`:** Prefer `npx shadcn@latest add --dry-run/--diff/--view` over `npx shadcn@latest view` when the user wants to preview changes to their project. `npx shadcn@latest view` only shows raw registry metadata. `npx shadcn@latest add --dry-run` shows exactly what would happen in the user's project: resolved file paths, diffs against existing files, and CSS updates. Use `npx shadcn@latest view` only when the user wants to browse registry info without a project context.
+> **`npx shadcn@latest add --dry-run` と `npx shadcn@latest view` の使い分け:** ユーザーがプロジェクトへの変更をプレビューしたい場合は `npx shadcn@latest view` よりも `npx shadcn@latest add --dry-run/--diff/--view` を優先する。`npx shadcn@latest view` は registry のメタデータをそのまま表示するだけ。`npx shadcn@latest add --dry-run` は実際にユーザーのプロジェクトで何が起きるか — 解決後のファイルパス、既存ファイルとの diff、CSS の更新内容 — を正確に示す。`npx shadcn@latest view` は、プロジェクトコンテキストなしで registry の情報だけを見たいときに使う。
 
-#### Smart Merge from Upstream
+#### アップストリームからの Smart Merge
 
-See [Updating Components in SKILL.md](./SKILL.md#updating-components) for the full workflow.
+完全なワークフローは [SKILL.md のコンポーネント更新](./SKILL.md#コンポーネントの更新) を参照。
 
-### `search` — Search registries
+### `search` — registry の検索
 
 ```bash
 npx shadcn@latest search <registries...> [options]
 ```
 
-Fuzzy search across registries. Also aliased as `npx shadcn@latest list`. Without `-q`, lists all items.
+registry 横断のファジー検索。`npx shadcn@latest list` でも呼べる。`-q` を付けない場合は全アイテムを一覧する。
 
-| Flag                | Short | Description            | Default |
-| ------------------- | ----- | ---------------------- | ------- |
-| `--query <query>`   | `-q`  | Search query           | —       |
-| `--limit <number>`  | `-l`  | Max items per registry | `100`   |
-| `--offset <number>` | `-o`  | Items to skip          | `0`     |
-| `--cwd <cwd>`       | `-c`  | Working directory      | current |
+| フラグ              | 短縮 | 説明                          | デフォルト |
+| ------------------- | ---- | ----------------------------- | ---------- |
+| `--query <query>`   | `-q` | 検索クエリ                    | —          |
+| `--limit <number>`  | `-l` | registry あたりの最大アイテム | `100`      |
+| `--offset <number>` | `-o` | スキップするアイテム数        | `0`        |
+| `--cwd <cwd>`       | `-c` | 作業ディレクトリ              | カレント   |
 
-### `view` — View item details
+### `view` — アイテム詳細の表示
 
 ```bash
 npx shadcn@latest view <items...> [options]
 ```
 
-Displays item info including file contents. Example: `npx shadcn@latest view @shadcn/button`.
+アイテム情報をファイル内容付きで表示する。例: `npx shadcn@latest view @shadcn/button`。
 
-### `docs` — Get component documentation URLs
+### `docs` — コンポーネントドキュメント URL の取得
 
 ```bash
 npx shadcn@latest docs <components...> [options]
 ```
 
-Outputs resolved URLs for component documentation, examples, and API references. Accepts one or more component names. Fetch the URLs to get the actual content.
+コンポーネントのドキュメント、サンプル、API リファレンスの解決済み URL を出力する。コンポーネント名を 1 つ以上受け付ける。実際の内容は URL を fetch して取得する。
 
-Example output for `npx shadcn@latest docs input button`:
+`npx shadcn@latest docs input button` の出力例:
 
 ```
 base  radix
@@ -168,109 +168,109 @@ button
   examples  https://raw.githubusercontent.com/.../examples/button-example.tsx
 ```
 
-Some components include an `api` link to the underlying library (e.g. `cmdk` for the command component).
+一部のコンポーネントには、基盤ライブラリへの `api` リンクが含まれる (例: command コンポーネントの `cmdk`)。
 
-### `diff` — Check for updates
+### `diff` — 更新確認
 
-Do not use this command. Use `npx shadcn@latest add --diff` instead.
+このコマンドは使わない。代わりに `npx shadcn@latest add --diff` を使う。
 
-### `info` — Project information
+### `info` — プロジェクト情報
 
 ```bash
 npx shadcn@latest info [options]
 ```
 
-Displays project info and `components.json` configuration. Run this first to discover the project's framework, aliases, Tailwind version, and resolved paths.
+プロジェクト情報と `components.json` の設定を表示する。プロジェクトの framework、alias、Tailwind バージョン、解決済みパスを把握するために最初に実行する。
 
-| Flag          | Short | Description       | Default |
-| ------------- | ----- | ----------------- | ------- |
-| `--cwd <cwd>` | `-c`  | Working directory | current |
+| フラグ        | 短縮 | 説明             | デフォルト |
+| ------------- | ---- | ---------------- | ---------- |
+| `--cwd <cwd>` | `-c` | 作業ディレクトリ | カレント   |
 
-**Project Info fields:**
+**Project Info フィールド:**
 
-| Field                | Type      | Meaning                                                            |
-| -------------------- | --------- | ------------------------------------------------------------------ |
-| `framework`          | `string`  | Detected framework (`next`, `vite`, `react-router`, `start`, etc.) |
-| `frameworkVersion`   | `string`  | Framework version (e.g. `15.2.4`)                                  |
-| `isSrcDir`           | `boolean` | Whether the project uses a `src/` directory                        |
-| `isRSC`              | `boolean` | Whether React Server Components are enabled                        |
-| `isTsx`              | `boolean` | Whether the project uses TypeScript                                |
-| `tailwindVersion`    | `string`  | `"v3"` or `"v4"`                                                   |
-| `tailwindConfigFile` | `string`  | Path to the Tailwind config file                                   |
-| `tailwindCssFile`    | `string`  | Path to the global CSS file                                        |
-| `aliasPrefix`        | `string`  | Import alias prefix (e.g. `@`, `~`, `@/`)                          |
-| `packageManager`     | `string`  | Detected package manager (`npm`, `pnpm`, `yarn`, `bun`)            |
+| フィールド           | 型        | 意味                                                                |
+| -------------------- | --------- | ------------------------------------------------------------------- |
+| `framework`          | `string`  | 検出された framework (`next`、`vite`、`react-router`、`start` など) |
+| `frameworkVersion`   | `string`  | framework バージョン (例: `15.2.4`)                                 |
+| `isSrcDir`           | `boolean` | プロジェクトが `src/` ディレクトリを使うかどうか                    |
+| `isRSC`              | `boolean` | React Server Components が有効かどうか                              |
+| `isTsx`              | `boolean` | プロジェクトが TypeScript を使うかどうか                            |
+| `tailwindVersion`    | `string`  | `"v3"` または `"v4"`                                                |
+| `tailwindConfigFile` | `string`  | Tailwind 設定ファイルのパス                                         |
+| `tailwindCssFile`    | `string`  | グローバル CSS ファイルのパス                                       |
+| `aliasPrefix`        | `string`  | import alias プレフィックス (例: `@`、`~`、`@/`)                    |
+| `packageManager`     | `string`  | 検出された package manager (`npm`、`pnpm`、`yarn`、`bun`)           |
 
-**Components.json fields:**
+**Components.json フィールド:**
 
-| Field                | Type      | Meaning                                                                                    |
-| -------------------- | --------- | ------------------------------------------------------------------------------------------ |
-| `base`               | `string`  | Primitive library (`radix` or `base`) — determines component APIs and available props      |
-| `style`              | `string`  | Visual style (e.g. `nova`, `vega`)                                                         |
-| `rsc`                | `boolean` | RSC flag from config                                                                       |
-| `tsx`                | `boolean` | TypeScript flag                                                                            |
-| `tailwind.config`    | `string`  | Tailwind config path                                                                       |
-| `tailwind.css`       | `string`  | Global CSS path — this is where custom CSS variables go                                    |
-| `iconLibrary`        | `string`  | Icon library — determines icon import package (e.g. `lucide-react`, `@tabler/icons-react`) |
-| `aliases.components` | `string`  | Component import alias (e.g. `@/components`)                                               |
-| `aliases.utils`      | `string`  | Utils import alias (e.g. `@/lib/utils`)                                                    |
-| `aliases.ui`         | `string`  | UI component alias (e.g. `@/components/ui`)                                                |
-| `aliases.lib`        | `string`  | Lib alias (e.g. `@/lib`)                                                                   |
-| `aliases.hooks`      | `string`  | Hooks alias (e.g. `@/hooks`)                                                               |
-| `resolvedPaths`      | `object`  | Absolute file-system paths for each alias                                                  |
-| `registries`         | `object`  | Configured custom registries                                                               |
+| フィールド           | 型        | 意味                                                                                            |
+| -------------------- | --------- | ----------------------------------------------------------------------------------------------- |
+| `base`               | `string`  | primitive ライブラリ (`radix` または `base`) — コンポーネント API と使える props に影響        |
+| `style`              | `string`  | ビジュアルスタイル (例: `nova`、`vega`)                                                         |
+| `rsc`                | `boolean` | 設定の RSC フラグ                                                                               |
+| `tsx`                | `boolean` | TypeScript フラグ                                                                               |
+| `tailwind.config`    | `string`  | Tailwind 設定パス                                                                               |
+| `tailwind.css`       | `string`  | グローバル CSS パス — カスタム CSS 変数はここに記述する                                         |
+| `iconLibrary`        | `string`  | アイコンライブラリ — アイコンの import パッケージを決める (例: `lucide-react`、`@tabler/icons-react`) |
+| `aliases.components` | `string`  | コンポーネントの import alias (例: `@/components`)                                              |
+| `aliases.utils`      | `string`  | utils の import alias (例: `@/lib/utils`)                                                       |
+| `aliases.ui`         | `string`  | UI コンポーネントの alias (例: `@/components/ui`)                                               |
+| `aliases.lib`        | `string`  | lib の alias (例: `@/lib`)                                                                      |
+| `aliases.hooks`      | `string`  | hooks の alias (例: `@/hooks`)                                                                  |
+| `resolvedPaths`      | `object`  | 各 alias の絶対ファイルシステムパス                                                             |
+| `registries`         | `object`  | 設定済みのカスタム registry                                                                     |
 
-**Links fields:**
+**Links フィールド:**
 
-The `info` output includes a **Links** section with templated URLs for component docs, source, and examples. For resolved URLs, use `npx shadcn@latest docs <component>` instead.
+`info` の出力には **Links** セクションがあり、コンポーネントのドキュメント、ソース、サンプル用のテンプレート URL が含まれる。解決済み URL が必要な場合は `npx shadcn@latest docs <component>` を使う。
 
-### `build` — Build a custom registry
+### `build` — カスタム registry のビルド
 
 ```bash
 npx shadcn@latest build [registry] [options]
 ```
 
-Builds `registry.json` into individual JSON files for distribution. Default input: `./registry.json`, default output: `./public/r`.
+配布用に `registry.json` を個別の JSON ファイルへビルドする。デフォルト入力: `./registry.json`、デフォルト出力: `./public/r`。
 
-| Flag              | Short | Description       | Default      |
-| ----------------- | ----- | ----------------- | ------------ |
-| `--output <path>` | `-o`  | Output directory  | `./public/r` |
-| `--cwd <cwd>`     | `-c`  | Working directory | current      |
-
----
-
-## Templates
-
-| Value          | Framework      | Monorepo support |
-| -------------- | -------------- | ---------------- |
-| `next`         | Next.js        | Yes              |
-| `vite`         | Vite           | Yes              |
-| `start`        | TanStack Start | Yes              |
-| `react-router` | React Router   | Yes              |
-| `astro`        | Astro          | Yes              |
-| `laravel`      | Laravel        | No               |
-
-All templates support monorepo scaffolding via the `--monorepo` flag. When passed, the CLI uses a monorepo-specific template directory (e.g. `next-monorepo`, `vite-monorepo`). When neither `--monorepo` nor `--no-monorepo` is passed, the CLI prompts interactively. Laravel does not support monorepo scaffolding.
+| フラグ            | 短縮 | 説明             | デフォルト   |
+| ----------------- | ---- | ---------------- | ------------ |
+| `--output <path>` | `-o` | 出力ディレクトリ | `./public/r` |
+| `--cwd <cwd>`     | `-c` | 作業ディレクトリ | カレント     |
 
 ---
 
-## Presets
+## テンプレート
 
-Three ways to specify a preset via `--preset`:
+| 値             | Framework      | monorepo サポート |
+| -------------- | -------------- | ----------------- |
+| `next`         | Next.js        | あり              |
+| `vite`         | Vite           | あり              |
+| `start`        | TanStack Start | あり              |
+| `react-router` | React Router   | あり              |
+| `astro`        | Astro          | あり              |
+| `laravel`      | Laravel        | なし              |
 
-1. **Named:** `--preset nova` or `--preset lyra`
-2. **Code:** `--preset a2r6bw` (version-prefixed base62 string, e.g. `a2r6bw` or `b0`)
+すべてのテンプレートは `--monorepo` フラグで monorepo scaffold をサポートする。`--monorepo` を指定すると CLI は monorepo 用のテンプレートディレクトリ (例: `next-monorepo`、`vite-monorepo`) を使う。`--monorepo` も `--no-monorepo` も指定されない場合は対話的に確認する。Laravel は monorepo の scaffold をサポートしない。
+
+---
+
+## Preset
+
+`--preset` で preset を指定する方法は 3 種類:
+
+1. **Named:** `--preset nova` や `--preset lyra`
+2. **Code:** `--preset a2r6bw` (バージョンプレフィックス付きの base62 文字列。例: `a2r6bw`、`b0`)
 3. **URL:** `--preset "https://ui.shadcn.com/init?base=radix&style=nova&..."`
 
-> **IMPORTANT:** Never try to decode, fetch, or resolve preset codes manually. Preset codes are opaque — pass them directly to `npx shadcn@latest init --preset <code>` and let the CLI handle resolution.
-> Use `npx shadcn@latest apply --preset <code>` when overwriting an existing project's preset.
+> **重要:** preset コードを手動でデコード・取得・解決しようとしない。preset コードは不透明な値 — そのまま `npx shadcn@latest init --preset <code>` に渡し、解決は CLI に任せる。
+> 既存プロジェクトの preset を上書きするときは `npx shadcn@latest apply --preset <code>` を使う。
 
-## Switching Presets
+## preset の切り替え
 
-Ask the user first: **overwrite**, **merge**, or **skip** existing components?
+先にユーザーに確認する: 既存コンポーネントを **overwrite**、**merge**、**skip** のどれにするか?
 
-- **Overwrite / Re-install** → `npx shadcn@latest apply --preset <code>`. Overwrites all detected component files with the new preset styles. Use when the user hasn't customized components.
-- **Merge** → `npx shadcn@latest init --preset <code> --force --no-reinstall`, then run `npx shadcn@latest info` to get the list of installed components and use the [smart merge workflow](./SKILL.md#updating-components) to update them one by one, preserving local changes. Use when the user has customized components.
-- **Skip** → `npx shadcn@latest init --preset <code> --force --no-reinstall`. Only updates config and CSS variables, leaves existing components as-is.
+- **Overwrite / Re-install** → `npx shadcn@latest apply --preset <code>`。検出されたコンポーネントファイルをすべて新しい preset のスタイルで上書きする。ユーザーがコンポーネントをカスタマイズしていないときに使う。
+- **Merge** → `npx shadcn@latest init --preset <code> --force --no-reinstall` を実行し、続いて `npx shadcn@latest info` でインストール済みコンポーネント一覧を取得し、[smart merge ワークフロー](./SKILL.md#コンポーネントの更新) を使って 1 つずつローカル変更を保ちながら更新する。ユーザーがコンポーネントをカスタマイズしているときに使う。
+- **Skip** → `npx shadcn@latest init --preset <code> --force --no-reinstall`。設定と CSS 変数のみを更新し、既存コンポーネントはそのまま残す。
 
-Always run preset commands inside the user's project directory. `apply` only works in an existing project with a `components.json` file. The CLI automatically preserves the current base (`base` vs `radix`) from `components.json`. If you must use a scratch/temp directory (e.g. for `--dry-run` comparisons), pass `--base <current-base>` explicitly — preset codes do not encode the base.
+preset コマンドは必ずユーザーのプロジェクトディレクトリで実行する。`apply` は `components.json` を持つ既存プロジェクトでのみ動作する。CLI は `components.json` の現在の base (`base` か `radix`) を自動的に維持する。スクラッチ/一時ディレクトリを使う必要がある場合 (例: `--dry-run` 比較のため) は `--base <current-base>` を明示的に渡す — preset コードに base は含まれない。

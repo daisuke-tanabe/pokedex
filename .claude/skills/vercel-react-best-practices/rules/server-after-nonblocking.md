@@ -7,18 +7,18 @@ tags: server, async, logging, analytics, side-effects
 
 ## Use after() for Non-Blocking Operations
 
-Use Next.js's `after()` to schedule work that should execute after a response is sent. This prevents logging, analytics, and other side effects from blocking the response.
+レスポンス送信後に実行したい処理は、Next.js の `after()` でスケジュールする。これによりロギング・analytics などの副作用がレスポンスをブロックしなくなる。
 
-**Incorrect (blocks response):**
+**Incorrect (レスポンスをブロックする):**
 
 ```tsx
 import { logUserAction } from '@/app/utils'
 
 export async function POST(request: Request) {
-  // Perform mutation
+  // ミューテーションを実行
   await updateDatabase(request)
   
-  // Logging blocks the response
+  // ロギングがレスポンスをブロックする
   const userAgent = request.headers.get('user-agent') || 'unknown'
   await logUserAction({ userAgent })
   
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 }
 ```
 
-**Correct (non-blocking):**
+**Correct (ブロックしない):**
 
 ```tsx
 import { after } from 'next/server'
@@ -37,10 +37,10 @@ import { headers, cookies } from 'next/headers'
 import { logUserAction } from '@/app/utils'
 
 export async function POST(request: Request) {
-  // Perform mutation
+  // ミューテーションを実行
   await updateDatabase(request)
   
-  // Log after response is sent
+  // レスポンス送信後にログを出す
   after(async () => {
     const userAgent = (await headers()).get('user-agent') || 'unknown'
     const sessionCookie = (await cookies()).get('session-id')?.value || 'anonymous'
@@ -55,19 +55,19 @@ export async function POST(request: Request) {
 }
 ```
 
-The response is sent immediately while logging happens in the background.
+レスポンスは即座に返り、ロギングはバックグラウンドで実行される。
 
-**Common use cases:**
+**よくある用途:**
 
-- Analytics tracking
-- Audit logging
-- Sending notifications
-- Cache invalidation
-- Cleanup tasks
+- analytics トラッキング
+- 監査ログ
+- 通知の送信
+- キャッシュの無効化
+- クリーンアップ処理
 
-**Important notes:**
+**重要な注意点:**
 
-- `after()` runs even if the response fails or redirects
-- Works in Server Actions, Route Handlers, and Server Components
+- `after()` はレスポンスが失敗した場合やリダイレクトした場合でも実行される
+- Server Actions、Route Handlers、Server Components で利用できる
 
 Reference: [https://nextjs.org/docs/app/api-reference/functions/after](https://nextjs.org/docs/app/api-reference/functions/after)

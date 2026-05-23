@@ -1,12 +1,12 @@
-# Async Patterns
+# Async パターン
 
-In Next.js 15+, `params`, `searchParams`, `cookies()`, and `headers()` are asynchronous.
+Next.js 15 以降では、`params`、`searchParams`、`cookies()`、`headers()` が非同期になっている。
 
-## Async Params and SearchParams
+## Async な Params と SearchParams
 
-Always type them as `Promise<...>` and await them.
+`Promise<...>` として型付けし、必ず await する。
 
-### Pages and Layouts
+### Pages と Layouts
 
 ```tsx
 type Props = { params: Promise<{ slug: string }> }
@@ -41,9 +41,9 @@ export default async function Page({ params, searchParams }: Props) {
 }
 ```
 
-### Synchronous Components
+### 同期コンポーネント
 
-Use `React.use()` for non-async components:
+非 async なコンポーネントでは `React.use()` を使う。
 
 ```tsx
 import { use } from 'react'
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 ```
 
-## Async Cookies and Headers
+## Async な Cookies と Headers
 
 ```tsx
 import { cookies, headers } from 'next/headers'
@@ -80,7 +80,7 @@ export default async function Page() {
 }
 ```
 
-## Migration Codemod
+## マイグレーション codemod
 
 ```bash
 npx @next/codemod@latest next-async-request-api .

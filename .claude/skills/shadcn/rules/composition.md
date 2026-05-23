@@ -1,26 +1,26 @@
-# Component Composition
+# コンポーネントのコンポジション
 
-## Contents
+## 目次
 
-- Items always inside their Group component
-- Callouts use Alert
-- Empty states use Empty component
-- Toast notifications use sonner
-- Choosing between overlay components
-- Dialog, Sheet, and Drawer always need a Title
-- Card structure
-- Button has no isPending or isLoading prop
-- TabsTrigger must be inside TabsList
-- Avatar always needs AvatarFallback
-- Use Separator instead of raw hr or border divs
-- Use Skeleton for loading placeholders
-- Use Badge instead of custom styled spans
+- Item は必ず対応する Group コンポーネントの中に置く
+- コールアウトには Alert を使う
+- 空状態には Empty コンポーネントを使う
+- トースト通知には sonner を使う
+- オーバーレイ系コンポーネントの選び方
+- Dialog、Sheet、Drawer には必ず Title が必要
+- Card の構造
+- Button に isPending や isLoading の prop はない
+- TabsTrigger は TabsList の中に置く
+- Avatar には必ず AvatarFallback が必要
+- 生の hr やボーダー付き div の代わりに Separator を使う
+- ローディングプレースホルダには Skeleton を使う
+- カスタムスタイルの span の代わりに Badge を使う
 
 ---
 
-## Items always inside their Group component
+## Item は必ず対応する Group コンポーネントの中に置く
 
-Never render items directly inside the content container.
+コンテンツコンテナの直下に item を直接レンダーしない。
 
 **Incorrect:**
 
@@ -42,7 +42,7 @@ Never render items directly inside the content container.
 </SelectContent>
 ```
 
-This applies to all group-based components:
+これはすべてのグループベースのコンポーネントに当てはまる。
 
 | Item | Group |
 |------|-------|
@@ -54,7 +54,7 @@ This applies to all group-based components:
 
 ---
 
-## Callouts use Alert
+## コールアウトには Alert を使う
 
 ```tsx
 <Alert>
@@ -65,7 +65,7 @@ This applies to all group-based components:
 
 ---
 
-## Empty states use Empty component
+## 空状態には Empty コンポーネントを使う
 
 ```tsx
 <Empty>
@@ -82,7 +82,7 @@ This applies to all group-based components:
 
 ---
 
-## Toast notifications use sonner
+## トースト通知には sonner を使う
 
 ```tsx
 import { toast } from "sonner"
@@ -96,22 +96,22 @@ toast("File deleted.", {
 
 ---
 
-## Choosing between overlay components
+## オーバーレイ系コンポーネントの選び方
 
-| Use case | Component |
-|----------|-----------|
-| Focused task that requires input | `Dialog` |
-| Destructive action confirmation | `AlertDialog` |
-| Side panel with details or filters | `Sheet` |
-| Mobile-first bottom panel | `Drawer` |
-| Quick info on hover | `HoverCard` |
-| Small contextual content on click | `Popover` |
+| ユースケース                            | コンポーネント |
+|----------------------------------------|---------------|
+| 入力を伴う集中タスク                    | `Dialog`      |
+| 破壊的アクションの確認                  | `AlertDialog` |
+| 詳細やフィルタを表示するサイドパネル    | `Sheet`       |
+| モバイル優先のボトムパネル              | `Drawer`      |
+| ホバーで素早く情報を出す                | `HoverCard`   |
+| クリックで小さなコンテキストを出す      | `Popover`     |
 
 ---
 
-## Dialog, Sheet, and Drawer always need a Title
+## Dialog、Sheet、Drawer には必ず Title が必要
 
-`DialogTitle`, `SheetTitle`, `DrawerTitle` are required for accessibility. Use `className="sr-only"` if visually hidden.
+アクセシビリティのため `DialogTitle`、`SheetTitle`、`DrawerTitle` は必須。視覚的に隠す場合は `className="sr-only"` を使う。
 
 ```tsx
 <DialogContent>
@@ -125,9 +125,9 @@ toast("File deleted.", {
 
 ---
 
-## Card structure
+## Card の構造
 
-Use full composition — don't dump everything into `CardContent`:
+完全なコンポジションを使う。すべてを `CardContent` に詰め込まない。
 
 ```tsx
 <Card>
@@ -144,9 +144,9 @@ Use full composition — don't dump everything into `CardContent`:
 
 ---
 
-## Button has no isPending or isLoading prop
+## Button に isPending や isLoading の prop はない
 
-Compose with `Spinner` + `data-icon` + `disabled`:
+`Spinner` + `data-icon` + `disabled` でコンポジションする。
 
 ```tsx
 <Button disabled>
@@ -157,9 +157,9 @@ Compose with `Spinner` + `data-icon` + `disabled`:
 
 ---
 
-## TabsTrigger must be inside TabsList
+## TabsTrigger は TabsList の中に置く
 
-Never render `TabsTrigger` directly inside `Tabs` — always wrap in `TabsList`:
+`TabsTrigger` を `Tabs` 直下にレンダーしない。必ず `TabsList` で包む。
 
 ```tsx
 <Tabs defaultValue="account">
@@ -173,9 +173,9 @@ Never render `TabsTrigger` directly inside `Tabs` — always wrap in `TabsList`:
 
 ---
 
-## Avatar always needs AvatarFallback
+## Avatar には必ず AvatarFallback が必要
 
-Always include `AvatarFallback` for when the image fails to load:
+画像のロードに失敗した場合のため、必ず `AvatarFallback` を含める。
 
 ```tsx
 <Avatar>
@@ -186,10 +186,10 @@ Always include `AvatarFallback` for when the image fails to load:
 
 ---
 
-## Use existing components instead of custom markup
+## カスタムマークアップの代わりに既存コンポーネントを使う
 
-| Instead of | Use |
+| 代わりに | 使うもの |
 |---|---|
-| `<hr>` or `<div className="border-t">` | `<Separator />` |
-| `<div className="animate-pulse">` with styled divs | `<Skeleton className="h-4 w-3/4" />` |
+| `<hr>` や `<div className="border-t">` | `<Separator />` |
+| スタイル付き div を使った `<div className="animate-pulse">` | `<Skeleton className="h-4 w-3/4" />` |
 | `<span className="rounded-full bg-green-100 ...">` | `<Badge variant="secondary">` |

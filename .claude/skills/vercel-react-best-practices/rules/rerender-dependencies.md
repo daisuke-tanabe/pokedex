@@ -7,9 +7,9 @@ tags: rerender, useEffect, dependencies, optimization
 
 ## Narrow Effect Dependencies
 
-Specify primitive dependencies instead of objects to minimize effect re-runs.
+effect の再実行を最小化するため、オブジェクトではなくプリミティブを依存に指定する。
 
-**Incorrect (re-runs on any user field change):**
+**Incorrect (user のどのフィールド変更でも再実行される):**
 
 ```tsx
 useEffect(() => {
@@ -17,7 +17,7 @@ useEffect(() => {
 }, [user])
 ```
 
-**Correct (re-runs only when id changes):**
+**Correct (id が変わったときだけ再実行する):**
 
 ```tsx
 useEffect(() => {
@@ -25,17 +25,17 @@ useEffect(() => {
 }, [user.id])
 ```
 
-**For derived state, compute outside effect:**
+**派生状態は effect の外で計算する:**
 
 ```tsx
-// Incorrect: runs on width=767, 766, 765...
+// Incorrect: width=767, 766, 765... で毎回走る
 useEffect(() => {
   if (width < 768) {
     enableMobileMode()
   }
 }, [width])
 
-// Correct: runs only on boolean transition
+// Correct: boolean が切り替わったときだけ走る
 const isMobile = width < 768
 useEffect(() => {
   if (isMobile) {

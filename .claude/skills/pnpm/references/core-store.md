@@ -1,141 +1,141 @@
 ---
 name: pnpm-store
-description: Content-addressable storage system that makes pnpm fast and disk-efficient
+description: pnpm を高速かつディスク効率に優れたものにするコンテンツアドレス指定ストレージ
 ---
 
-# pnpm Store
+# pnpm の Store
 
-pnpm uses a content-addressable store to save disk space and speed up installations. All packages are stored once globally and hard-linked to project `node_modules`.
+pnpm はコンテンツアドレス指定の store を用いて、ディスク容量を節約しインストールを高速化する。すべてのパッケージはグローバルに 1 度だけ保存され、プロジェクトの `node_modules` にハードリンクされる。
 
-## How It Works
+## 仕組み
 
-1. **Global Store**: Packages are downloaded once to a central store
-2. **Hard Links**: Projects link to store instead of copying files
-3. **Content-Addressable**: Files are stored by content hash, deduplicating identical files
+1. **グローバル store**: パッケージは中央 store に 1 度だけダウンロードされる
+2. **ハードリンク**: プロジェクトはファイルをコピーせず store にリンクする
+3. **コンテンツアドレス指定**: コンテンツのハッシュをキーに保存され、同一ファイルが重複排除される
 
-### Storage Layout
+### ストレージのレイアウト
 
 ```
-~/.pnpm-store/              # Global store (default location)
+~/.pnpm-store/              # グローバル store (デフォルトの場所)
 └── v3/
     └── files/
-        └── <hash>/         # Files stored by content hash
+        └── <hash>/         # コンテンツハッシュごとに保存されたファイル
 
 project/
 └── node_modules/
-    ├── .pnpm/              # Virtual store (hard links to global store)
+    ├── .pnpm/              # 仮想 store (グローバル store へのハードリンク)
     │   ├── lodash@4.17.21/
     │   │   └── node_modules/
     │   │       └── lodash/
     │   └── express@4.18.2/
     │       └── node_modules/
     │           ├── express/
-    │           └── <deps>/  # Flat structure for dependencies
+    │           └── <deps>/  # 依存関係のフラット構造
     ├── lodash -> .pnpm/lodash@4.17.21/node_modules/lodash
     └── express -> .pnpm/express@4.18.2/node_modules/express
 ```
 
-## Store Commands
+## Store 系コマンド
 
 ```bash
-# Show store location
+# store の場所を表示
 pnpm store path
 
-# Remove unreferenced packages
+# 参照されていないパッケージを削除
 pnpm store prune
 
-# Check store integrity
+# store の整合性をチェック
 pnpm store status
 
-# Add package to store without installing
+# インストールせずに store にパッケージを追加
 pnpm store add <pkg>
 ```
 
-## Configuration
+## 設定
 
-### Store Location
+### Store の場所
 
 ```ini
 # .npmrc
 store-dir=~/.pnpm-store
 
-# Or use environment variable
+# あるいは環境変数で指定
 PNPM_HOME=~/.local/share/pnpm
 ```
 
-### Virtual Store
+### 仮想 store
 
-The virtual store (`.pnpm` in `node_modules`) contains symlinks to the global store:
+仮想 store (`node_modules` 内の `.pnpm`) はグローバル store への symlink を含む。
 
 ```ini
-# Customize virtual store location
+# 仮想 store の場所をカスタマイズ
 virtual-store-dir=node_modules/.pnpm
 
-# Alternative flat layout
+# 代替のフラットレイアウト
 node-linker=hoisted
 ```
 
-## Disk Space Benefits
+## ディスク容量のメリット
 
-pnpm saves significant disk space:
+pnpm はディスク容量を大きく節約する。
 
-- **Deduplication**: Same package version stored once across all projects
-- **Content deduplication**: Identical files across different packages stored once
-- **Hard links**: No copying, just linking
+- **重複排除**: 同一バージョンのパッケージはすべてのプロジェクトを通じて 1 度のみ保存
+- **コンテンツ重複排除**: 異なるパッケージ間でも同一ファイルは 1 度のみ保存
+- **ハードリンク**: コピーせず、リンクするだけ
 
-### Check disk usage
+### ディスク使用量の確認
 
 ```bash
-# Compare actual vs apparent size
-du -sh node_modules        # Apparent size
-du -sh --apparent-size node_modules  # With hard links counted
+# 実サイズと見かけ上のサイズの比較
+du -sh node_modules        # 見かけ上のサイズ
+du -sh --apparent-size node_modules  # ハードリンクを加味
 ```
 
-## Node Linker Modes
+## Node linker のモード
 
-Configure how `node_modules` is structured:
+`node_modules` の構造を設定できる。
 
 ```ini
-# Default: Symlinked structure (recommended)
+# デフォルト: symlink 構造 (推奨)
 node-linker=isolated
 
-# Flat node_modules (npm-like, for compatibility)
+# フラットな node_modules (npm 互換重視)
 node-linker=hoisted
 
-# PnP mode (experimental, like Yarn PnP)
+# PnP モード (実験的、Yarn PnP に類似)
 node-linker=pnp
 ```
 
-### Isolated Mode (Default)
+### isolated モード (デフォルト)
 
-- Strict dependency resolution
-- No phantom dependencies
-- Packages can only access declared dependencies
+- 厳格な依存解決
+- phantom dependency なし
+- パッケージは宣言された依存のみアクセス可能
 
-### Hoisted Mode
+### hoisted モード
 
-- Flat `node_modules` like npm
-- For compatibility with tools that don't support symlinks
-- Loses strictness benefits
+- npm と同様のフラットな `node_modules`
+- symlink をサポートしないツールとの互換性のため
+- strictness のメリットを失う
 
-## Side Effects Cache
+## 副作用キャッシュ
 
-Cache build outputs for native modules:
+ネイティブモジュールのビルド成果物をキャッシュする。
 
 ```ini
-# Enable side effects caching
+# 副作用キャッシュを有効化
 side-effects-cache=true
 
-# Store side effects in project (instead of global store)
+# 副作用をプロジェクト内に保存 (グローバル store ではなく)
 side-effects-cache-readonly=true
 ```
 
-## Shared Store Across Machines
+## マシン間で store を共有
 
-For CI/CD, you can share the store:
+CI/CD では store を共有できる。
 
 ```yaml
-# GitHub Actions example
+# GitHub Actions の例
 - uses: pnpm/action-setup@v4
   with:
     run_install: false
@@ -150,28 +150,28 @@ For CI/CD, you can share the store:
     key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
 ```
 
-## Troubleshooting
+## トラブルシューティング
 
-### Store corruption
+### Store が壊れた場合
 ```bash
-# Verify and fix store
+# store を検査して修復
 pnpm store status
 pnpm store prune
 ```
 
-### Hard link issues (network drives, Docker)
+### ハードリンクの問題 (ネットワークドライブ、Docker)
 ```ini
-# Use copying instead of hard links
+# ハードリンクの代わりにコピーを使用
 package-import-method=copy
 ```
 
-### Permission issues
+### パーミッションの問題
 ```bash
-# Fix store permissions
+# store のパーミッションを修正
 chmod -R u+w ~/.pnpm-store
 ```
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/symlinked-node-modules-structure
 - https://pnpm.io/cli/store

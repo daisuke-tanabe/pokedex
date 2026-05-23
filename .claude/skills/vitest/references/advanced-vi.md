@@ -1,27 +1,27 @@
 ---
 name: vi-utilities
-description: vi helper for mocking, timers, utilities
+description: モック・タイマー・各種ユーティリティを提供する vi ヘルパー
 ---
 
-# Vi Utilities
+# Vi ユーティリティ
 
-The `vi` helper provides mocking and utility functions.
+`vi` ヘルパーはモックとユーティリティ関数を提供する。
 
 ```ts
 import { vi } from 'vitest'
 ```
 
-## Mock Functions
+## モック関数
 
 ```ts
-// Create mock
+// モックを作成
 const fn = vi.fn()
 const fnWithImpl = vi.fn((x) => x * 2)
 
-// Check if mock
+// モック関数か判定
 vi.isMockFunction(fn) // true
 
-// Mock methods
+// モックメソッド
 fn.mockReturnValue(42)
 fn.mockReturnValueOnce(1)
 fn.mockResolvedValue(data)
@@ -29,13 +29,13 @@ fn.mockRejectedValue(error)
 fn.mockImplementation(() => 'result')
 fn.mockImplementationOnce(() => 'once')
 
-// Clear/reset
-fn.mockClear()    // Clear call history
-fn.mockReset()    // Clear history + implementation
-fn.mockRestore()  // Restore original (for spies)
+// clear / reset
+fn.mockClear()    // 呼び出し履歴をクリア
+fn.mockReset()    // 履歴 + 実装をクリア
+fn.mockRestore()  // 元の実装に戻す (spy 用)
 ```
 
-## Spying
+## スパイ
 
 ```ts
 const obj = { method: () => 'original' }
@@ -45,56 +45,56 @@ obj.method()
 
 expect(spy).toHaveBeenCalled()
 
-// Mock implementation
+// 実装をモック
 spy.mockReturnValue('mocked')
 
-// Spy on getter/setter
+// getter / setter をスパイ
 vi.spyOn(obj, 'prop', 'get').mockReturnValue('value')
 ```
 
-## Module Mocking
+## モジュールのモック
 
 ```ts
-// Hoisted to top of file
+// ファイル先頭に hoist される
 vi.mock('./module', () => ({
   fn: vi.fn(),
 }))
 
-// Partial mock
+// 部分モック
 vi.mock('./module', async (importOriginal) => ({
   ...(await importOriginal()),
   specificFn: vi.fn(),
 }))
 
-// Spy mode - keep implementation
+// spy モード - 実装を保つ
 vi.mock('./module', { spy: true })
 
-// Import actual module inside mock
+// mock 内部で実際のモジュールを import
 const actual = await vi.importActual('./module')
 
-// Import as mock
+// モックとして import
 const mocked = await vi.importMock('./module')
 ```
 
-## Dynamic Mocking
+## 動的モック
 
 ```ts
-// Not hoisted - use with dynamic imports
+// hoist されない - 動的 import 向け
 vi.doMock('./config', () => ({ key: 'value' }))
 const config = await import('./config')
 
-// Unmock
+// unmock
 vi.doUnmock('./config')
-vi.unmock('./module') // Hoisted
+vi.unmock('./module') // hoist される
 ```
 
-## Reset Modules
+## モジュールのリセット
 
 ```ts
-// Clear module cache
+// モジュールキャッシュをクリア
 vi.resetModules()
 
-// Wait for dynamic imports
+// 動的 import の解決を待つ
 await vi.dynamicImportSettled()
 ```
 
@@ -105,73 +105,73 @@ vi.useFakeTimers()
 
 setTimeout(() => console.log('done'), 1000)
 
-// Advance time
+// 時間を進める
 vi.advanceTimersByTime(1000)
-vi.advanceTimersByTimeAsync(1000)  // For async callbacks
+vi.advanceTimersByTimeAsync(1000)  // 非同期コールバック向け
 vi.advanceTimersToNextTimer()
 vi.advanceTimersToNextFrame()      // requestAnimationFrame
 
-// Run all timers
+// 全タイマーを実行
 vi.runAllTimers()
 vi.runAllTimersAsync()
 vi.runOnlyPendingTimers()
 
-// Clear timers
+// タイマーをクリア
 vi.clearAllTimers()
 
-// Check state
+// 状態を確認
 vi.getTimerCount()
 vi.isFakeTimers()
 
-// Restore
+// 元に戻す
 vi.useRealTimers()
 ```
 
-## Mock Date/Time
+## 日時のモック
 
 ```ts
 vi.setSystemTime(new Date('2024-01-01'))
 expect(new Date().getFullYear()).toBe(2024)
 
-vi.getMockedSystemTime()  // Get mocked date
-vi.getRealSystemTime()    // Get real time (ms)
+vi.getMockedSystemTime()  // モック中の日時を取得
+vi.getRealSystemTime()    // 実時刻を取得 (ms)
 ```
 
-## Global/Env Mocking
+## グローバル / 環境変数のモック
 
 ```ts
-// Stub global
+// グローバルを stub
 vi.stubGlobal('fetch', vi.fn())
 vi.unstubAllGlobals()
 
-// Stub environment
+// 環境変数を stub
 vi.stubEnv('API_KEY', 'test')
 vi.stubEnv('NODE_ENV', 'test')
 vi.unstubAllEnvs()
 ```
 
-## Hoisted Code
+## Hoisted コード
 
-Run code before imports:
+import より前にコードを実行する:
 
 ```ts
 const mock = vi.hoisted(() => vi.fn())
 
 vi.mock('./module', () => ({
-  fn: mock, // Can reference hoisted variable
+  fn: mock, // hoisted 変数を参照できる
 }))
 ```
 
-## Waiting Utilities
+## 待機ユーティリティ
 
 ```ts
-// Wait for callback to succeed
+// コールバックが成功するまで待つ
 await vi.waitFor(async () => {
   const el = document.querySelector('.loaded')
   expect(el).toBeTruthy()
 }, { timeout: 5000, interval: 100 })
 
-// Wait for truthy value
+// truthy な値を待つ
 const element = await vi.waitUntil(
   () => document.querySelector('.loaded'),
   { timeout: 5000 }
@@ -180,7 +180,7 @@ const element = await vi.waitUntil(
 
 ## Mock Object
 
-Mock all methods of an object:
+オブジェクトの全メソッドをモックする:
 
 ```ts
 const original = {
@@ -189,16 +189,16 @@ const original = {
 }
 
 const mocked = vi.mockObject(original)
-mocked.method()  // undefined (mocked)
+mocked.method()  // undefined (モック化)
 mocked.method.mockReturnValue('mocked')
 
-// Spy mode
+// spy モード
 const spied = vi.mockObject(original, { spy: true })
 spied.method()  // 'real'
 expect(spied.method).toHaveBeenCalled()
 ```
 
-## Test Configuration
+## テスト設定
 
 ```ts
 vi.setConfig({
@@ -209,39 +209,39 @@ vi.setConfig({
 vi.resetConfig()
 ```
 
-## Global Mock Management
+## グローバルなモック管理
 
 ```ts
-vi.clearAllMocks()   // Clear all mock call history
-vi.resetAllMocks()   // Reset + clear implementation
-vi.restoreAllMocks() // Restore originals (spies)
+vi.clearAllMocks()   // 全モックの呼び出し履歴をクリア
+vi.resetAllMocks()   // reset + 実装をクリア
+vi.restoreAllMocks() // 元の実装に戻す (spy)
 ```
 
-## vi.mocked Type Helper
+## vi.mocked 型ヘルパー
 
-TypeScript helper for mocked values:
+モック値向けの TypeScript ヘルパー:
 
 ```ts
 import { myFn } from './module'
 vi.mock('./module')
 
-// Type as mock
+// モックとして型付け
 vi.mocked(myFn).mockReturnValue('typed')
 
-// Deep mocking
+// 深いモック
 vi.mocked(myModule, { deep: true })
 
-// Partial mock typing
+// 部分モックの型付け
 vi.mocked(fn, { partial: true }).mockResolvedValue({ ok: true })
 ```
 
-## Key Points
+## 要点
 
-- `vi.mock` is hoisted - use `vi.doMock` for dynamic mocking
-- `vi.hoisted` lets you reference variables in mock factories
-- Use `vi.spyOn` to spy on existing methods
-- Fake timers require explicit setup and teardown
-- `vi.waitFor` retries until assertion passes
+- `vi.mock` は hoist される - 動的なモックには `vi.doMock` を使う
+- `vi.hoisted` で mock factory 内から変数を参照できる
+- 既存メソッドのスパイには `vi.spyOn` を使う
+- fake timer は明示的なセットアップとティアダウンが必要
+- `vi.waitFor` はアサーションが成功するまで再試行する
 
 <!-- 
 Source references:

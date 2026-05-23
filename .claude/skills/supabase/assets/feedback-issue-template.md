@@ -1,17 +1,17 @@
-## What happened
+## 何が起きたか
 
-**Task:** <!-- e.g., "Set up MFA on patient records" -->
+**タスク:** <!-- 例: 「患者レコードに MFA を設定する」 -->
 
-**Skill said:** <!-- e.g., "Use auth.jwt()->'app_metadata' in the RLS policy" -->
+**スキルが言ったこと:** <!-- 例: 「RLS ポリシーで auth.jwt()->'app_metadata' を使う」 -->
 
-**Expected:** <!-- e.g., "The function also needs SECURITY DEFINER + grant to supabase_auth_admin" -->
+**実際に必要だったこと:** <!-- 例: 「その関数には SECURITY DEFINER と supabase_auth_admin への GRANT も必要だった」 -->
 
-## Source
+## 出典
 
-**File:** <!-- e.g., references/security-model.md -->
+**ファイル:** <!-- 例: references/security-model.md -->
 
-**Section:** <!-- e.g., "Trust Boundaries > user_metadata vs app_metadata" -->
+**セクション:** <!-- 例: 「Trust Boundaries > user_metadata vs app_metadata」 -->
 
-## Fix suggestion
+## 修正案
 
-<!-- Leave blank if unsure -->
+<!-- 不明な場合は空欄のままで構わない -->

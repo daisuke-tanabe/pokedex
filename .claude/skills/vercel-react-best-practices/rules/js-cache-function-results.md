@@ -7,16 +7,16 @@ tags: javascript, cache, memoization, performance
 
 ## Cache Repeated Function Calls
 
-Use a module-level Map to cache function results when the same function is called repeatedly with the same inputs during render.
+レンダリング中に同じ入力で同じ関数が繰り返し呼ばれる場合は、モジュールレベルの Map を使って結果をキャッシュする。
 
-**Incorrect (redundant computation):**
+**Incorrect (重複した計算):**
 
 ```typescript
 function ProjectList({ projects }: { projects: Project[] }) {
   return (
     <div>
       {projects.map(project => {
-        // slugify() called 100+ times for same project names
+        // 同じプロジェクト名に対して slugify() が 100 回以上呼ばれる
         const slug = slugify(project.name)
         
         return <ProjectCard key={project.id} slug={slug} />
@@ -26,10 +26,10 @@ function ProjectList({ projects }: { projects: Project[] }) {
 }
 ```
 
-**Correct (cached results):**
+**Correct (結果をキャッシュする):**
 
 ```typescript
-// Module-level cache
+// モジュールレベルのキャッシュ
 const slugifyCache = new Map<string, string>()
 
 function cachedSlugify(text: string): string {
@@ -45,7 +45,7 @@ function ProjectList({ projects }: { projects: Project[] }) {
   return (
     <div>
       {projects.map(project => {
-        // Computed only once per unique project name
+        // ユニークなプロジェクト名ごとに 1 回だけ計算する
         const slug = cachedSlugify(project.name)
         
         return <ProjectCard key={project.id} slug={slug} />
@@ -55,7 +55,7 @@ function ProjectList({ projects }: { projects: Project[] }) {
 }
 ```
 
-**Simpler pattern for single-value functions:**
+**単一値を返す関数向けのシンプルなパターン:**
 
 ```typescript
 let isLoggedInCache: boolean | null = null
@@ -69,12 +69,12 @@ function isLoggedIn(): boolean {
   return isLoggedInCache
 }
 
-// Clear cache when auth changes
+// 認証状態が変わったらキャッシュをクリア
 function onAuthChange() {
   isLoggedInCache = null
 }
 ```
 
-Use a Map (not a hook) so it works everywhere: utilities, event handlers, not just React components.
+hook ではなく Map を使うことで、ユーティリティやイベントハンドラなど React コンポーネント以外でも動作する。
 
 Reference: [How we made the Vercel Dashboard twice as fast](https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast)

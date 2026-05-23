@@ -7,19 +7,19 @@ tags: bundle, nextjs, vite, webpack, rollup, esbuild, path
 
 ## Prefer Statically Analyzable Paths
 
-Build tools work best when import and file-system paths are obvious at build time. If you hide the real path inside a variable or compose it too dynamically, the tool either has to include a broad set of possible files, warn that it cannot analyze the import, or widen file tracing to stay safe.
+ビルドツールは、import やファイルシステムのパスがビルド時に明確である場合に最も効率よく動作する。実パスを変数の中に隠したり、動的に組み立てすぎると、ツールは可能性のあるファイルを広く取り込むか、解析不能な import として警告するか、安全策としてファイルトレースを広げるかのいずれかになる。
 
-Prefer explicit maps or literal paths so the set of reachable files stays narrow and predictable. This is the same rule whether you are choosing modules with `import()` or reading files in server/build code.
+明示的なマップやリテラルパスを使うことで、到達可能なファイル集合を狭く・予測可能に保つ。これは `import()` でモジュールを選ぶときも、サーバー／ビルドコードでファイルを読むときも同じルールである。
 
-When analysis becomes too broad, the cost is real:
-- Larger server bundles
-- Slower builds
-- Worse cold starts
-- More memory use
+解析範囲が広がるとコストは無視できない:
+- サーバーバンドルが大きくなる
+- ビルドが遅くなる
+- コールドスタートが悪化する
+- メモリ使用量が増える
 
-### Import Paths
+### Import パス
 
-**Incorrect (the bundler cannot tell what may be imported):**
+**Incorrect (バンドラーは何が import され得るのか判断できない):**
 
 ```ts
 const PAGE_MODULES = {
@@ -30,7 +30,7 @@ const PAGE_MODULES = {
 const Page = await import(PAGE_MODULES[pageName])
 ```
 
-**Correct (use an explicit map of allowed modules):**
+**Correct (許可するモジュールを明示的なマップで列挙する):**
 
 ```ts
 const PAGE_MODULES = {
@@ -41,15 +41,15 @@ const PAGE_MODULES = {
 const Page = await PAGE_MODULES[pageName]()
 ```
 
-### File-System Paths
+### ファイルシステムパス
 
-**Incorrect (a 2-value enum still hides the final path from static analysis):**
+**Incorrect (2 値の列挙であっても、最終パスは静的解析から隠れている):**
 
 ```ts
 const baseDir = path.join(process.cwd(), 'content/' + contentKind)
 ```
 
-**Correct (make each final path literal at the callsite):**
+**Correct (呼び出し箇所で最終パスをそれぞれリテラルにする):**
 
 ```ts
 const baseDir =
@@ -58,6 +58,6 @@ const baseDir =
     : path.join(process.cwd(), 'content/docs')
 ```
 
-In Next.js server code, this matters for output file tracing too. `path.join(process.cwd(), someVar)` can widen the traced file set because Next.js statically analyze `import`, `require`, and `fs` usage.
+Next.js のサーバーコードでは、これは output file tracing にも影響する。Next.js は `import`、`require`、`fs` の使用を静的に解析するため、`path.join(process.cwd(), someVar)` のような書き方はトレース対象のファイル集合を広げてしまう。
 
 Reference: [Next.js output](https://nextjs.org/docs/app/api-reference/config/next-config-js/output), [Next.js dynamic imports](https://nextjs.org/learn/seo/dynamic-imports), [Vite features](https://vite.dev/guide/features.html), [esbuild API](https://esbuild.github.io/api/), [Rollup dynamic import vars](https://www.npmjs.com/package/@rollup/plugin-dynamic-import-vars), [Webpack dependency management](https://webpack.js.org/guides/dependency-management/)

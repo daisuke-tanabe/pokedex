@@ -1,48 +1,47 @@
 ---
 title: Prevent Deadlocks with Consistent Lock Ordering
 impact: MEDIUM-HIGH
-impactDescription: Eliminate deadlock errors, improve reliability
+impactDescription: deadlock エラーを解消し、信頼性が向上する
 tags: deadlocks, locking, transactions, ordering
 ---
 
 ## Prevent Deadlocks with Consistent Lock Ordering
 
-Deadlocks occur when transactions lock resources in different orders. Always
-acquire locks in a consistent order.
+deadlock はトランザクションがリソースを異なる順序でロックすると発生する。常に一貫した順序でロックを取得する。
 
-**Incorrect (inconsistent lock ordering):**
+**誤り (不揃いなロック順序):**
 
 ```sql
--- Transaction A                    -- Transaction B
+-- トランザクション A                  -- トランザクション B
 begin;                              begin;
 update accounts                     update accounts
 set balance = balance - 100         set balance = balance - 50
-where id = 1;                       where id = 2;  -- B locks row 2
+where id = 1;                       where id = 2;  -- B は行 2 をロック
 
 update accounts                     update accounts
 set balance = balance + 100         set balance = balance + 50
-where id = 2;  -- A waits for B     where id = 1;  -- B waits for A
+where id = 2;  -- A は B を待つ      where id = 1;  -- B は A を待つ
 
--- DEADLOCK! Both waiting for each other
+-- DEADLOCK! 互いに待ち合う状態
 ```
 
-**Correct (lock rows in consistent order first):**
+**正しい例 (先に一貫した順序でロックを取得する):**
 
 ```sql
--- Explicitly acquire locks in ID order before updating
+-- update する前に明示的に ID 順でロックを取得する
 begin;
 select * from accounts where id in (1, 2) order by id for update;
 
--- Now perform updates in any order - locks already held
+-- ロックを保持しているので、update はどの順序でも安全
 update accounts set balance = balance - 100 where id = 1;
 update accounts set balance = balance + 100 where id = 2;
 commit;
 ```
 
-Alternative: use a single statement to update atomically:
+代替案: 1 つの文で原子的に更新する:
 
 ```sql
--- Single statement acquires all locks atomically
+-- 1 つの文ですべてのロックをアトミックに取得する
 begin;
 update accounts
 set balance = balance + case id
@@ -53,13 +52,13 @@ where id in (1, 2);
 commit;
 ```
 
-Detect deadlocks in logs:
+ログから deadlock を検出する:
 
 ```sql
--- Check for recent deadlocks
+-- 最近の deadlock を確認
 select * from pg_stat_database where deadlocks > 0;
 
--- Enable deadlock logging
+-- deadlock ログを有効化
 set log_lock_waits = on;
 set deadlock_timeout = '1s';
 ```

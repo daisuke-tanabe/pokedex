@@ -7,9 +7,9 @@ tags: javascript, arrays, performance, sorting, algorithms
 
 ## Use Loop for Min/Max Instead of Sort
 
-Finding the smallest or largest element only requires a single pass through the array. Sorting is wasteful and slower.
+最小値や最大値を求めるには配列を 1 回走査するだけでよい。ソートは無駄で遅い。
 
-**Incorrect (O(n log n) - sort to find latest):**
+**Incorrect (O(n log n) - 最新を見つけるためにソートする):**
 
 ```typescript
 interface Project {
@@ -24,9 +24,9 @@ function getLatestProject(projects: Project[]) {
 }
 ```
 
-Sorts the entire array just to find the maximum value.
+最大値を求めるだけのために配列全体をソートしている。
 
-**Incorrect (O(n log n) - sort for oldest and newest):**
+**Incorrect (O(n log n) - 最古と最新の両方を求めるためにソートする):**
 
 ```typescript
 function getOldestAndNewest(projects: Project[]) {
@@ -35,9 +35,9 @@ function getOldestAndNewest(projects: Project[]) {
 }
 ```
 
-Still sorts unnecessarily when only min/max are needed.
+min/max が必要なだけなのに、依然として不必要にソートしている。
 
-**Correct (O(n) - single loop):**
+**Correct (O(n) - 1 回のループ):**
 
 ```typescript
 function getLatestProject(projects: Project[]) {
@@ -69,9 +69,9 @@ function getOldestAndNewest(projects: Project[]) {
 }
 ```
 
-Single pass through the array, no copying, no sorting.
+配列を 1 回走査するだけ。コピーもソートも不要。
 
-**Alternative (Math.min/Math.max for small arrays):**
+**代替 (小さな配列なら Math.min/Math.max):**
 
 ```typescript
 const numbers = [5, 2, 8, 1, 9]
@@ -79,4 +79,4 @@ const min = Math.min(...numbers)
 const max = Math.max(...numbers)
 ```
 
-This works for small arrays, but can be slower or just throw an error for very large arrays due to spread operator limitations. Maximal array length is approximately 124000 in Chrome 143 and 638000 in Safari 18; exact numbers may vary - see [the fiddle](https://jsfiddle.net/qw1jabsx/4/). Use the loop approach for reliability.
+小さい配列ならこれでもよいが、非常に大きな配列ではスプレッド構文の制限により遅くなったり、エラーになったりする。配列長の上限はおおむね Chrome 143 で約 124,000、Safari 18 で約 638,000 程度（環境により異なる、[the fiddle](https://jsfiddle.net/qw1jabsx/4/) を参照）。信頼性の観点ではループの方を使う。

@@ -1,15 +1,15 @@
 ---
 title: Add Constraints Safely in Migrations
 impact: HIGH
-impactDescription: Prevents migration failures and enables idempotent schema changes
+impactDescription: マイグレーション失敗を防ぎ、スキーマ変更を冪等にできる
 tags: constraints, migrations, schema, alter-table
 ---
 
 ## Add Constraints Safely in Migrations
 
-PostgreSQL does not support `ADD CONSTRAINT IF NOT EXISTS`. Migrations using this syntax will fail.
+PostgreSQL は `ADD CONSTRAINT IF NOT EXISTS` をサポートしない。この構文を使ったマイグレーションは失敗する。
 
-**Incorrect (causes syntax error):**
+**誤り (構文エラーになる):**
 
 ```sql
 -- ERROR: syntax error at or near "not" (SQLSTATE 42601)
@@ -17,10 +17,10 @@ alter table public.profiles
 add constraint if not exists profiles_birthchart_id_unique unique (birthchart_id);
 ```
 
-**Correct (idempotent constraint creation):**
+**正しい例 (冪等な制約の追加):**
 
 ```sql
--- Use DO block to check before adding
+-- DO ブロックで事前にチェックしてから追加する
 do $$
 begin
   if not exists (
@@ -34,10 +34,10 @@ begin
 end $$;
 ```
 
-For all constraint types:
+すべての制約種別に対して同様に書ける:
 
 ```sql
--- Check constraints
+-- check 制約
 do $$
 begin
   if not exists (
@@ -48,7 +48,7 @@ begin
   end if;
 end $$;
 
--- Foreign keys
+-- foreign key
 do $$
 begin
   if not exists (
@@ -62,15 +62,15 @@ begin
 end $$;
 ```
 
-Check if constraint exists:
+制約が存在するか確認する:
 
 ```sql
--- Query to check constraint existence
+-- 制約の存在をチェックするクエリ
 select conname, contype, pg_get_constraintdef(oid)
 from pg_constraint
 where conrelid = 'public.profiles'::regclass;
 
--- contype values:
+-- contype の値:
 -- 'p' = PRIMARY KEY
 -- 'f' = FOREIGN KEY
 -- 'u' = UNIQUE

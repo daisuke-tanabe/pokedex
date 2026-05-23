@@ -1,15 +1,15 @@
 ---
 name: pnpm-catalogs
-description: Centralized dependency version management for workspaces
+description: workspace 全体の依存バージョンを一元管理するための仕組み
 ---
 
-# pnpm Catalogs
+# pnpm の Catalogs
 
-Catalogs provide a centralized way to manage dependency versions across a workspace. Define versions once, use everywhere.
+Catalog は workspace 全体で依存バージョンを一元的に管理する方法を提供する。バージョンを一度定義すれば、どこからでも利用できる。
 
-## Basic Usage
+## 基本的な使い方
 
-Define a catalog in `pnpm-workspace.yaml`:
+`pnpm-workspace.yaml` で catalog を定義する。
 
 ```yaml
 packages:
@@ -22,7 +22,7 @@ catalog:
   vite: ^5.0.0
 ```
 
-Reference in `package.json` with `catalog:`:
+`package.json` から `catalog:` で参照する。
 
 ```json
 {
@@ -37,34 +37,34 @@ Reference in `package.json` with `catalog:`:
 }
 ```
 
-## Named Catalogs
+## 名前付き Catalog
 
-Create multiple catalogs for different scenarios:
+シナリオごとに複数の catalog を作成できる。
 
 ```yaml
 packages:
   - 'packages/*'
 
-# Default catalog
+# デフォルト catalog
 catalog:
   lodash: ^4.17.21
 
-# Named catalogs
+# 名前付き catalog
 catalogs:
   react17:
     react: ^17.0.2
     react-dom: ^17.0.2
-  
+
   react18:
     react: ^18.2.0
     react-dom: ^18.2.0
-  
+
   testing:
     vitest: ^1.0.0
     "@testing-library/react": ^14.0.0
 ```
 
-Reference named catalogs:
+名前付き catalog を参照する。
 
 ```json
 {
@@ -78,35 +78,35 @@ Reference named catalogs:
 }
 ```
 
-## Benefits
+## メリット
 
-1. **Single source of truth**: Update version in one place
-2. **Consistency**: All packages use the same version
-3. **Easy upgrades**: Change version once, affects entire workspace
-4. **Type-safe**: TypeScript support in pnpm-workspace.yaml
+1. **単一の信頼できる情報源**: バージョンを 1 か所で更新できる
+2. **整合性**: すべてのパッケージが同じバージョンを使用する
+3. **アップグレードが容易**: 1 度バージョンを変更すれば workspace 全体に反映される
+4. **型安全**: pnpm-workspace.yaml で TypeScript のサポートが効く
 
-## Catalog vs Overrides
+## Catalog と Overrides の比較
 
-| Feature | Catalogs | Overrides |
+| 機能 | Catalogs | Overrides |
 |---------|----------|-----------|
-| Purpose | Define versions for direct dependencies | Force versions for any dependency |
-| Scope | Direct dependencies only | All dependencies (including transitive) |
-| Usage | `"pkg": "catalog:"` | Applied automatically |
-| Opt-in | Explicit per package.json | Global to workspace |
+| 目的 | 直接依存のバージョンを定義 | 任意の依存のバージョンを強制 |
+| スコープ | 直接依存のみ | 推移的依存も含むすべての依存 |
+| 利用方法 | `"pkg": "catalog:"` | 自動適用 |
+| オプトイン | package.json ごとに明示的 | workspace 全体にグローバル適用 |
 
-## Publishing with Catalogs
+## Catalog を使ったパッケージの公開
 
-When publishing, `catalog:` references are replaced with actual versions:
+公開時、`catalog:` の参照は実バージョンに置換される。
 
 ```json
-// Before publish (source)
+// 公開前 (ソース)
 {
   "dependencies": {
     "react": "catalog:"
   }
 }
 
-// After publish (published package)
+// 公開後 (公開されるパッケージ)
 {
   "dependencies": {
     "react": "^18.2.0"
@@ -114,46 +114,46 @@ When publishing, `catalog:` references are replaced with actual versions:
 }
 ```
 
-## Migration from Overrides
+## Overrides からの移行
 
-If you're using overrides for version consistency:
+バージョン整合のために overrides を利用している場合は、
 
 ```yaml
-# Before (using overrides)
+# 移行前 (overrides を使用)
 overrides:
   react: ^18.2.0
   react-dom: ^18.2.0
 ```
 
-Migrate to catalogs for cleaner dependency management:
+依存管理を整理するために catalog へ移行する。
 
 ```yaml
-# After (using catalogs)
+# 移行後 (catalog を使用)
 catalog:
   react: ^18.2.0
   react-dom: ^18.2.0
 ```
 
-Then update package.json files to use `catalog:`.
+そのうえで、各 package.json を `catalog:` 参照に置き換える。
 
-## Best Practices
+## ベストプラクティス
 
-1. **Use default catalog** for commonly shared dependencies
-2. **Use named catalogs** for version variants (e.g., different React versions)
-3. **Keep catalog minimal** - only include shared dependencies
-4. **Combine with workspace protocol** for internal packages
+1. **共有依存にはデフォルト catalog を使う**: 広く共有される依存に向く
+2. **バージョンバリエーションには名前付き catalog を使う**: 例: React のバージョン違い
+3. **catalog は最小限に保つ**: 共有される依存のみを載せる
+4. **workspace protocol と併用する**: 内部パッケージは workspace protocol を使う
 
 ```yaml
 catalog:
-  # External shared dependencies
+  # 共有される外部依存
   lodash: ^4.17.21
   zod: ^3.22.0
 
-# Internal packages use workspace: protocol instead
+# 内部パッケージは代わりに workspace: プロトコルを使う
 # "dependencies": { "@myorg/utils": "workspace:^" }
 ```
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/catalogs
 -->

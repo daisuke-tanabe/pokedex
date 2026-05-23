@@ -7,9 +7,9 @@ tags: api-routes, server-actions, waterfalls, parallelization
 
 ## Prevent Waterfall Chains in API Routes
 
-In API routes and Server Actions, start independent operations immediately, even if you don't await them yet.
+API ルートや Server Actions では、まだ await しないとしても、独立した処理は即座に開始する。
 
-**Incorrect (config waits for auth, data waits for both):**
+**Incorrect (config は auth を待ち、data はその両方を待つ):**
 
 ```typescript
 export async function GET(request: Request) {
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 }
 ```
 
-**Correct (auth and config start immediately):**
+**Correct (auth と config が即座に開始される):**
 
 ```typescript
 export async function GET(request: Request) {
@@ -35,4 +35,4 @@ export async function GET(request: Request) {
 }
 ```
 
-For operations with more complex dependency chains, use `better-all` to automatically maximize parallelism (see Dependency-Based Parallelization).
+依存関係がより複雑な場合は `better-all` を使って自動的に並列度を最大化する（Dependency-Based Parallelization を参照）。

@@ -1,153 +1,171 @@
 ---
 name: next-best-practices
-description: Next.js best practices - file conventions, RSC boundaries, data patterns, async APIs, metadata, error handling, route handlers, image/font optimization, bundling
+description: Next.js ベストプラクティス - ファイル規約、RSC 境界、データパターン、async API、メタデータ、エラー処理、Route Handlers、画像/フォント最適化、バンドリング
 user-invocable: false
 ---
 
-# Next.js Best Practices
+# Next.js ベストプラクティス
 
-Apply these rules when writing or reviewing Next.js code.
+Next.js のコードを書く / レビューする際は、これらのルールを適用する。
 
-## File Conventions
+## ファイル規約
 
-See [file-conventions.md](./file-conventions.md) for:
-- Project structure and special files
-- Route segments (dynamic, catch-all, groups)
-- Parallel and intercepting routes
-- Middleware rename in v16 (middleware → proxy)
+[file-conventions.md](./file-conventions.md) を参照。
 
-## RSC Boundaries
+- プロジェクト構成と特殊ファイル
+- ルートセグメント（dynamic、catch-all、グループ）
+- 並列ルートとインターセプトルート
+- v16 での middleware リネーム（middleware → proxy）
 
-Detect invalid React Server Component patterns.
+## RSC 境界
 
-See [rsc-boundaries.md](./rsc-boundaries.md) for:
-- Async client component detection (invalid)
-- Non-serializable props detection
-- Server Action exceptions
+React Server Component の不正なパターンを検出する。
 
-## Async Patterns
+[rsc-boundaries.md](./rsc-boundaries.md) を参照。
 
-Next.js 15+ async API changes.
+- async client component の検出（不正）
+- 非シリアライズ可能な props の検出
+- Server Action の例外
 
-See [async-patterns.md](./async-patterns.md) for:
-- Async `params` and `searchParams`
-- Async `cookies()` and `headers()`
-- Migration codemod
+## Async パターン
 
-## Runtime Selection
+Next.js 15 以降の async API 変更点。
 
-See [runtime-selection.md](./runtime-selection.md) for:
-- Default to Node.js runtime
-- When Edge runtime is appropriate
+[async-patterns.md](./async-patterns.md) を参照。
 
-## Directives
+- async な `params` と `searchParams`
+- async な `cookies()` と `headers()`
+- マイグレーション codemod
 
-See [directives.md](./directives.md) for:
-- `'use client'`, `'use server'` (React)
-- `'use cache'` (Next.js)
+## ランタイム選択
 
-## Functions
+[runtime-selection.md](./runtime-selection.md) を参照。
 
-See [functions.md](./functions.md) for:
-- Navigation hooks: `useRouter`, `usePathname`, `useSearchParams`, `useParams`
-- Server functions: `cookies`, `headers`, `draftMode`, `after`
-- Generate functions: `generateStaticParams`, `generateMetadata`
+- 既定では Node.js ランタイムを使う
+- Edge ランタイムが適切なケース
 
-## Error Handling
+## ディレクティブ
 
-See [error-handling.md](./error-handling.md) for:
-- `error.tsx`, `global-error.tsx`, `not-found.tsx`
-- `redirect`, `permanentRedirect`, `notFound`
-- `forbidden`, `unauthorized` (auth errors)
-- `unstable_rethrow` for catch blocks
+[directives.md](./directives.md) を参照。
 
-## Data Patterns
+- `'use client'`、`'use server'`（React）
+- `'use cache'`（Next.js）
 
-See [data-patterns.md](./data-patterns.md) for:
-- Server Components vs Server Actions vs Route Handlers
-- Avoiding data waterfalls (`Promise.all`, Suspense, preload)
-- Client component data fetching
+## 関数
+
+[functions.md](./functions.md) を参照。
+
+- ナビゲーションフック: `useRouter`、`usePathname`、`useSearchParams`、`useParams`
+- サーバー関数: `cookies`、`headers`、`draftMode`、`after`
+- Generate 関数: `generateStaticParams`、`generateMetadata`
+
+## エラー処理
+
+[error-handling.md](./error-handling.md) を参照。
+
+- `error.tsx`、`global-error.tsx`、`not-found.tsx`
+- `redirect`、`permanentRedirect`、`notFound`
+- `forbidden`、`unauthorized`（認証エラー）
+- catch ブロック用の `unstable_rethrow`
+
+## データパターン
+
+[data-patterns.md](./data-patterns.md) を参照。
+
+- Server Components / Server Actions / Route Handlers の使い分け
+- データウォーターフォール回避（`Promise.all`、Suspense、preload）
+- Client component でのデータ取得
 
 ## Route Handlers
 
-See [route-handlers.md](./route-handlers.md) for:
-- `route.ts` basics
-- GET handler conflicts with `page.tsx`
-- Environment behavior (no React DOM)
-- When to use vs Server Actions
+[route-handlers.md](./route-handlers.md) を参照。
 
-## Metadata & OG Images
+- `route.ts` の基本
+- GET ハンドラと `page.tsx` の衝突
+- 実行環境の挙動（React DOM は使えない）
+- Server Actions との使い分け
 
-See [metadata.md](./metadata.md) for:
-- Static and dynamic metadata
-- `generateMetadata` function
-- OG image generation with `next/og`
-- File-based metadata conventions
+## メタデータと OG Image
 
-## Image Optimization
+[metadata.md](./metadata.md) を参照。
 
-See [image.md](./image.md) for:
-- Always use `next/image` over `<img>`
-- Remote images configuration
-- Responsive `sizes` attribute
-- Blur placeholders
-- Priority loading for LCP
+- 静的メタデータと動的メタデータ
+- `generateMetadata` 関数
+- `next/og` での OG image 生成
+- ファイルベースのメタデータ規約
 
-## Font Optimization
+## 画像最適化
 
-See [font.md](./font.md) for:
-- `next/font` setup
-- Google Fonts, local fonts
-- Tailwind CSS integration
-- Preloading subsets
+[image.md](./image.md) を参照。
 
-## Bundling
+- `<img>` ではなく必ず `next/image` を使う
+- リモート画像の設定
+- レスポンシブな `sizes` 属性
+- blur placeholder
+- LCP 向けの priority loading
 
-See [bundling.md](./bundling.md) for:
-- Server-incompatible packages
-- CSS imports (not link tags)
-- Polyfills (already included)
-- ESM/CommonJS issues
-- Bundle analysis
+## フォント最適化
+
+[font.md](./font.md) を参照。
+
+- `next/font` のセットアップ
+- Google Fonts、ローカルフォント
+- Tailwind CSS との統合
+- サブセットの preloading
+
+## バンドリング
+
+[bundling.md](./bundling.md) を参照。
+
+- サーバー非互換パッケージ
+- CSS import（link タグではない）
+- ポリフィル（既に同梱されている）
+- ESM/CommonJS の問題
+- バンドル解析
 
 ## Scripts
 
-See [scripts.md](./scripts.md) for:
-- `next/script` vs native script tags
-- Inline scripts need `id`
-- Loading strategies
-- Google Analytics with `@next/third-parties`
+[scripts.md](./scripts.md) を参照。
 
-## Hydration Errors
+- `next/script` とネイティブ script タグの使い分け
+- inline scripts には `id` が必要
+- ロード戦略
+- `@next/third-parties` での Google Analytics
 
-See [hydration-error.md](./hydration-error.md) for:
-- Common causes (browser APIs, dates, invalid HTML)
-- Debugging with error overlay
-- Fixes for each cause
+## hydration エラー
 
-## Suspense Boundaries
+[hydration-error.md](./hydration-error.md) を参照。
 
-See [suspense-boundaries.md](./suspense-boundaries.md) for:
-- CSR bailout with `useSearchParams` and `usePathname`
-- Which hooks require Suspense boundaries
+- よくある原因（ブラウザ API、日付、不正な HTML）
+- エラーオーバーレイによるデバッグ
+- 原因ごとの修正方法
 
-## Parallel & Intercepting Routes
+## Suspense 境界
 
-See [parallel-routes.md](./parallel-routes.md) for:
-- Modal patterns with `@slot` and `(.)` interceptors
-- `default.tsx` for fallbacks
-- Closing modals correctly with `router.back()`
+[suspense-boundaries.md](./suspense-boundaries.md) を参照。
 
-## Self-Hosting
+- `useSearchParams` と `usePathname` による CSR bailout
+- Suspense 境界が必要なフック
 
-See [self-hosting.md](./self-hosting.md) for:
-- `output: 'standalone'` for Docker
-- Cache handlers for multi-instance ISR
-- What works vs needs extra setup
+## 並列ルートとインターセプトルート
 
-## Debug Tricks
+[parallel-routes.md](./parallel-routes.md) を参照。
 
-See [debug-tricks.md](./debug-tricks.md) for:
-- MCP endpoint for AI-assisted debugging
-- Rebuild specific routes with `--debug-build-paths`
+- `@slot` と `(.)` インターセプタによるモーダルパターン
+- フォールバック用の `default.tsx`
+- `router.back()` による正しいモーダルの閉じ方
 
+## セルフホスティング
+
+[self-hosting.md](./self-hosting.md) を参照。
+
+- Docker 向けの `output: 'standalone'`
+- マルチインスタンス ISR 用のキャッシュハンドラ
+- 動作するもの / 追加設定が必要なもの
+
+## デバッグの小技
+
+[debug-tricks.md](./debug-tricks.md) を参照。
+
+- AI 支援デバッグ向けの MCP エンドポイント
+- `--debug-build-paths` で特定のルートだけリビルド

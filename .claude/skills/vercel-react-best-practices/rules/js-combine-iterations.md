@@ -7,9 +7,9 @@ tags: javascript, arrays, loops, performance
 
 ## Combine Multiple Array Iterations
 
-Multiple `.filter()` or `.map()` calls iterate the array multiple times. Combine into one loop.
+`.filter()` や `.map()` を複数回呼ぶと、配列を何度も走査することになる。1 つのループにまとめる。
 
-**Incorrect (3 iterations):**
+**Incorrect (3 回走査):**
 
 ```typescript
 const admins = users.filter(u => u.isAdmin)
@@ -17,7 +17,7 @@ const testers = users.filter(u => u.isTester)
 const inactive = users.filter(u => !u.isActive)
 ```
 
-**Correct (1 iteration):**
+**Correct (1 回走査):**
 
 ```typescript
 const admins: User[] = []

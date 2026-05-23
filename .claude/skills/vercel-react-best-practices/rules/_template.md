@@ -9,7 +9,7 @@ tags: tag1, tag2
 
 **Impact: MEDIUM (optional impact description)**
 
-Brief explanation of the rule and why it matters. This should be clear and concise, explaining the performance implications.
+ルールの簡単な説明と、なぜ重要なのかをここに書く。明確かつ簡潔に、パフォーマンス上の影響を説明する。
 
 **Incorrect (description of what's wrong):**
 

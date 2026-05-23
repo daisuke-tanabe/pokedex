@@ -1,15 +1,16 @@
-# Directives
+# ディレクティブ
 
-## React Directives
+## React ディレクティブ
 
-These are React directives, not Next.js specific.
+これらは React のディレクティブであり、Next.js 固有のものではない。
 
 ### `'use client'`
 
-Marks a component as a Client Component. Required for:
-- React hooks (`useState`, `useEffect`, etc.)
-- Event handlers (`onClick`, `onChange`)
-- Browser APIs (`window`, `localStorage`)
+コンポーネントを Client Component として扱う。以下の用途で必要になる。
+
+- React フック（`useState`、`useEffect` など）
+- イベントハンドラ（`onClick`、`onChange`）
+- ブラウザ API（`window`、`localStorage`）
 
 ```tsx
 'use client'
@@ -22,41 +23,41 @@ export function Counter() {
 }
 ```
 
-Reference: https://react.dev/reference/rsc/use-client
+参考: https://react.dev/reference/rsc/use-client
 
 ### `'use server'`
 
-Marks a function as a Server Action. Can be passed to Client Components.
+関数を Server Action として扱う。Client Component に渡せる。
 
 ```tsx
 'use server'
 
 export async function submitForm(formData: FormData) {
-  // Runs on server
+  // サーバー上で実行される
 }
 ```
 
-Or inline within a Server Component:
+Server Component 内にインラインで書くこともできる。
 
 ```tsx
 export default function Page() {
   async function submit() {
     'use server'
-    // Runs on server
+    // サーバー上で実行される
   }
   return <form action={submit}>...</form>
 }
 ```
 
-Reference: https://react.dev/reference/rsc/use-server
+参考: https://react.dev/reference/rsc/use-server
 
 ---
 
-## Next.js Directive
+## Next.js のディレクティブ
 
 ### `'use cache'`
 
-Marks a function or component for caching. Part of Next.js Cache Components.
+関数やコンポーネントをキャッシュ対象としてマークする。Next.js Cache Components の一部。
 
 ```tsx
 'use cache'
@@ -66,8 +67,8 @@ export async function getCachedData() {
 }
 ```
 
-Requires `cacheComponents: true` in `next.config.ts`.
+`next.config.ts` で `cacheComponents: true` を有効にする必要がある。
 
-For detailed usage including cache profiles, `cacheLife()`, `cacheTag()`, and `updateTag()`, see the `next-cache-components` skill.
+キャッシュプロファイル、`cacheLife()`、`cacheTag()`、`updateTag()` を含む詳しい使い方は、`next-cache-components` スキルを参照する。
 
-Reference: https://nextjs.org/docs/app/api-reference/directives/use-cache
+参考: https://nextjs.org/docs/app/api-reference/directives/use-cache

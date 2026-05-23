@@ -1,15 +1,15 @@
 ---
 name: type-testing
-description: Test TypeScript types with expectTypeOf and assertType
+description: expectTypeOf と assertType による TypeScript の型テスト
 ---
 
-# Type Testing
+# 型テスト
 
-Test TypeScript types without runtime execution.
+ランタイム実行を伴わずに TypeScript の型をテストする。
 
-## Setup
+## セットアップ
 
-Type tests use `.test-d.ts` extension:
+型テストは `.test-d.ts` 拡張子を使う:
 
 ```ts
 // math.test-d.ts
@@ -21,7 +21,7 @@ test('add returns number', () => {
 })
 ```
 
-## Configuration
+## 設定
 
 ```ts
 defineConfig({
@@ -29,16 +29,16 @@ defineConfig({
     typecheck: {
       enabled: true,
       
-      // Only type check
+      // 型チェックのみ
       only: false,
       
-      // Checker: 'tsc' or 'vue-tsc'
+      // チェッカー: 'tsc' または 'vue-tsc'
       checker: 'tsc',
       
-      // Include patterns
+      // include パターン
       include: ['**/*.test-d.ts'],
       
-      // tsconfig to use
+      // 使用する tsconfig
       tsconfig: './tsconfig.json',
     },
   },
@@ -50,7 +50,7 @@ defineConfig({
 ```ts
 import { expectTypeOf } from 'vitest'
 
-// Basic type checks
+// 基本的な型チェック
 expectTypeOf<string>().toBeString()
 expectTypeOf<number>().toBeNumber()
 expectTypeOf<boolean>().toBeBoolean()
@@ -66,7 +66,7 @@ expectTypeOf<[]>().toBeArray()
 expectTypeOf<symbol>().toBeSymbol()
 ```
 
-## Value Type Checking
+## 値の型チェック
 
 ```ts
 const value = 'hello'
@@ -77,7 +77,7 @@ expectTypeOf(obj).toMatchTypeOf<{ name: string }>()
 expectTypeOf(obj).toHaveProperty('name')
 ```
 
-## Function Types
+## 関数の型
 
 ```ts
 function greet(name: string): string {
@@ -88,11 +88,11 @@ expectTypeOf(greet).toBeFunction()
 expectTypeOf(greet).parameters.toEqualTypeOf<[string]>()
 expectTypeOf(greet).returns.toBeString()
 
-// Parameter checking
+// 引数のチェック
 expectTypeOf(greet).parameter(0).toBeString()
 ```
 
-## Object Types
+## オブジェクトの型
 
 ```ts
 interface User {
@@ -104,25 +104,25 @@ interface User {
 expectTypeOf<User>().toHaveProperty('id')
 expectTypeOf<User>().toHaveProperty('name').toBeString()
 
-// Check shape
+// 形状チェック
 expectTypeOf({ id: 1, name: 'test' }).toMatchTypeOf<User>()
 ```
 
-## Equality vs Matching
+## 等価性 vs マッチング
 
 ```ts
 interface A { x: number }
 interface B { x: number; y: string }
 
-// toMatchTypeOf - subset matching
-expectTypeOf<B>().toMatchTypeOf<A>()  // B extends A
+// toMatchTypeOf - 部分集合マッチ
+expectTypeOf<B>().toMatchTypeOf<A>()  // B は A を継承
 
-// toEqualTypeOf - exact match
-expectTypeOf<A>().not.toEqualTypeOf<B>()  // Not exact match
-expectTypeOf<A>().toEqualTypeOf<{ x: number }>()  // Exact match
+// toEqualTypeOf - 完全一致
+expectTypeOf<A>().not.toEqualTypeOf<B>()  // 完全一致しない
+expectTypeOf<A>().toEqualTypeOf<{ x: number }>()  // 完全一致
 ```
 
-## Branded Types
+## ブランド型
 
 ```ts
 type UserId = number & { __brand: 'UserId' }
@@ -132,7 +132,7 @@ expectTypeOf<UserId>().not.toEqualTypeOf<PostId>()
 expectTypeOf<UserId>().not.toEqualTypeOf<number>()
 ```
 
-## Generic Types
+## ジェネリック型
 
 ```ts
 function identity<T>(value: T): T {
@@ -143,7 +143,7 @@ expectTypeOf(identity<string>).returns.toBeString()
 expectTypeOf(identity<number>).returns.toBeNumber()
 ```
 
-## Nullable Types
+## Nullable 型
 
 ```ts
 type MaybeString = string | null | undefined
@@ -154,7 +154,7 @@ expectTypeOf<string>().not.toBeNullable()
 
 ## assertType
 
-Assert a value matches a type (no assertion at runtime):
+値が型に一致するか主張する (ランタイムには何も起こらない):
 
 ```ts
 import { assertType } from 'vitest'
@@ -166,43 +166,43 @@ function getUser(): User | null {
 test('returns user', () => {
   const result = getUser()
   
-  // @ts-expect-error - should fail type check
+  // @ts-expect-error - 型チェックで失敗するはず
   assertType<string>(result)
   
-  // Correct type
+  // 正しい型
   assertType<User | null>(result)
 })
 ```
 
-## Using @ts-expect-error
+## @ts-expect-error の活用
 
-Test that code produces type error:
+コードが型エラーを発生させることをテストする:
 
 ```ts
 test('rejects wrong types', () => {
   function requireString(s: string) {}
   
-  // @ts-expect-error - number not assignable to string
+  // @ts-expect-error - number は string に代入不可
   requireString(123)
 })
 ```
 
-## Running Type Tests
+## 型テストの実行
 
 ```bash
-# Run type tests
+# 型テストを実行
 vitest typecheck
 
-# Run alongside unit tests
+# ユニットテストと並行実行
 vitest --typecheck
 
-# Type tests only
+# 型テストのみ
 vitest --typecheck.only
 ```
 
-## Mixed Test Files
+## ランタイムと型テストの混在
 
-Combine runtime and type tests:
+ランタイムテストと型テストを同居させる:
 
 ```ts
 // user.test.ts
@@ -221,14 +221,14 @@ describe('createUser', () => {
 })
 ```
 
-## Key Points
+## 要点
 
-- Use `.test-d.ts` for type-only tests
-- `expectTypeOf` for type assertions
-- `toMatchTypeOf` for subset matching
-- `toEqualTypeOf` for exact type matching
-- Use `@ts-expect-error` to test type errors
-- Run with `vitest typecheck` or `--typecheck`
+- 型のみのテストには `.test-d.ts` を使う
+- 型アサーションには `expectTypeOf` を使う
+- 部分集合マッチには `toMatchTypeOf` を使う
+- 完全一致には `toEqualTypeOf` を使う
+- 型エラーをテストするには `@ts-expect-error` を使う
+- `vitest typecheck` または `--typecheck` で実行する
 
 <!-- 
 Source references:

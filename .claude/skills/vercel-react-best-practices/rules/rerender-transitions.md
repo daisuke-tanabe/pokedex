@@ -7,9 +7,9 @@ tags: rerender, transitions, startTransition, performance
 
 ## Use Transitions for Non-Urgent Updates
 
-Mark frequent, non-urgent state updates as transitions to maintain UI responsiveness.
+頻繁かつ緊急でない state 更新は transition としてマークし、UI の応答性を保つ。
 
-**Incorrect (blocks UI on every scroll):**
+**Incorrect (スクロールのたびに UI がブロックされる):**
 
 ```tsx
 function ScrollTracker() {
@@ -22,7 +22,7 @@ function ScrollTracker() {
 }
 ```
 
-**Correct (non-blocking updates):**
+**Correct (ブロックしない更新):**
 
 ```tsx
 import { startTransition } from 'react'

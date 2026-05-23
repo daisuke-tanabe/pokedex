@@ -1,19 +1,19 @@
 ---
 name: pnpm-aliases
-description: Install packages under custom names for versioning, forks, or alternatives
+description: バージョン違い、fork、代替パッケージなどをカスタム名でインストールする
 ---
 
-# pnpm Aliases
+# pnpm の Aliases
 
-pnpm supports package aliases using the `npm:` protocol. This lets you install packages under different names, use multiple versions of the same package, or substitute packages.
+pnpm は `npm:` プロトコルによるパッケージエイリアスをサポートする。これにより、別名でパッケージをインストールしたり、同一パッケージの複数バージョンを併用したり、パッケージを置換したりできる。
 
-## Basic Syntax
+## 基本の文法
 
 ```bash
 pnpm add <alias>@npm:<package>@<version>
 ```
 
-In `package.json`:
+`package.json` では、
 ```json
 {
   "dependencies": {
@@ -22,11 +22,11 @@ In `package.json`:
 }
 ```
 
-## Use Cases
+## ユースケース
 
-### Multiple Versions of Same Package
+### 同一パッケージの複数バージョン
 
-Install different versions side by side:
+異なるバージョンを並行してインストールする。
 
 ```json
 {
@@ -37,15 +37,15 @@ Install different versions side by side:
 }
 ```
 
-Usage:
+利用例:
 ```js
 import lodash3 from 'lodash3'
 import lodash4 from 'lodash4'
 ```
 
-### Replace Package with Fork
+### パッケージを fork に置換
 
-Substitute a package with a fork or alternative:
+パッケージを fork や代替実装に差し替える。
 
 ```json
 {
@@ -55,9 +55,9 @@ Substitute a package with a fork or alternative:
 }
 ```
 
-All imports of `original-pkg` will resolve to `my-fork`.
+`original-pkg` への import はすべて `my-fork` に解決される。
 
-### Replace Deprecated Package
+### 非推奨パッケージを置換
 
 ```json
 {
@@ -67,7 +67,7 @@ All imports of `original-pkg` will resolve to `my-fork`.
 }
 ```
 
-### Scoped to Unscoped (or vice versa)
+### スコープ付き ⇄ スコープなしの置換
 
 ```json
 {
@@ -78,27 +78,27 @@ All imports of `original-pkg` will resolve to `my-fork`.
 }
 ```
 
-## CLI Usage
+## CLI の利用
 
-### Add with alias
+### エイリアス付きで追加
 
 ```bash
-# Add lodash under alias
+# lodash をエイリアスで追加
 pnpm add lodash4@npm:lodash@4
 
-# Add fork as original name
+# fork を元の名前で追加
 pnpm add request@npm:@cypress/request
 ```
 
-### Add multiple versions
+### 複数バージョンの追加
 
 ```bash
 pnpm add react17@npm:react@17 react18@npm:react@18
 ```
 
-## With TypeScript
+## TypeScript との併用
 
-For type resolution with aliases, you may need to configure TypeScript:
+エイリアスでの型解決のため、TypeScript の設定が必要なことがある。
 
 ```json
 // tsconfig.json
@@ -112,7 +112,7 @@ For type resolution with aliases, you may need to configure TypeScript:
 }
 ```
 
-Or use `@types` packages with aliases:
+`@types` パッケージにもエイリアスを使える。
 
 ```json
 {
@@ -123,9 +123,9 @@ Or use `@types` packages with aliases:
 }
 ```
 
-## Combined with Overrides
+## Overrides との組み合わせ
 
-Force all transitive dependencies to use an alias:
+すべての推移的依存にエイリアスを強制する。
 
 ```yaml
 # pnpm-workspace.yaml
@@ -133,11 +133,11 @@ overrides:
   "underscore": "npm:lodash@^4.17.21"
 ```
 
-This replaces all `underscore` imports (including in dependencies) with lodash.
+これにより、依存内のものも含めすべての `underscore` の import が lodash に置換される。
 
-## Git and Local Aliases
+## Git・ローカルのエイリアス
 
-Aliases work with any valid pnpm specifier:
+エイリアスは pnpm の有効な指定子であれば何でも使える。
 
 ```json
 {
@@ -148,21 +148,21 @@ Aliases work with any valid pnpm specifier:
 }
 ```
 
-## Best Practices
+## ベストプラクティス
 
-1. **Clear naming**: Use descriptive alias names that indicate purpose
+1. **わかりやすい命名**: 目的が伝わるエイリアス名を使う
    ```json
    "lodash-legacy": "npm:lodash@3"
    "lodash-modern": "npm:lodash@4"
    ```
 
-2. **Document aliases**: Add comments or documentation explaining why aliases exist
+2. **エイリアスを文書化する**: なぜエイリアスを使うのかを示すコメントや説明を残す
 
-3. **Prefer overrides for global replacement**: If you want to replace a package everywhere, use overrides instead of aliases
+3. **全体的な置換には overrides を優先する**: あらゆる場所で置換したいなら、エイリアスではなく overrides を使う
 
-4. **Test thoroughly**: Aliased packages may have subtle differences in behavior
+4. **十分にテストする**: エイリアスされたパッケージは挙動が微妙に異なる可能性がある
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/aliases
 -->

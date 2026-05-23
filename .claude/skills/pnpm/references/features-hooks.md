@@ -1,25 +1,25 @@
 ---
 name: pnpm-hooks
-description: Customize package resolution and dependency behavior with pnpmfile hooks
+description: pnpmfile の hook でパッケージ解決と依存挙動をカスタマイズする
 ---
 
-# pnpm Hooks
+# pnpm の Hooks
 
-pnpm provides hooks via `.pnpmfile.cjs` to customize how packages are resolved and their metadata is processed.
+pnpm は `.pnpmfile.cjs` を通じて、パッケージ解決やメタデータ処理を上書きできる hook を提供する。
 
-## Setup
+## セットアップ
 
-Create `.pnpmfile.cjs` at workspace root:
+workspace ルートに `.pnpmfile.cjs` を作成する。
 
 ```js
 // .pnpmfile.cjs
 function readPackage(pkg, context) {
-  // Modify package metadata
+  // パッケージのメタデータを編集
   return pkg
 }
 
 function afterAllResolved(lockfile, context) {
-  // Modify lockfile
+  // lockfile を編集
   return lockfile
 }
 
@@ -31,11 +31,11 @@ module.exports = {
 }
 ```
 
-## readPackage Hook
+## readPackage hook
 
-Called for every package before resolution. Use to modify dependencies, add missing peer deps, or fix broken packages.
+解決前にすべてのパッケージに対して呼び出される。依存の編集、不足する peer dependency の追加、壊れたパッケージの修正に使う。
 
-### Add Missing Peer Dependency
+### 不足する peer dependency を追加
 
 ```js
 function readPackage(pkg, context) {
@@ -50,11 +50,11 @@ function readPackage(pkg, context) {
 }
 ```
 
-### Override Dependency Version
+### 依存バージョンを上書き
 
 ```js
 function readPackage(pkg, context) {
-  // Fix all lodash versions
+  // すべての lodash バージョンを修正
   if (pkg.dependencies?.lodash) {
     pkg.dependencies.lodash = '^4.17.21'
   }
@@ -65,11 +65,11 @@ function readPackage(pkg, context) {
 }
 ```
 
-### Remove Unwanted Dependency
+### 不要な依存を削除
 
 ```js
 function readPackage(pkg, context) {
-  // Remove optional dependency that causes issues
+  // 問題を起こす optional dependency を削除
   if (pkg.optionalDependencies?.fsevents) {
     delete pkg.optionalDependencies.fsevents
   }
@@ -77,11 +77,11 @@ function readPackage(pkg, context) {
 }
 ```
 
-### Replace Package
+### パッケージを置換
 
 ```js
 function readPackage(pkg, context) {
-  // Replace deprecated package
+  // 非推奨パッケージを置き換え
   if (pkg.dependencies?.['old-package']) {
     pkg.dependencies['new-package'] = pkg.dependencies['old-package']
     delete pkg.dependencies['old-package']
@@ -90,11 +90,11 @@ function readPackage(pkg, context) {
 }
 ```
 
-### Fix Broken Package
+### 壊れたパッケージを修正
 
 ```js
 function readPackage(pkg, context) {
-  // Fix incorrect exports field
+  // exports フィールドの誤りを修正
   if (pkg.name === 'broken-esm-package') {
     pkg.exports = {
       '.': {
@@ -107,36 +107,36 @@ function readPackage(pkg, context) {
 }
 ```
 
-## afterAllResolved Hook
+## afterAllResolved hook
 
-Called after the lockfile is generated. Use for post-resolution modifications.
+lockfile 生成後に呼び出される。解決後の修正に使う。
 
 ```js
 function afterAllResolved(lockfile, context) {
-  // Log all resolved packages
+  // 解決されたすべてのパッケージをログ出力
   context.log(`Resolved ${Object.keys(lockfile.packages || {}).length} packages`)
-  
-  // Modify lockfile if needed
+
+  // 必要に応じて lockfile を編集
   return lockfile
 }
 ```
 
-## Context Object
+## Context オブジェクト
 
-The `context` object provides utilities:
+`context` オブジェクトはユーティリティを提供する。
 
 ```js
 function readPackage(pkg, context) {
-  // Log messages
+  // メッセージをログ出力
   context.log('Processing package...')
-  
+
   return pkg
 }
 ```
 
-## Use with TypeScript
+## TypeScript との併用
 
-For type hints, use JSDoc:
+型ヒントには JSDoc を使う。
 
 ```js
 // .pnpmfile.cjs
@@ -157,9 +157,9 @@ module.exports = {
 }
 ```
 
-## Common Patterns
+## よくあるパターン
 
-### Conditional by Package Name
+### パッケージ名で条件分岐
 
 ```js
 function readPackage(pkg, context) {
@@ -175,11 +175,11 @@ function readPackage(pkg, context) {
 }
 ```
 
-### Apply to All Packages
+### 全パッケージに適用
 
 ```js
 function readPackage(pkg, context) {
-  // Remove all optional fsevents
+  // すべての optional fsevents を除去
   if (pkg.optionalDependencies) {
     delete pkg.optionalDependencies.fsevents
   }
@@ -187,7 +187,7 @@ function readPackage(pkg, context) {
 }
 ```
 
-### Debug Resolution
+### 解決処理のデバッグ
 
 ```js
 function readPackage(pkg, context) {
@@ -199,35 +199,35 @@ function readPackage(pkg, context) {
 }
 ```
 
-## Hooks vs Overrides
+## Hooks と Overrides の比較
 
-| Feature | Hooks (.pnpmfile.cjs) | Overrides |
+| 機能 | Hooks (.pnpmfile.cjs) | Overrides |
 |---------|----------------------|-----------|
-| Complexity | Can use JavaScript logic | Declarative only |
-| Scope | Any package metadata | Version only |
-| Use case | Complex fixes, conditional logic | Simple version pins |
+| 複雑さ | JavaScript ロジックを利用可能 | 宣言的のみ |
+| スコープ | パッケージメタデータ全般 | バージョンのみ |
+| 用途 | 複雑な修正、条件分岐 | 単純なバージョン固定 |
 
-**Prefer overrides** for simple version fixes. **Use hooks** when you need:
-- Conditional logic
-- Non-version modifications (exports, peer deps)
-- Logging/debugging
+**単純なバージョン修正は overrides を優先**する。**hooks は次のような場合に使う**:
+- 条件分岐ロジックが必要
+- バージョン以外の修正 (exports、peer dependency 等)
+- ログ出力やデバッグ
 
-## Troubleshooting
+## トラブルシューティング
 
-### Hook not running
+### hook が実行されない
 
-1. Ensure file is named `.pnpmfile.cjs` (not `.js`)
-2. Check file is at workspace root
-3. Run `pnpm install` to trigger hooks
+1. ファイル名が `.pnpmfile.cjs` であることを確認する (`.js` ではない)
+2. workspace ルートに置かれていることを確認する
+3. `pnpm install` を実行して hook をトリガーする
 
-### Debug hooks
+### hook をデバッグ
 
 ```bash
-# See hook logs
+# hook のログを確認
 pnpm install --reporter=append-only
 ```
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/pnpmfile
 -->

@@ -1,46 +1,46 @@
 ---
 title: Use Cursor-Based Pagination Instead of OFFSET
 impact: MEDIUM-HIGH
-impactDescription: Consistent O(1) performance regardless of page depth
+impactDescription: ページの深さに関係なく一定 (O(1)) のパフォーマンス
 tags: pagination, cursor, keyset, offset, performance
 ---
 
 ## Use Cursor-Based Pagination Instead of OFFSET
 
-OFFSET-based pagination scans all skipped rows, getting slower on deeper pages. Cursor pagination is O(1).
+OFFSET によるページネーションはスキップする行をすべて走査するため、深いページほど遅くなる。cursor ベースのページネーションは O(1) で動作する。
 
-**Incorrect (OFFSET pagination):**
+**誤り (OFFSET ページネーション):**
 
 ```sql
--- Page 1: scans 20 rows
+-- 1 ページ目: 20 行をスキャン
 select * from products order by id limit 20 offset 0;
 
--- Page 100: scans 2000 rows to skip 1980
+-- 100 ページ目: 2000 行スキャンして 1980 行をスキップ
 select * from products order by id limit 20 offset 1980;
 
--- Page 10000: scans 200,000 rows!
+-- 10000 ページ目: 200,000 行のスキャンが必要!
 select * from products order by id limit 20 offset 199980;
 ```
 
-**Correct (cursor/keyset pagination):**
+**正しい例 (cursor / keyset ページネーション):**
 
 ```sql
--- Page 1: get first 20
+-- 1 ページ目: 先頭から 20 件取得
 select * from products order by id limit 20;
--- Application stores last_id = 20
+-- アプリ側で last_id = 20 を保持
 
--- Page 2: start after last ID
+-- 2 ページ目: 直前の ID より後ろから取得
 select * from products where id > 20 order by id limit 20;
--- Uses index, always fast regardless of page depth
+-- インデックスを使うため、何ページ目でも常に高速
 
--- Page 10000: same speed as page 1
+-- 10000 ページ目: 1 ページ目と同じ速度で取得できる
 select * from products where id > 199980 order by id limit 20;
 ```
 
-For multi-column sorting:
+複数カラムでソートする場合:
 
 ```sql
--- Cursor must include all sort columns
+-- cursor にはソート対象のすべてのカラムを含める
 select * from products
 where (created_at, id) > ('2024-01-15 10:00:00', 12345)
 order by created_at, id

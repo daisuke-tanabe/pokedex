@@ -1,37 +1,37 @@
 ---
 name: pnpm-overrides
-description: Force specific versions of dependencies including transitive dependencies
+description: 推移的依存も含め、依存パッケージの特定バージョンを強制する
 ---
 
-# pnpm Overrides
+# pnpm の Overrides
 
-Overrides let you force specific versions of packages, including transitive dependencies. Useful for fixing security vulnerabilities or compatibility issues.
+Overrides を使うと、推移的依存を含むパッケージのバージョンを強制できる。セキュリティ脆弱性の修正や互換性問題の解決に有用である。
 
-## Basic Syntax
+## 基本の文法
 
-Define overrides in `pnpm-workspace.yaml` (recommended) or `package.json`:
+Overrides は `pnpm-workspace.yaml` (推奨) または `package.json` で定義する。
 
-### In pnpm-workspace.yaml (Recommended)
+### pnpm-workspace.yaml の場合 (推奨)
 
 ```yaml
 packages:
   - 'packages/*'
 
 overrides:
-  # Override all versions of a package
+  # パッケージのすべてのバージョンを上書き
   lodash: ^4.17.21
-  
-  # Override specific version range
+
+  # 特定のバージョン範囲だけを上書き
   "foo@^1.0.0": ^1.2.3
-  
-  # Override nested dependency
+
+  # ネストした依存を上書き
   "express>cookie": ^0.6.0
-  
-  # Override to different package
+
+  # 別のパッケージに置換
   "underscore": "npm:lodash@^4.17.21"
 ```
 
-### In package.json
+### package.json の場合
 
 ```json
 {
@@ -45,66 +45,66 @@ overrides:
 }
 ```
 
-## Override Patterns
+## Override のパターン
 
-### Override all instances
+### すべての出現を上書き
 ```yaml
 overrides:
   lodash: ^4.17.21
 ```
-Forces all lodash installations to use ^4.17.21.
+あらゆる lodash インストールを ^4.17.21 に強制する。
 
-### Override specific parent version
+### 特定の親バージョンのみを上書き
 ```yaml
 overrides:
   "foo@^1.0.0": ^1.2.3
 ```
-Only override foo when the requested version matches ^1.0.0.
+要求バージョンが ^1.0.0 にマッチするときだけ foo を上書きする。
 
-### Override nested dependency
+### ネストした依存を上書き
 ```yaml
 overrides:
   "express>cookie": ^0.6.0
   "foo@1.x>bar@^2.0.0>qux": ^1.0.0
 ```
-Override cookie only when it's a dependency of express.
+express の依存である場合に限り cookie を上書きする。
 
-### Replace with different package
+### 別のパッケージに置換
 ```yaml
 overrides:
-  # Replace underscore with lodash
+  # underscore を lodash に置換
   "underscore": "npm:lodash@^4.17.21"
-  
-  # Use local file
+
+  # ローカルファイルを使う
   "some-pkg": "file:./local-pkg"
-  
-  # Use git
+
+  # git を使う
   "some-pkg": "github:user/repo#commit"
 ```
 
-### Remove a dependency
+### 依存を削除
 ```yaml
 overrides:
   "unwanted-pkg": "-"
 ```
-The `-` removes the package entirely.
+`-` を指定するとパッケージは完全に削除される。
 
-## Common Use Cases
+## よくあるユースケース
 
-### Security Fix
+### セキュリティ修正
 
-Force patched version of vulnerable package:
+脆弱性のあるパッケージのパッチ済みバージョンを強制する。
 
 ```yaml
 overrides:
-  # Fix CVE in transitive dependency
+  # 推移的依存の CVE を修正
   "minimist": "^1.2.6"
   "json5": "^2.2.3"
 ```
 
-### Deduplicate Dependencies
+### 依存の重複排除
 
-Force single version when multiple are installed:
+複数バージョンがインストールされる場合に単一バージョンを強制する。
 
 ```yaml
 overrides:
@@ -112,40 +112,40 @@ overrides:
   "react-dom": "^18.2.0"
 ```
 
-### Fix Peer Dependency Issues
+### Peer dependency の問題を修正
 
 ```yaml
 overrides:
   "@types/react": "^18.2.0"
 ```
 
-### Replace Deprecated Package
+### 非推奨パッケージを置換
 
 ```yaml
 overrides:
   "request": "npm:@cypress/request@^3.0.0"
 ```
 
-## Hooks Alternative
+## Hooks による代替手段
 
-For more complex scenarios, use `.pnpmfile.cjs`:
+より複雑なシナリオでは `.pnpmfile.cjs` を使う。
 
 ```js
 // .pnpmfile.cjs
 function readPackage(pkg, context) {
-  // Override dependency version
+  // 依存のバージョンを上書き
   if (pkg.dependencies?.lodash) {
     pkg.dependencies.lodash = '^4.17.21'
   }
-  
-  // Add missing peer dependency
+
+  // 不足している peer dependency を追加
   if (pkg.name === 'some-package') {
     pkg.peerDependencies = {
       ...pkg.peerDependencies,
       react: '*'
     }
   }
-  
+
   return pkg
 }
 
@@ -156,28 +156,28 @@ module.exports = {
 }
 ```
 
-## Overrides vs Catalogs
+## Overrides と Catalogs の比較
 
-| Feature | Overrides | Catalogs |
+| 機能 | Overrides | Catalogs |
 |---------|-----------|----------|
-| Affects | All dependencies (including transitive) | Direct dependencies only |
-| Usage | Automatic | Explicit `catalog:` reference |
-| Purpose | Force versions, fix issues | Version management |
-| Granularity | Can target specific parents | Package-wide only |
+| 影響範囲 | 推移的依存を含むすべての依存 | 直接依存のみ |
+| 利用方法 | 自動 | `catalog:` を明示的に参照 |
+| 目的 | バージョン強制、問題の修正 | バージョン管理 |
+| 粒度 | 特定の親に対象を絞れる | パッケージ全体のみ |
 
-## Debugging
+## デバッグ
 
-Check which version is resolved:
+どのバージョンが解決されたかを確認する。
 
 ```bash
-# See resolved versions
+# 解決されたバージョンを表示
 pnpm why lodash
 
-# List all versions
+# すべてのバージョンを一覧表示
 pnpm list lodash --depth=Infinity
 ```
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/package_json#pnpmoverrides
 - https://pnpm.io/pnpmfile

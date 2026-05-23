@@ -1,12 +1,12 @@
-# Bundling
+# バンドリング
 
-Fix common bundling issues with third-party packages.
+サードパーティパッケージで起きやすいバンドリング問題への対処。
 
-## Server-Incompatible Packages
+## サーバー非互換のパッケージ
 
-Some packages use browser APIs (`window`, `document`, `localStorage`) and fail in Server Components.
+ブラウザ API（`window`、`document`、`localStorage`）を利用するパッケージは Server Components で失敗する。
 
-### Error Signs
+### エラーの兆候
 
 ```
 ReferenceError: window is not defined
@@ -15,19 +15,19 @@ ReferenceError: localStorage is not defined
 Module not found: Can't resolve 'fs'
 ```
 
-### Solution 1: Mark as Client-Only
+### 解決策 1: クライアント専用としてマークする
 
-If the package is only needed on client:
+パッケージが client 側でしか必要ない場合:
 
 ```tsx
-// Bad: Fails - package uses window
+// Bad: 失敗する - パッケージが window を使っている
 import SomeChart from 'some-chart-library'
 
 export default function Page() {
   return <SomeChart />
 }
 
-// Good: Use dynamic import with ssr: false
+// Good: dynamic import に ssr: false を付ける
 import dynamic from 'next/dynamic'
 
 const SomeChart = dynamic(() => import('some-chart-library'), {
@@ -39,9 +39,9 @@ export default function Page() {
 }
 ```
 
-### Solution 2: Externalize from Server Bundle
+### 解決策 2: サーバーバンドルから外部化する
 
-For packages that should run on server but have bundling issues:
+server 側で動かすが、バンドリングに問題があるパッケージ:
 
 ```js
 // next.config.js
@@ -50,14 +50,15 @@ module.exports = {
 }
 ```
 
-Use this for:
-- Packages with native bindings (sharp, bcrypt)
-- Packages that don't bundle well (some ORMs)
-- Packages with circular dependencies
+次のような場面で使う:
 
-### Solution 3: Client Component Wrapper
+- ネイティブバインディングを持つパッケージ（sharp、bcrypt）
+- バンドルしにくいパッケージ（一部の ORM）
+- 循環依存があるパッケージ
 
-Wrap the entire usage in a client component:
+### 解決策 3: Client Component ラッパー
+
+使用箇所全体を client component で包む:
 
 ```tsx
 // components/ChartWrapper.tsx
@@ -69,7 +70,7 @@ export function ChartWrapper(props) {
   return <Chart {...props} />
 }
 
-// app/page.tsx (server component)
+// app/page.tsx（server component）
 import { ChartWrapper } from '@/components/ChartWrapper'
 
 export default function Page() {
@@ -77,37 +78,37 @@ export default function Page() {
 }
 ```
 
-## CSS Imports
+## CSS の import
 
-Import CSS files instead of using `<link>` tags. Next.js handles bundling and optimization.
+`<link>` タグではなく CSS ファイルを import する。Next.js がバンドルと最適化を担う。
 
 ```tsx
-// Bad: Manual link tag
+// Bad: 手動の link タグ
 <link rel="stylesheet" href="/styles.css" />
 
-// Good: Import CSS
+// Good: CSS を import する
 import './styles.css'
 
 // Good: CSS Modules
 import styles from './Button.module.css'
 ```
 
-## Polyfills
+## ポリフィル
 
-Next.js includes common polyfills automatically. Don't load redundant ones from polyfill.io or similar CDNs.
+Next.js は一般的なポリフィルを自動で同梱する。polyfill.io などの CDN から重複して読み込まないこと。
 
-Already included: `Array.from`, `Object.assign`, `Promise`, `fetch`, `Map`, `Set`, `Symbol`, `URLSearchParams`, and 50+ others.
+既に含まれているもの: `Array.from`、`Object.assign`、`Promise`、`fetch`、`Map`、`Set`、`Symbol`、`URLSearchParams` など 50 以上。
 
 ```tsx
-// Bad: Redundant polyfills
+// Bad: 重複したポリフィル
 <script src="https://polyfill.io/v3/polyfill.min.js?features=fetch,Promise,Array.from" />
 
-// Good: Next.js includes these automatically
+// Good: Next.js が自動で含めてくれる
 ```
 
-## ESM/CommonJS Issues
+## ESM / CommonJS の問題
 
-### Error Signs
+### エラーの兆候
 
 ```
 SyntaxError: Cannot use import statement outside a module
@@ -115,7 +116,7 @@ Error: require() of ES Module
 Module not found: ESM packages need to be imported
 ```
 
-### Solution: Transpile Package
+### 解決策: パッケージをトランスパイルする
 
 ```js
 // next.config.js
@@ -124,57 +125,58 @@ module.exports = {
 }
 ```
 
-## Common Problematic Packages
+## 問題が出やすいパッケージ
 
 | Package | Issue | Solution |
 |---------|-------|----------|
-| `sharp` | Native bindings | `serverExternalPackages: ['sharp']` |
-| `bcrypt` | Native bindings | `serverExternalPackages: ['bcrypt']` or use `bcryptjs` |
-| `canvas` | Native bindings | `serverExternalPackages: ['canvas']` |
-| `recharts` | Uses window | `dynamic(() => import('recharts'), { ssr: false })` |
-| `react-quill` | Uses document | `dynamic(() => import('react-quill'), { ssr: false })` |
-| `mapbox-gl` | Uses window | `dynamic(() => import('mapbox-gl'), { ssr: false })` |
-| `monaco-editor` | Uses window | `dynamic(() => import('@monaco-editor/react'), { ssr: false })` |
-| `lottie-web` | Uses document | `dynamic(() => import('lottie-react'), { ssr: false })` |
+| `sharp` | ネイティブバインディング | `serverExternalPackages: ['sharp']` |
+| `bcrypt` | ネイティブバインディング | `serverExternalPackages: ['bcrypt']` か `bcryptjs` を使う |
+| `canvas` | ネイティブバインディング | `serverExternalPackages: ['canvas']` |
+| `recharts` | window を使う | `dynamic(() => import('recharts'), { ssr: false })` |
+| `react-quill` | document を使う | `dynamic(() => import('react-quill'), { ssr: false })` |
+| `mapbox-gl` | window を使う | `dynamic(() => import('mapbox-gl'), { ssr: false })` |
+| `monaco-editor` | window を使う | `dynamic(() => import('@monaco-editor/react'), { ssr: false })` |
+| `lottie-web` | document を使う | `dynamic(() => import('lottie-react'), { ssr: false })` |
 
-## Bundle Analysis
+## バンドル解析
 
-Analyze bundle size with the built-in analyzer (Next.js 16.1+):
+組み込みのアナライザでバンドルサイズを解析する（Next.js 16.1+）:
 
 ```bash
 next experimental-analyze
 ```
 
-This opens an interactive UI to:
-- Filter by route, environment (client/server), and type
-- Inspect module sizes and import chains
-- View treemap visualization
+これで対話 UI が開き、次のことができる:
 
-Save output for comparison:
+- ルート、環境（client/server）、種別でフィルタリング
+- モジュールサイズと import チェーンの確認
+- ツリーマップでの可視化
+
+比較用に出力を保存する:
 
 ```bash
 next experimental-analyze --output
-# Output saved to .next/diagnostics/analyze
+# 出力は .next/diagnostics/analyze に保存される
 ```
 
-Reference: https://nextjs.org/docs/app/guides/package-bundling
+参考: https://nextjs.org/docs/app/guides/package-bundling
 
-## Migrating from Webpack to Turbopack
+## Webpack から Turbopack への移行
 
-Turbopack is the default bundler in Next.js 15+. If you have custom webpack config, migrate to Turbopack-compatible alternatives:
+Next.js 15 以降は Turbopack が既定のバンドラ。カスタム webpack 設定があれば、Turbopack 互換のものに移行する。
 
 ```js
 // next.config.js
 module.exports = {
-  // Good: Works with Turbopack
+  // Good: Turbopack で動く
   serverExternalPackages: ['package'],
   transpilePackages: ['package'],
 
-  // Bad: Webpack-only - migrate away from this
+  // Bad: webpack 専用 - ここから移行する
   webpack: (config) => {
-    // custom webpack config
+    // カスタム webpack 設定
   },
 }
 ```
 
-Reference: https://nextjs.org/docs/app/building-your-application/upgrading/from-webpack-to-turbopack
+参考: https://nextjs.org/docs/app/building-your-application/upgrading/from-webpack-to-turbopack

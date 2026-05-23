@@ -7,11 +7,11 @@ tags: javascript, arrays, flatMap, filter, performance
 
 ## Use flatMap to Map and Filter in One Pass
 
-**Impact: LOW-MEDIUM (eliminates intermediate array)**
+**Impact: LOW-MEDIUM (中間配列の生成を避ける)**
 
-Chaining `.map().filter(Boolean)` creates an intermediate array and iterates twice. Use `.flatMap()` to transform and filter in a single pass.
+`.map().filter(Boolean)` のチェーンは中間配列を作り、2 回走査する。`.flatMap()` を使えば 1 回の走査で変換と絞り込みができる。
 
-**Incorrect (2 iterations, intermediate array):**
+**Incorrect (2 回走査、中間配列あり):**
 
 ```typescript
 const userNames = users
@@ -19,7 +19,7 @@ const userNames = users
   .filter(Boolean)
 ```
 
-**Correct (1 iteration, no intermediate array):**
+**Correct (1 回走査、中間配列なし):**
 
 ```typescript
 const userNames = users.flatMap(user =>
@@ -27,10 +27,10 @@ const userNames = users.flatMap(user =>
 )
 ```
 
-**More examples:**
+**追加の例:**
 
 ```typescript
-// Extract valid emails from responses
+// レスポンスから有効なメールアドレスを取り出す
 // Before
 const emails = responses
   .map(r => r.success ? r.data.email : null)
@@ -41,7 +41,7 @@ const emails = responses.flatMap(r =>
   r.success ? [r.data.email] : []
 )
 
-// Parse and filter valid numbers
+// 数値をパースして有効なものだけ抽出する
 // Before
 const numbers = strings
   .map(s => parseInt(s, 10))
@@ -54,7 +54,7 @@ const numbers = strings.flatMap(s => {
 })
 ```
 
-**When to use:**
-- Transforming items while filtering some out
-- Conditional mapping where some inputs produce no output
-- Parsing/validating where invalid inputs should be skipped
+**使うべきケース:**
+- 一部の要素を除外しながら変換するとき
+- 一部の入力に対しては出力が無いような条件付き map
+- 不正な入力をスキップしながらパース／バリデーションするとき

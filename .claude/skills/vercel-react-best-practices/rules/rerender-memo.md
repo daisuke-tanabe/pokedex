@@ -7,9 +7,9 @@ tags: rerender, memo, useMemo, optimization
 
 ## Extract to Memoized Components
 
-Extract expensive work into memoized components to enable early returns before computation.
+高コストな処理を memo 化されたコンポーネントに切り出し、計算前に早期 return できるようにする。
 
-**Incorrect (computes avatar even when loading):**
+**Incorrect (loading 中でも avatar の計算が走る):**
 
 ```tsx
 function Profile({ user, loading }: Props) {
@@ -23,7 +23,7 @@ function Profile({ user, loading }: Props) {
 }
 ```
 
-**Correct (skips computation when loading):**
+**Correct (loading 中は計算をスキップする):**
 
 ```tsx
 const UserAvatar = memo(function UserAvatar({ user }: { user: User }) {
@@ -41,4 +41,4 @@ function Profile({ user, loading }: Props) {
 }
 ```
 
-**Note:** If your project has [React Compiler](https://react.dev/learn/react-compiler) enabled, manual memoization with `memo()` and `useMemo()` is not necessary. The compiler automatically optimizes re-renders.
+**注意:** プロジェクトで [React Compiler](https://react.dev/learn/react-compiler) が有効化されている場合、`memo()` や `useMemo()` による手動の memo 化は不要。コンパイラが自動的に再レンダリングを最適化する。

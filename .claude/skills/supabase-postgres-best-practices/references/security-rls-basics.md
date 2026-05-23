@@ -1,44 +1,44 @@
 ---
 title: Enable Row Level Security for Multi-Tenant Data
 impact: CRITICAL
-impactDescription: Database-enforced tenant isolation, prevent data leaks
+impactDescription: データベースで tenant 分離を担保し、データ漏洩を防ぐ
 tags: rls, row-level-security, multi-tenant, security
 ---
 
 ## Enable Row Level Security for Multi-Tenant Data
 
-Row Level Security (RLS) enforces data access at the database level, ensuring users only see their own data.
+Row Level Security (RLS) はデータベースレベルでアクセスを制限するため、ユーザーが自分のデータのみを参照できるようにする。
 
-**Incorrect (application-level filtering only):**
+**誤り (アプリケーション側でのフィルタリングだけに頼る):**
 
 ```sql
--- Relying only on application to filter
+-- アプリ側のフィルタだけに依存
 select * from orders where user_id = $current_user_id;
 
--- Bug or bypass means all data is exposed!
-select * from orders;  -- Returns ALL orders
+-- バグやバイパスがあるとデータ全体が露出してしまう!
+select * from orders;  -- すべての orders を返してしまう
 ```
 
-**Correct (database-enforced RLS):**
+**正しい例 (データベースで RLS を強制する):**
 
 ```sql
--- Enable RLS on the table
+-- テーブルに対して RLS を有効化する
 alter table orders enable row level security;
 
--- Create policy for users to see only their orders
+-- 自分の注文のみ見られるポリシーを作成する
 create policy orders_user_policy on orders
   for all
   using (user_id = current_setting('app.current_user_id')::bigint);
 
--- Force RLS even for table owners
+-- テーブルオーナーに対しても RLS を強制する
 alter table orders force row level security;
 
--- Set user context and query
+-- ユーザーコンテキストを設定してクエリする
 set app.current_user_id = '123';
-select * from orders;  -- Only returns orders for user 123
+select * from orders;  -- ユーザー 123 の注文のみ返る
 ```
 
-Policy for authenticated role:
+authenticated ロール向けのポリシー:
 
 ```sql
 create policy orders_user_policy on orders

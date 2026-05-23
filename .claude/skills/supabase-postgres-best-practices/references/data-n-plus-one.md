@@ -1,53 +1,53 @@
 ---
 title: Eliminate N+1 Queries with Batch Loading
 impact: MEDIUM-HIGH
-impactDescription: 10-100x fewer database round trips
+impactDescription: データベースへのラウンドトリップが 10〜100 分の 1 に減少
 tags: n-plus-one, batch, performance, queries
 ---
 
 ## Eliminate N+1 Queries with Batch Loading
 
-N+1 queries execute one query per item in a loop. Batch them into a single query using arrays or JOINs.
+N+1 クエリはループ内で要素ごとに 1 つずつクエリを発行する。配列や JOIN を使って 1 回のクエリにまとめる。
 
-**Incorrect (N+1 queries):**
+**誤り (N+1 クエリ):**
 
 ```sql
--- First query: get all users
-select id from users where active = true;  -- Returns 100 IDs
+-- 最初のクエリ: 全ユーザーを取得
+select id from users where active = true;  -- 100 件の ID が返る
 
--- Then N queries, one per user
+-- そのあとユーザーごとに N 回のクエリ
 select * from orders where user_id = 1;
 select * from orders where user_id = 2;
 select * from orders where user_id = 3;
--- ... 97 more queries!
+-- ... さらに 97 クエリ!
 
--- Total: 101 round trips to database
+-- 合計: データベースへのラウンドトリップが 101 回
 ```
 
-**Correct (single batch query):**
+**正しい例 (1 回のバッチクエリ):**
 
 ```sql
--- Collect IDs and query once with ANY
+-- ID を集めて ANY で一度に問い合わせる
 select * from orders where user_id = any(array[1, 2, 3, ...]);
 
--- Or use JOIN instead of loop
+-- ループの代わりに JOIN を使う
 select u.id, u.name, o.*
 from users u
 left join orders o on o.user_id = u.id
 where u.active = true;
 
--- Total: 1 round trip
+-- 合計: ラウンドトリップは 1 回
 ```
 
-Application pattern:
+アプリケーション側のパターン:
 
 ```sql
--- Instead of looping in application code:
+-- アプリケーションコードでループする代わりに:
 -- for user in users: db.query("SELECT * FROM orders WHERE user_id = $1", user.id)
 
--- Pass array parameter:
+-- 配列パラメータを渡す:
 select * from orders where user_id = any($1::bigint[]);
--- Application passes: [1, 2, 3, 4, 5, ...]
+-- アプリは [1, 2, 3, 4, 5, ...] を渡す
 ```
 
 Reference: [N+1 Query Problem](https://supabase.com/docs/guides/database/query-optimization)

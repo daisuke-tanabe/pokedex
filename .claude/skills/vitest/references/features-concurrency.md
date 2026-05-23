@@ -1,36 +1,36 @@
 ---
 name: concurrency-parallelism
-description: Concurrent tests, parallel execution, and sharding
+description: concurrent テスト、並列実行、シャーディング
 ---
 
-# Concurrency & Parallelism
+# 並列実行と並行性
 
-## File Parallelism
+## ファイル単位の並列化
 
-By default, Vitest runs test files in parallel across workers:
+デフォルトでは Vitest はワーカー間でテストファイルを並列実行する:
 
 ```ts
 defineConfig({
   test: {
-    // Run files in parallel (default: true)
+    // ファイルを並列実行 (デフォルト: true)
     fileParallelism: true,
     
-    // Number of worker threads
+    // ワーカースレッド数
     maxWorkers: 4,
     minWorkers: 1,
     
-    // Pool type: 'threads', 'forks', 'vmThreads'
+    // プールの種類: 'threads', 'forks', 'vmThreads'
     pool: 'threads',
   },
 })
 ```
 
-## Concurrent Tests
+## Concurrent テスト
 
-Run tests within a file in parallel:
+ファイル内のテストを並列実行する:
 
 ```ts
-// Individual concurrent tests
+// 個別の concurrent テスト
 test.concurrent('test 1', async ({ expect }) => {
   expect(await fetch1()).toBe('result')
 })
@@ -39,18 +39,18 @@ test.concurrent('test 2', async ({ expect }) => {
   expect(await fetch2()).toBe('result')
 })
 
-// All tests in suite concurrent
+// スイート内の全テストを concurrent
 describe.concurrent('parallel suite', () => {
   test('test 1', async ({ expect }) => {})
   test('test 2', async ({ expect }) => {})
 })
 ```
 
-**Important:** Use `{ expect }` from context for concurrent tests.
+**重要:** concurrent テストでは context の `{ expect }` を使う。
 
-## Sequential in Concurrent Context
+## Concurrent コンテキスト内の sequential
 
-Force sequential execution:
+順次実行を強制する:
 
 ```ts
 describe.concurrent('mostly parallel', () => {
@@ -61,41 +61,41 @@ describe.concurrent('mostly parallel', () => {
   test.sequential('must run alone 2', async () => {})
 })
 
-// Or entire suite
+// スイート全体を sequential にする
 describe.sequential('sequential suite', () => {
   test('first', () => {})
   test('second', () => {})
 })
 ```
 
-## Max Concurrency
+## 最大並列数
 
-Limit concurrent tests:
+concurrent テストの上限を指定する:
 
 ```ts
 defineConfig({
   test: {
-    maxConcurrency: 5, // Max concurrent tests per file
+    maxConcurrency: 5, // ファイルあたりの最大並列テスト数
   },
 })
 ```
 
-## Isolation
+## 隔離
 
-Each file runs in isolated environment by default:
+各ファイルはデフォルトで隔離された環境で実行される:
 
 ```ts
 defineConfig({
   test: {
-    // Disable isolation for faster runs (less safe)
+    // 高速化のため隔離を無効化する (安全性は低下)
     isolate: false,
   },
 })
 ```
 
-## Sharding
+## シャーディング
 
-Split tests across machines:
+テストを複数マシンに分割する:
 
 ```bash
 # Machine 1
@@ -108,7 +108,7 @@ vitest run --shard=2/3
 vitest run --shard=3/3
 ```
 
-### CI Example (GitHub Actions)
+### CI の例 (GitHub Actions)
 
 ```yaml
 jobs:
@@ -125,50 +125,50 @@ jobs:
       - run: vitest --merge-reports --reporter=junit
 ```
 
-### Merge Reports
+### レポートのマージ
 
 ```bash
-# Each shard outputs blob
+# 各シャードが blob を出力
 vitest run --shard=1/3 --reporter=blob --coverage
 vitest run --shard=2/3 --reporter=blob --coverage
 
-# Merge all blobs
+# すべての blob をマージ
 vitest --merge-reports --reporter=json --coverage
 ```
 
-## Test Sequence
+## テストの実行順
 
-Control test order:
+テスト順序を制御する:
 
 ```ts
 defineConfig({
   test: {
     sequence: {
-      // Run tests in random order
+      // テストをランダム順で実行
       shuffle: true,
       
-      // Seed for reproducible shuffle
+      // 再現性のあるシャッフル用シード
       seed: 12345,
       
-      // Hook execution order
+      // フックの実行順
       hooks: 'stack', // 'stack', 'list', 'parallel'
       
-      // All tests concurrent by default
+      // デフォルトで全テストを concurrent に
       concurrent: true,
     },
   },
 })
 ```
 
-## Shuffle Tests
+## テストのシャッフル
 
-Randomize to catch hidden dependencies:
+隠れた依存関係を発見するためにランダム化する:
 
 ```ts
-// Via CLI
+// CLI から
 vitest --sequence.shuffle
 
-// Per suite
+// スイートごと
 describe.shuffle('random order', () => {
   test('test 1', () => {})
   test('test 2', () => {})
@@ -176,9 +176,9 @@ describe.shuffle('random order', () => {
 })
 ```
 
-## Pool Options
+## プールオプション
 
-### Threads (Default)
+### Threads (デフォルト)
 
 ```ts
 defineConfig({
@@ -197,7 +197,7 @@ defineConfig({
 
 ### Forks
 
-Better isolation, slower:
+隔離が強いが遅い:
 
 ```ts
 defineConfig({
@@ -215,7 +215,7 @@ defineConfig({
 
 ### VM Threads
 
-Full VM isolation per file:
+ファイルごとに完全な VM 隔離:
 
 ```ts
 defineConfig({
@@ -225,23 +225,23 @@ defineConfig({
 })
 ```
 
-## Bail on Failure
+## 失敗時の停止 (bail)
 
-Stop after first failure:
+最初の失敗で停止する:
 
 ```bash
-vitest --bail 1    # Stop after 1 failure
-vitest --bail      # Stop on first failure (same as --bail 1)
+vitest --bail 1    # 1 件失敗で停止
+vitest --bail      # 最初の失敗で停止 (--bail 1 と同等)
 ```
 
-## Key Points
+## 要点
 
-- Files run in parallel by default
-- Use `.concurrent` for parallel tests within file
-- Always use context's `expect` in concurrent tests
-- Sharding splits tests across CI machines
-- Use `--merge-reports` to combine sharded results
-- Shuffle tests to find hidden dependencies
+- ファイルはデフォルトで並列実行される
+- ファイル内で並列実行するには `.concurrent` を使う
+- concurrent テストでは必ず context の `expect` を使う
+- シャーディングで CI マシン間にテストを分割できる
+- シャード結果の結合には `--merge-reports` を使う
+- 隠れた依存関係を見つけるためにテストをシャッフルする
 
 <!-- 
 Source references:

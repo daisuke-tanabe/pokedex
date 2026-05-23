@@ -1,54 +1,54 @@
 ---
 title: Use tsvector for Full-Text Search
 impact: MEDIUM
-impactDescription: 100x faster than LIKE, with ranking support
+impactDescription: LIKE よりも 100 倍高速で、スコアリングにも対応
 tags: full-text-search, tsvector, gin, search
 ---
 
 ## Use tsvector for Full-Text Search
 
-LIKE with wildcards can't use indexes. Full-text search with tsvector is orders of magnitude faster.
+ワイルドカード付きの LIKE はインデックスを利用できない。tsvector による full text search は桁違いに高速になる。
 
-**Incorrect (LIKE pattern matching):**
+**誤り (LIKE によるパターンマッチ):**
 
 ```sql
--- Cannot use index, scans all rows
+-- インデックスを使えず、全行をスキャンしてしまう
 select * from articles where content like '%postgresql%';
 
--- Case-insensitive makes it worse
+-- 大文字小文字を無視するとさらに悪化する
 select * from articles where lower(content) like '%postgresql%';
 ```
 
-**Correct (full-text search with tsvector):**
+**正しい例 (tsvector による full text search):**
 
 ```sql
--- Add tsvector column and index
+-- tsvector カラムとインデックスを追加する
 alter table articles add column search_vector tsvector
   generated always as (to_tsvector('english', coalesce(title,'') || ' ' || coalesce(content,''))) stored;
 
 create index articles_search_idx on articles using gin (search_vector);
 
--- Fast full-text search
+-- 高速な full text search
 select * from articles
 where search_vector @@ to_tsquery('english', 'postgresql & performance');
 
--- With ranking
+-- スコアリング付き
 select *, ts_rank(search_vector, query) as rank
 from articles, to_tsquery('english', 'postgresql') query
 where search_vector @@ query
 order by rank desc;
 ```
 
-Search multiple terms:
+複数の語を検索する場合:
 
 ```sql
--- AND: both terms required
+-- AND: 両方の語が必須
 to_tsquery('postgresql & performance')
 
--- OR: either term
+-- OR: いずれかの語
 to_tsquery('postgresql | mysql')
 
--- Prefix matching
+-- 前方一致
 to_tsquery('post:*')
 ```
 

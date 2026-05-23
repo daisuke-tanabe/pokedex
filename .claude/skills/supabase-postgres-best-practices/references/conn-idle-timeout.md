@@ -1,41 +1,41 @@
 ---
 title: Configure Idle Connection Timeouts
 impact: HIGH
-impactDescription: Reclaim 30-50% of connection slots from idle clients
+impactDescription: アイドル状態のクライアントから接続スロットを 30〜50% 回収できる
 tags: connections, timeout, idle, resource-management
 ---
 
 ## Configure Idle Connection Timeouts
 
-Idle connections waste resources. Configure timeouts to automatically reclaim them.
+アイドル状態の接続はリソースを浪費する。タイムアウトを設定して自動的に回収する。
 
-**Incorrect (connections held indefinitely):**
+**誤り (接続を無期限に保持してしまう):**
 
 ```sql
--- No timeout configured
-show idle_in_transaction_session_timeout;  -- 0 (disabled)
+-- タイムアウトが設定されていない
+show idle_in_transaction_session_timeout;  -- 0 (無効)
 
--- Connections stay open forever, even when idle
+-- アイドル状態でも接続が開きっぱなしになる
 select pid, state, state_change, query
 from pg_stat_activity
 where state = 'idle in transaction';
--- Shows transactions idle for hours, holding locks
+-- 何時間も idle in transaction でロックを保持しているトランザクションが表示される
 ```
 
-**Correct (automatic cleanup of idle connections):**
+**正しい例 (アイドル接続を自動的に解放する):**
 
 ```sql
--- Terminate connections idle in transaction after 30 seconds
+-- トランザクション内でアイドルになって 30 秒経過した接続を終了する
 alter system set idle_in_transaction_session_timeout = '30s';
 
--- Terminate completely idle connections after 10 minutes
+-- 完全にアイドル状態の接続を 10 分後に終了する
 alter system set idle_session_timeout = '10min';
 
--- Reload configuration
+-- 設定を反映する
 select pg_reload_conf();
 ```
 
-For pooled connections, configure at the pooler level:
+connection pool を利用している場合は、pooler 側でも設定する:
 
 ```ini
 # pgbouncer.ini

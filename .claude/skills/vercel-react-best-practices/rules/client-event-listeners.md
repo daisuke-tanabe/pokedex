@@ -7,9 +7,9 @@ tags: client, swr, event-listeners, subscription
 
 ## Deduplicate Global Event Listeners
 
-Use `useSWRSubscription()` to share global event listeners across component instances.
+`useSWRSubscription()` を使って、グローバルなイベントリスナーをコンポーネントインスタンス間で共有する。
 
-**Incorrect (N instances = N listeners):**
+**Incorrect (N インスタンス = N リスナー):**
 
 ```tsx
 function useKeyboardShortcut(key: string, callback: () => void) {
@@ -25,18 +25,18 @@ function useKeyboardShortcut(key: string, callback: () => void) {
 }
 ```
 
-When using the `useKeyboardShortcut` hook multiple times, each instance will register a new listener.
+`useKeyboardShortcut` フックを複数回使うと、各インスタンスが新しいリスナーを登録してしまう。
 
-**Correct (N instances = 1 listener):**
+**Correct (N インスタンス = 1 リスナー):**
 
 ```tsx
 import useSWRSubscription from 'swr/subscription'
 
-// Module-level Map to track callbacks per key
+// キーごとのコールバックを追跡するモジュールレベルの Map
 const keyCallbacks = new Map<string, Set<() => void>>()
 
 function useKeyboardShortcut(key: string, callback: () => void) {
-  // Register this callback in the Map
+  // このコールバックを Map に登録する
   useEffect(() => {
     if (!keyCallbacks.has(key)) {
       keyCallbacks.set(key, new Set())
@@ -66,7 +66,7 @@ function useKeyboardShortcut(key: string, callback: () => void) {
 }
 
 function Profile() {
-  // Multiple shortcuts will share the same listener
+  // 複数のショートカットが同じリスナーを共有する
   useKeyboardShortcut('p', () => { /* ... */ }) 
   useKeyboardShortcut('k', () => { /* ... */ })
   // ...

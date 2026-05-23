@@ -1,47 +1,47 @@
 ---
 title: Choose the Right Index Type for Your Data
 impact: HIGH
-impactDescription: 10-100x improvement with correct index type
+impactDescription: 適切なインデックス種別を選ぶことで 10〜100 倍高速化
 tags: indexes, btree, gin, gist, brin, hash, index-types
 ---
 
 ## Choose the Right Index Type for Your Data
 
-Different index types excel at different query patterns. The default B-tree isn't always optimal.
+クエリのパターンによって得意なインデックス種別は異なる。デフォルトの B-tree が常に最適とは限らない。
 
-**Incorrect (B-tree for JSONB containment):**
+**誤り (JSONB の containment に B-tree を使う):**
 
 ```sql
--- B-tree cannot optimize containment operators
+-- B-tree は containment 演算子を最適化できない
 create index products_attrs_idx on products (attributes);
 select * from products where attributes @> '{"color": "red"}';
--- Full table scan - B-tree doesn't support @> operator
+-- フルテーブルスキャンとなる - B-tree は @> 演算子をサポートしない
 ```
 
-**Correct (GIN for JSONB):**
+**正しい例 (JSONB には GIN):**
 
 ```sql
--- GIN supports @>, ?, ?&, ?| operators
+-- GIN は @>, ?, ?&, ?| 演算子をサポートする
 create index products_attrs_idx on products using gin (attributes);
 select * from products where attributes @> '{"color": "red"}';
 ```
 
-Index type guide:
+インデックス種別の指針:
 
 ```sql
--- B-tree (default): =, <, >, BETWEEN, IN, IS NULL
+-- B-tree (デフォルト): =, <, >, BETWEEN, IN, IS NULL
 create index users_created_idx on users (created_at);
 
--- GIN: arrays, JSONB, full-text search
+-- GIN: 配列、JSONB、full text search
 create index posts_tags_idx on posts using gin (tags);
 
--- GiST: geometric data, range types, nearest-neighbor (KNN) queries
+-- GiST: 幾何データ、range 型、近傍検索 (KNN)
 create index locations_idx on places using gist (location);
 
--- BRIN: large time-series tables (10-100x smaller)
+-- BRIN: 大規模な時系列テーブル (10〜100 倍小さい)
 create index events_time_idx on events using brin (created_at);
 
--- Hash: equality-only (slightly faster than B-tree for =)
+-- Hash: 等価比較のみ (B-tree より = がわずかに速い)
 create index sessions_token_idx on sessions using hash (token);
 ```
 

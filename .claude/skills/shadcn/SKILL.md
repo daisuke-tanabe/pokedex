@@ -1,91 +1,91 @@
 ---
 name: shadcn
-description: Manages shadcn components and projects — adding, searching, fixing, debugging, styling, and composing UI. Provides project context, component docs, and usage examples. Applies when working with shadcn/ui, component registries, presets, --preset codes, or any project with a components.json file. Also triggers for "shadcn init", "create an app with --preset", or "switch to --preset".
+description: shadcn コンポーネントとプロジェクトを管理する — 追加・検索・修正・デバッグ・スタイリング・UI のコンポジションをサポート。プロジェクトのコンテキスト、コンポーネントのドキュメント、利用例を提供する。shadcn/ui、component registry、preset、--preset コード、または `components.json` を持つプロジェクトを扱う際に適用される。「shadcn init」「create an app with --preset」「switch to --preset」などのリクエストにもトリガーされる。
 user-invocable: false
 allowed-tools: Bash(npx shadcn@latest *), Bash(pnpm dlx shadcn@latest *), Bash(bunx --bun shadcn@latest *)
 ---
 
 # shadcn/ui
 
-A framework for building ui, components and design systems. Components are added as source code to the user's project via the CLI.
+UI、コンポーネント、デザインシステムを構築するためのフレームワーク。コンポーネントは CLI を介してソースコードとしてユーザーのプロジェクトに追加される。
 
-> **IMPORTANT:** Run all CLI commands using the project's package runner: `npx shadcn@latest`, `pnpm dlx shadcn@latest`, or `bunx --bun shadcn@latest` — based on the project's `packageManager`. Examples below use `npx shadcn@latest` but substitute the correct runner for the project.
+> **重要:** CLI コマンドはすべてプロジェクトの package runner で実行する。プロジェクトの `packageManager` に応じて `npx shadcn@latest`、`pnpm dlx shadcn@latest`、`bunx --bun shadcn@latest` のいずれかを選ぶ。以下の例では `npx shadcn@latest` を使っているが、プロジェクトに合った runner に置き換えること。
 
-## Current Project Context
+## 現在のプロジェクトコンテキスト
 
 ```json
 !`npx shadcn@latest info --json`
 ```
 
-The JSON above contains the project config and installed components. Use `npx shadcn@latest docs <component>` to get documentation and example URLs for any component.
+上記の JSON にはプロジェクトの設定とインストール済みコンポーネントが含まれる。任意のコンポーネントのドキュメントと例の URL を取得するには `npx shadcn@latest docs <component>` を使う。
 
-## Principles
+## 原則
 
-1. **Use existing components first.** Use `npx shadcn@latest search` to check registries before writing custom UI. Check community registries too.
-2. **Compose, don't reinvent.** Settings page = Tabs + Card + form controls. Dashboard = Sidebar + Card + Chart + Table.
-3. **Use built-in variants before custom styles.** `variant="outline"`, `size="sm"`, etc.
-4. **Use semantic colors.** `bg-primary`, `text-muted-foreground` — never raw values like `bg-blue-500`.
+1. **既存のコンポーネントを優先する。** カスタム UI を書く前に `npx shadcn@latest search` で registry を確認する。コミュニティ registry もチェックする。
+2. **再発明せずコンポジションする。** Settings ページ = Tabs + Card + フォームコントロール。Dashboard = Sidebar + Card + Chart + Table。
+3. **カスタムスタイルより組み込み variant を使う。** `variant="outline"`、`size="sm"` など。
+4. **セマンティックカラーを使う。** `bg-primary`、`text-muted-foreground` を使い、`bg-blue-500` のような生の値は使わない。
 
-## Critical Rules
+## 重要なルール
 
-These rules are **always enforced**. Each links to a file with Incorrect/Correct code pairs.
+これらのルールは **常に強制** される。各項目は Incorrect/Correct のコード例を含むファイルへのリンクを持つ。
 
-### Styling & Tailwind → [styling.md](./rules/styling.md)
+### Styling と Tailwind → [styling.md](./rules/styling.md)
 
-- **`className` for layout, not styling.** Never override component colors or typography.
-- **No `space-x-*` or `space-y-*`.** Use `flex` with `gap-*`. For vertical stacks, `flex flex-col gap-*`.
-- **Use `size-*` when width and height are equal.** `size-10` not `w-10 h-10`.
-- **Use `truncate` shorthand.** Not `overflow-hidden text-ellipsis whitespace-nowrap`.
-- **No manual `dark:` color overrides.** Use semantic tokens (`bg-background`, `text-muted-foreground`).
-- **Use `cn()` for conditional classes.** Don't write manual template literal ternaries.
-- **No manual `z-index` on overlay components.** Dialog, Sheet, Popover, etc. handle their own stacking.
+- **`className` はレイアウト用であり、スタイリング用ではない。** コンポーネントの色や typography を上書きしない。
+- **`space-x-*` や `space-y-*` を使わない。** `flex` と `gap-*` を使う。縦方向のスタックには `flex flex-col gap-*`。
+- **幅と高さが等しい場合は `size-*` を使う。** `w-10 h-10` ではなく `size-10`。
+- **`truncate` ショートハンドを使う。** `overflow-hidden text-ellipsis whitespace-nowrap` の代わり。
+- **`dark:` の手動カラー上書きをしない。** セマンティックトークン (`bg-background`、`text-muted-foreground`) を使う。
+- **条件付きクラスには `cn()` を使う。** className 内で template literal の三項演算を手書きしない。
+- **オーバーレイ系コンポーネントに手動で `z-index` を指定しない。** Dialog、Sheet、Popover などは自前で重なり順を管理する。
 
-### Forms & Inputs → [forms.md](./rules/forms.md)
+### Forms と Inputs → [forms.md](./rules/forms.md)
 
-- **Forms use `FieldGroup` + `Field`.** Never use raw `div` with `space-y-*` or `grid gap-*` for form layout.
-- **`InputGroup` uses `InputGroupInput`/`InputGroupTextarea`.** Never raw `Input`/`Textarea` inside `InputGroup`.
-- **Buttons inside inputs use `InputGroup` + `InputGroupAddon`.**
-- **Option sets (2–7 choices) use `ToggleGroup`.** Don't loop `Button` with manual active state.
-- **`FieldSet` + `FieldLegend` for grouping related checkboxes/radios.** Don't use a `div` with a heading.
-- **Field validation uses `data-invalid` + `aria-invalid`.** `data-invalid` on `Field`, `aria-invalid` on the control. For disabled: `data-disabled` on `Field`, `disabled` on the control.
+- **フォームは `FieldGroup` + `Field` を使う。** フォームレイアウトに生の `div` + `space-y-*` や `grid gap-*` を使わない。
+- **`InputGroup` は `InputGroupInput`/`InputGroupTextarea` を使う。** `InputGroup` の中で生の `Input`/`Textarea` を使わない。
+- **入力内のボタンには `InputGroup` + `InputGroupAddon` を使う。**
+- **2〜7 個の選択肢の場合は `ToggleGroup` を使う。** `Button` をループしてアクティブ状態を手で管理しない。
+- **関連するチェックボックス/ラジオのグループ化には `FieldSet` + `FieldLegend` を使う。** 見出し付きの `div` を使わない。
+- **フィールドのバリデーションは `data-invalid` + `aria-invalid` を使う。** `Field` には `data-invalid`、コントロールには `aria-invalid`。disabled の場合は `Field` に `data-disabled`、コントロールに `disabled`。
 
-### Component Structure → [composition.md](./rules/composition.md)
+### コンポーネント構造 → [composition.md](./rules/composition.md)
 
-- **Items always inside their Group.** `SelectItem` → `SelectGroup`. `DropdownMenuItem` → `DropdownMenuGroup`. `CommandItem` → `CommandGroup`.
-- **Use `asChild` (radix) or `render` (base) for custom triggers.** Check `base` field from `npx shadcn@latest info`. → [base-vs-radix.md](./rules/base-vs-radix.md)
-- **Dialog, Sheet, and Drawer always need a Title.** `DialogTitle`, `SheetTitle`, `DrawerTitle` required for accessibility. Use `className="sr-only"` if visually hidden.
-- **Use full Card composition.** `CardHeader`/`CardTitle`/`CardDescription`/`CardContent`/`CardFooter`. Don't dump everything in `CardContent`.
-- **Button has no `isPending`/`isLoading`.** Compose with `Spinner` + `data-icon` + `disabled`.
-- **`TabsTrigger` must be inside `TabsList`.** Never render triggers directly in `Tabs`.
-- **`Avatar` always needs `AvatarFallback`.** For when the image fails to load.
+- **Item は必ず対応する Group の中に置く。** `SelectItem` → `SelectGroup`、`DropdownMenuItem` → `DropdownMenuGroup`、`CommandItem` → `CommandGroup`。
+- **カスタムトリガーには `asChild` (radix) または `render` (base) を使う。** `npx shadcn@latest info` の `base` フィールドを確認する。→ [base-vs-radix.md](./rules/base-vs-radix.md)
+- **Dialog、Sheet、Drawer には必ず Title が必要。** アクセシビリティのため `DialogTitle`、`SheetTitle`、`DrawerTitle` は必須。視覚的に隠す場合は `className="sr-only"` を使う。
+- **Card は完全なコンポジションで使う。** `CardHeader`/`CardTitle`/`CardDescription`/`CardContent`/`CardFooter` を使う。すべてを `CardContent` に詰め込まない。
+- **Button に `isPending`/`isLoading` プロパティはない。** `Spinner` + `data-icon` + `disabled` でコンポジションする。
+- **`TabsTrigger` は `TabsList` の中に置く。** `Tabs` の直下にトリガーを置かない。
+- **`Avatar` には必ず `AvatarFallback` が必要。** 画像のロードに失敗した場合のため。
 
-### Use Components, Not Custom Markup → [composition.md](./rules/composition.md)
+### カスタムマークアップではなくコンポーネントを使う → [composition.md](./rules/composition.md)
 
-- **Use existing components before custom markup.** Check if a component exists before writing a styled `div`.
-- **Callouts use `Alert`.** Don't build custom styled divs.
-- **Empty states use `Empty`.** Don't build custom empty state markup.
-- **Toast via `sonner`.** Use `toast()` from `sonner`.
-- **Use `Separator`** instead of `<hr>` or `<div className="border-t">`.
-- **Use `Skeleton`** for loading placeholders. No custom `animate-pulse` divs.
-- **Use `Badge`** instead of custom styled spans.
+- **カスタムマークアップの前に既存コンポーネントを使う。** スタイル付きの `div` を書く前に同等のコンポーネントが存在しないか確認する。
+- **コールアウトには `Alert` を使う。** スタイル付きの div を独自に作らない。
+- **空状態には `Empty` を使う。** 空状態のカスタムマークアップを作らない。
+- **トーストは `sonner` を使う。** `sonner` の `toast()` を使う。
+- **`<hr>` や `<div className="border-t">` の代わりに `Separator` を使う。**
+- **ローディングプレースホルダには `Skeleton` を使う。** 独自の `animate-pulse` の div を作らない。
+- **カスタムスタイルの span の代わりに `Badge` を使う。**
 
 ### Icons → [icons.md](./rules/icons.md)
 
-- **Icons in `Button` use `data-icon`.** `data-icon="inline-start"` or `data-icon="inline-end"` on the icon.
-- **No sizing classes on icons inside components.** Components handle icon sizing via CSS. No `size-4` or `w-4 h-4`.
-- **Pass icons as objects, not string keys.** `icon={CheckIcon}`, not a string lookup.
+- **`Button` 内のアイコンは `data-icon` を使う。** アイコンに `data-icon="inline-start"` または `data-icon="inline-end"` を付ける。
+- **コンポーネント内のアイコンにサイズクラスを付けない。** コンポーネントは CSS でアイコンサイズを管理する。`size-4` や `w-4 h-4` を付けない。
+- **アイコンは文字列キーではなくオブジェクトとして渡す。** 文字列ルックアップではなく `icon={CheckIcon}`。
 
 ### CLI
 
-- **Never decode preset codes or build preset URLs manually.** Use `npx shadcn@latest preset decode <code>`, `preset url <code>`, or `preset open <code>`. For project-aware preset detection, use `npx shadcn@latest preset resolve`.
-- **Apply preset codes directly with the CLI.** Use `npx shadcn@latest apply <code>` for existing projects, or `npx shadcn@latest init --preset <code>` when initializing.
+- **preset コードを手動でデコードしたり preset URL を組み立てたりしない。** `npx shadcn@latest preset decode <code>`、`preset url <code>`、または `preset open <code>` を使う。プロジェクトを認識する preset 検出には `npx shadcn@latest preset resolve` を使う。
+- **preset コードは CLI で直接適用する。** 既存プロジェクトには `npx shadcn@latest apply <code>`、初期化時は `npx shadcn@latest init --preset <code>` を使う。
 
-## Key Patterns
+## 主要パターン
 
-These are the most common patterns that differentiate correct shadcn/ui code. For edge cases, see the linked rule files above.
+正しい shadcn/ui コードを書くうえで特に差が出やすい代表的なパターン。エッジケースについては上記のルールファイルを参照する。
 
 ```tsx
-// Form layout: FieldGroup + Field, not div + Label.
+// フォームレイアウト: div + Label ではなく FieldGroup + Field を使う。
 <FieldGroup>
   <Field>
     <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -93,168 +93,168 @@ These are the most common patterns that differentiate correct shadcn/ui code. Fo
   </Field>
 </FieldGroup>
 
-// Validation: data-invalid on Field, aria-invalid on the control.
+// バリデーション: Field に data-invalid、コントロールに aria-invalid。
 <Field data-invalid>
   <FieldLabel>Email</FieldLabel>
   <Input aria-invalid />
   <FieldDescription>Invalid email.</FieldDescription>
 </Field>
 
-// Icons in buttons: data-icon, no sizing classes.
+// ボタン内のアイコン: data-icon を使い、サイズクラスは付けない。
 <Button>
   <SearchIcon data-icon="inline-start" />
   Search
 </Button>
 
-// Spacing: gap-*, not space-y-*.
+// スペーシング: space-y-* ではなく gap-* を使う。
 <div className="flex flex-col gap-4">  // correct
 <div className="space-y-4">           // wrong
 
-// Equal dimensions: size-*, not w-* h-*.
+// 等しい寸法: w-* h-* ではなく size-* を使う。
 <Avatar className="size-10">   // correct
 <Avatar className="w-10 h-10"> // wrong
 
-// Status colors: Badge variants or semantic tokens, not raw colors.
+// ステータスカラー: 生のカラーではなく Badge variant かセマンティックトークンを使う。
 <Badge variant="secondary">+20.1%</Badge>    // correct
 <span className="text-emerald-600">+20.1%</span> // wrong
 ```
 
-## Component Selection
+## コンポーネント選択
 
-| Need                       | Use                                                                                                 |
+| 必要なもの                  | 使うコンポーネント                                                                                  |
 | -------------------------- | --------------------------------------------------------------------------------------------------- |
-| Button/action              | `Button` with appropriate variant                                                                   |
-| Form inputs                | `Input`, `Select`, `Combobox`, `Switch`, `Checkbox`, `RadioGroup`, `Textarea`, `InputOTP`, `Slider` |
-| Toggle between 2–5 options | `ToggleGroup` + `ToggleGroupItem`                                                                   |
-| Data display               | `Table`, `Card`, `Badge`, `Avatar`                                                                  |
-| Navigation                 | `Sidebar`, `NavigationMenu`, `Breadcrumb`, `Tabs`, `Pagination`                                     |
-| Overlays                   | `Dialog` (modal), `Sheet` (side panel), `Drawer` (bottom sheet), `AlertDialog` (confirmation)       |
-| Feedback                   | `sonner` (toast), `Alert`, `Progress`, `Skeleton`, `Spinner`                                        |
-| Command palette            | `Command` inside `Dialog`                                                                           |
-| Charts                     | `Chart` (wraps Recharts)                                                                            |
-| Layout                     | `Card`, `Separator`, `Resizable`, `ScrollArea`, `Accordion`, `Collapsible`                          |
-| Empty states               | `Empty`                                                                                             |
-| Menus                      | `DropdownMenu`, `ContextMenu`, `Menubar`                                                            |
-| Tooltips/info              | `Tooltip`, `HoverCard`, `Popover`                                                                   |
+| ボタン/アクション          | 適切な variant を指定した `Button`                                                                  |
+| フォーム入力               | `Input`, `Select`, `Combobox`, `Switch`, `Checkbox`, `RadioGroup`, `Textarea`, `InputOTP`, `Slider` |
+| 2〜5 個の選択肢の切り替え  | `ToggleGroup` + `ToggleGroupItem`                                                                   |
+| データ表示                 | `Table`, `Card`, `Badge`, `Avatar`                                                                  |
+| ナビゲーション             | `Sidebar`, `NavigationMenu`, `Breadcrumb`, `Tabs`, `Pagination`                                     |
+| オーバーレイ               | `Dialog` (モーダル), `Sheet` (サイドパネル), `Drawer` (ボトムシート), `AlertDialog` (確認)          |
+| フィードバック             | `sonner` (トースト), `Alert`, `Progress`, `Skeleton`, `Spinner`                                     |
+| コマンドパレット           | `Dialog` 内に `Command`                                                                             |
+| チャート                   | `Chart` (Recharts のラッパー)                                                                       |
+| レイアウト                 | `Card`, `Separator`, `Resizable`, `ScrollArea`, `Accordion`, `Collapsible`                          |
+| 空状態                     | `Empty`                                                                                             |
+| メニュー                   | `DropdownMenu`, `ContextMenu`, `Menubar`                                                            |
+| ツールチップ/情報          | `Tooltip`, `HoverCard`, `Popover`                                                                   |
 
-## Key Fields
+## 主要フィールド
 
-The injected project context contains these key fields:
+注入されるプロジェクトコンテキストには次の主要フィールドが含まれる。
 
-- **`aliases`** → use the actual alias prefix for imports (e.g. `@/`, `~/`), never hardcode.
-- **`isRSC`** → when `true`, components using `useState`, `useEffect`, event handlers, or browser APIs need `"use client"` at the top of the file. Always reference this field when advising on the directive.
-- **`tailwindVersion`** → `"v4"` uses `@theme inline` blocks; `"v3"` uses `tailwind.config.js`.
-- **`tailwindCssFile`** → the global CSS file where custom CSS variables are defined. Always edit this file, never create a new one.
-- **`style`** → component visual treatment (e.g. `nova`, `vega`).
-- **`base`** → primitive library (`radix` or `base`). Affects component APIs and available props.
-- **`iconLibrary`** → determines icon imports. Use `lucide-react` for `lucide`, `@tabler/icons-react` for `tabler`, etc. Never assume `lucide-react`.
-- **`resolvedPaths`** → exact file-system destinations for components, utils, hooks, etc.
-- **`framework`** → routing and file conventions (e.g. Next.js App Router vs Vite SPA).
-- **`packageManager`** → use this for any non-shadcn dependency installs (e.g. `pnpm add date-fns` vs `npm install date-fns`).
-- **`preset`** → resolved preset code and values for the current project. Use `npx shadcn@latest preset resolve --json` when you only need preset information.
+- **`aliases`** → 実際の alias プレフィックスを import に使う (例: `@/`、`~/`)。ハードコードしない。
+- **`isRSC`** → `true` のとき、`useState`、`useEffect`、イベントハンドラ、ブラウザ API を使うコンポーネントはファイル先頭に `"use client"` が必要。ディレクティブの案内をする際は必ずこのフィールドを参照する。
+- **`tailwindVersion`** → `"v4"` は `@theme inline` ブロックを使い、`"v3"` は `tailwind.config.js` を使う。
+- **`tailwindCssFile`** → カスタム CSS 変数を定義するグローバル CSS ファイル。常にこのファイルを編集し、新しいファイルを作らない。
+- **`style`** → コンポーネントのビジュアル処理 (例: `nova`、`vega`)。
+- **`base`** → primitive ライブラリ (`radix` または `base`)。コンポーネントの API と利用可能な props に影響する。
+- **`iconLibrary`** → アイコンの import 先を決める。`lucide` なら `lucide-react`、`tabler` なら `@tabler/icons-react` を使う。`lucide-react` を勝手に前提にしない。
+- **`resolvedPaths`** → コンポーネント・utils・hooks などの正確なファイルシステム上の出力先。
+- **`framework`** → ルーティングとファイル規約 (例: Next.js App Router と Vite SPA)。
+- **`packageManager`** → shadcn 以外の依存関係インストールに使う (例: `pnpm add date-fns` と `npm install date-fns` の使い分け)。
+- **`preset`** → 現在のプロジェクトに対して解決された preset コードと値。preset 情報だけが必要なときは `npx shadcn@latest preset resolve --json` を使う。
 
-See [cli.md — `info` command](./cli.md) for the full field reference.
+全フィールドの詳細は [cli.md — `info` コマンド](./cli.md) を参照。
 
-## Component Docs, Examples, and Usage
+## コンポーネントのドキュメント、サンプル、利用例
 
-Run `npx shadcn@latest docs <component>` to get the URLs for a component's documentation, examples, and API reference. Fetch these URLs to get the actual content.
+`npx shadcn@latest docs <component>` を実行すると、コンポーネントのドキュメント、サンプル、API リファレンスの URL が得られる。これらの URL を fetch して実際の内容を取得する。
 
 ```bash
 npx shadcn@latest docs button dialog select
 ```
 
-**When creating, fixing, debugging, or using a component, always run `npx shadcn@latest docs` and fetch the URLs first.** This ensures you're working with the correct API and usage patterns rather than guessing.
+**コンポーネントを作成・修正・デバッグ・利用する際は、必ず最初に `npx shadcn@latest docs` を実行して URL を fetch する。** これにより、推測ではなく正しい API と使い方のパターンに従って作業できる。
 
-## Workflow
+## ワークフロー
 
-1. **Get project context** — already injected above. Run `npx shadcn@latest info` again if you need to refresh.
-2. **Check installed components first** — before running `add`, always check the `components` list from project context or list the `resolvedPaths.ui` directory. Don't import components that haven't been added, and don't re-add ones already installed.
-3. **Find components** — `npx shadcn@latest search`.
-4. **Get docs and examples** — run `npx shadcn@latest docs <component>` to get URLs, then fetch them. Use `npx shadcn@latest view` to browse registry items you haven't installed. To preview changes to installed components, use `npx shadcn@latest add --diff`.
-5. **Install or update** — `npx shadcn@latest add`. When updating existing components, use `--dry-run` and `--diff` to preview changes first (see [Updating Components](#updating-components) below).
-6. **Fix imports in third-party components** — After adding components from community registries (e.g. `@bundui`, `@magicui`), check the added non-UI files for hardcoded import paths like `@/components/ui/...`. These won't match the project's actual aliases. Use `npx shadcn@latest info` to get the correct `ui` alias (e.g. `@workspace/ui/components`) and rewrite the imports accordingly. The CLI rewrites imports for its own UI files, but third-party registry components may use default paths that don't match the project.
-7. **Review added components** — After adding a component or block from any registry, **always read the added files and verify they are correct**. Check for missing sub-components (e.g. `SelectItem` without `SelectGroup`), missing imports, incorrect composition, or violations of the [Critical Rules](#critical-rules). Also replace any icon imports with the project's `iconLibrary` from the project context (e.g. if the registry item uses `lucide-react` but the project uses `hugeicons`, swap the imports and icon names accordingly). Fix all issues before moving on.
-8. **Registry must be explicit** — When the user asks to add a block or component, **do not guess the registry**. If no registry is specified (e.g. user says "add a login block" without specifying `@shadcn`, `@tailark`, etc.), ask which registry to use. Never default to a registry on behalf of the user.
-9. **Switching presets** — Ask the user first: **overwrite**, **partial**, **merge**, or **skip**?
-   - **Inspect current preset**: `npx shadcn@latest preset resolve`. Use `--json` when you need structured values.
-   - **Inspect incoming preset**: `npx shadcn@latest preset decode <code>`. Use `preset url <code>` or `preset open <code>` to share or open the preset builder.
-   - **Overwrite**: `npx shadcn@latest apply <code>`. Overwrites detected components, fonts, and CSS variables.
-   - **Partial**: `npx shadcn@latest apply <code> --only theme,font`. Updates only the selected preset parts without reinstalling UI components. Supported values are `theme` and `font`; comma-separated combinations are allowed. `icon` is intentionally not supported, because icon changes may require full component reinstall and transforms.
-   - **Merge**: `npx shadcn@latest init --preset <code> --force --no-reinstall`, then run `npx shadcn@latest info` to list installed components, then for each installed component use `--dry-run` and `--diff` to [smart merge](#updating-components) it individually.
-   - **Skip**: `npx shadcn@latest init --preset <code> --force --no-reinstall`. Only updates config and CSS, leaves components as-is.
-   - **Important**: Always run preset commands inside the user's project directory. `apply` only works in an existing project with a `components.json` file. The CLI automatically preserves the current base (`base` vs `radix`) from `components.json`. If you must use a scratch/temp directory (e.g. for `--dry-run` comparisons), pass `--base <current-base>` explicitly — preset codes do not encode the base.
+1. **プロジェクトコンテキストを取得する** — 上部で既に注入済み。更新が必要なら再度 `npx shadcn@latest info` を実行する。
+2. **インストール済みコンポーネントをまず確認する** — `add` を実行する前に、プロジェクトコンテキストの `components` リストを確認するか `resolvedPaths.ui` ディレクトリを一覧する。未追加のコンポーネントを import したり、既にインストール済みのものを再追加したりしない。
+3. **コンポーネントを探す** — `npx shadcn@latest search`。
+4. **ドキュメントとサンプルを取得する** — `npx shadcn@latest docs <component>` で URL を取得し fetch する。未インストールの registry 項目を閲覧するには `npx shadcn@latest view` を使う。インストール済みコンポーネントへの変更をプレビューするには `npx shadcn@latest add --diff` を使う。
+5. **インストールまたは更新する** — `npx shadcn@latest add`。既存コンポーネントを更新する際は、まず `--dry-run` と `--diff` で変更をプレビューする (下記 [Updating Components](#updating-components) を参照)。
+6. **サードパーティコンポーネントの import を修正する** — コミュニティ registry (例: `@bundui`、`@magicui`) からコンポーネントを追加した後は、追加された非 UI ファイルに `@/components/ui/...` のようなハードコードされた import パスがないか確認する。これらはプロジェクトの実際の alias と一致しない。`npx shadcn@latest info` で正しい `ui` alias (例: `@workspace/ui/components`) を取得し、import を書き換える。CLI は自前の UI ファイルについては import を書き換えるが、サードパーティ registry のコンポーネントはプロジェクトに合わないデフォルトパスを使っていることがある。
+7. **追加されたコンポーネントをレビューする** — 任意の registry からコンポーネントやブロックを追加したら、**必ず追加されたファイルを読み、正しいか確認する**。サブコンポーネントの欠落 (例: `SelectGroup` のない `SelectItem`)、import の漏れ、誤ったコンポジション、[重要なルール](#重要なルール) 違反をチェックする。さらに、アイコンの import はプロジェクトコンテキストの `iconLibrary` に合わせて置き換える (例: registry が `lucide-react` を使うがプロジェクトが `hugeicons` を使う場合は、import とアイコン名をそれに合わせて差し替える)。問題はすべて修正してから次に進む。
+8. **registry は明示する** — ユーザーがブロックやコンポーネントの追加を依頼したとき **registry を勝手に推測しない**。registry が指定されていない場合 (例: ユーザーが `@shadcn`、`@tailark` などを指定せず「ログインブロックを追加して」と言った場合) は、どの registry を使うか確認する。ユーザーの代わりに既定の registry を選ばない。
+9. **preset を切り替えるとき** — 先にユーザーに確認する: **overwrite**、**partial**、**merge**、**skip** のどれか?
+   - **現在の preset を確認**: `npx shadcn@latest preset resolve`。構造化された値が必要なときは `--json` を付ける。
+   - **適用予定の preset を確認**: `npx shadcn@latest preset decode <code>`。preset builder を共有・オープンするには `preset url <code>` または `preset open <code>` を使う。
+   - **Overwrite**: `npx shadcn@latest apply <code>`。検出されたコンポーネント、フォント、CSS 変数を上書きする。
+   - **Partial**: `npx shadcn@latest apply <code> --only theme,font`。UI コンポーネントを再インストールせず、選択した preset の一部だけを更新する。指定できる値は `theme` と `font` で、カンマ区切りの組み合わせも可能。`icon` はサポート対象外 — アイコン変更はコンポーネントの再インストールと変換が必要になる場合があるため。
+   - **Merge**: `npx shadcn@latest init --preset <code> --force --no-reinstall` を実行し、続いて `npx shadcn@latest info` でインストール済みコンポーネント一覧を取得し、各コンポーネントを `--dry-run` と `--diff` で [smart merge](#updating-components) する。
+   - **Skip**: `npx shadcn@latest init --preset <code> --force --no-reinstall`。設定と CSS のみを更新し、コンポーネントはそのまま残す。
+   - **重要**: preset コマンドは必ずユーザーのプロジェクトディレクトリで実行する。`apply` は `components.json` を持つ既存プロジェクトでのみ動作する。CLI は `components.json` の現在の base (`base` か `radix`) を自動的に維持する。スクラッチ/一時ディレクトリを使う必要がある場合 (例: `--dry-run` 比較のため) は、`--base <current-base>` を明示的に渡す — preset コードに base は含まれない。
 
-## Updating Components
+## コンポーネントの更新
 
-When the user asks to update a component from upstream while keeping their local changes, use `--dry-run` and `--diff` to intelligently merge. **NEVER fetch raw files from GitHub manually — always use the CLI.**
+ローカルの変更を保ちつつアップストリームからコンポーネントを更新するように依頼された場合は、`--dry-run` と `--diff` で賢くマージする。**GitHub から生ファイルを手動で取得しないこと — 常に CLI を使う。**
 
-1. Run `npx shadcn@latest add <component> --dry-run` to see all files that would be affected.
-2. For each file, run `npx shadcn@latest add <component> --diff <file>` to see what changed upstream vs local.
-3. Decide per file based on the diff:
-   - No local changes → safe to overwrite.
-   - Has local changes → read the local file, analyze the diff, and apply upstream updates while preserving local modifications.
-   - User says "just update everything" → use `--overwrite`, but confirm first.
-4. **Never use `--overwrite` without the user's explicit approval.**
+1. `npx shadcn@latest add <component> --dry-run` を実行し、影響を受けるファイルをすべて確認する。
+2. ファイルごとに `npx shadcn@latest add <component> --diff <file>` を実行し、アップストリームとローカルの差分を確認する。
+3. diff に基づいてファイル単位で判断する。
+   - ローカル変更なし → そのまま上書きしてよい。
+   - ローカル変更あり → ローカルファイルを読み、diff を解析し、ローカル変更を保ちながらアップストリームの更新を適用する。
+   - ユーザーが「全部更新して」と言った場合 → `--overwrite` を使うが、事前に確認する。
+4. **ユーザーの明示的な承認なしに `--overwrite` を使わない。**
 
-## Quick Reference
+## クイックリファレンス
 
 ```bash
-# Create a new project.
+# 新規プロジェクトを作成する。
 npx shadcn@latest init --name my-app --preset base-nova
 npx shadcn@latest init --name my-app --preset a2r6bw --template vite
 
-# Create a monorepo project.
+# monorepo プロジェクトを作成する。
 npx shadcn@latest init --name my-app --preset base-nova --monorepo
 npx shadcn@latest init --name my-app --preset base-nova --template next --monorepo
 
-# Initialize existing project.
+# 既存プロジェクトを初期化する。
 npx shadcn@latest init --preset base-nova
 npx shadcn@latest init --defaults  # shortcut: --template=next --preset=nova (base style implied)
 
-# Apply a preset to an existing project.
+# 既存プロジェクトに preset を適用する。
 npx shadcn@latest apply a2r6bw
 npx shadcn@latest apply a2r6bw --only theme
 npx shadcn@latest apply a2r6bw --only font
 npx shadcn@latest apply a2r6bw --only theme,font
 
-# Inspect preset codes and project preset state.
+# preset コードとプロジェクトの preset 状態を確認する。
 npx shadcn@latest preset decode a2r6bw
 npx shadcn@latest preset url a2r6bw
 npx shadcn@latest preset open a2r6bw
 npx shadcn@latest preset resolve
 npx shadcn@latest preset resolve --json
 
-# Add components.
+# コンポーネントを追加する。
 npx shadcn@latest add button card dialog
 npx shadcn@latest add @magicui/shimmer-button
 npx shadcn@latest add --all
 
-# Preview changes before adding/updating.
+# 追加・更新の前に変更をプレビューする。
 npx shadcn@latest add button --dry-run
 npx shadcn@latest add button --diff button.tsx
 npx shadcn@latest add @acme/form --view button.tsx
 
-# Search registries.
+# registry を検索する。
 npx shadcn@latest search @shadcn -q "sidebar"
 npx shadcn@latest search @tailark -q "stats"
 
-# Get component docs and example URLs.
+# コンポーネントのドキュメントとサンプル URL を取得する。
 npx shadcn@latest docs button dialog select
 
-# View registry item details (for items not yet installed).
+# registry 項目の詳細を表示する (未インストール項目向け)。
 npx shadcn@latest view @shadcn/button
 ```
 
 **Named presets:** `nova`, `vega`, `maia`, `lyra`, `mira`, `luma`
-**Templates:** `next`, `vite`, `start`, `react-router`, `astro` (all support `--monorepo`) and `laravel` (not supported for monorepo)
-**Preset codes:** Version-prefixed base62 strings (e.g. `a2r6bw` or `b0`), from [ui.shadcn.com](https://ui.shadcn.com).
+**Templates:** `next`, `vite`, `start`, `react-router`, `astro` (すべて `--monorepo` をサポート)、`laravel` (monorepo 非対応)
+**Preset codes:** バージョンプレフィックス付きの base62 文字列 (例: `a2r6bw` や `b0`)。[ui.shadcn.com](https://ui.shadcn.com) から取得する。
 
-## Detailed References
+## 詳細リファレンス
 
-- [rules/forms.md](./rules/forms.md) — FieldGroup, Field, InputGroup, ToggleGroup, FieldSet, validation states
-- [rules/composition.md](./rules/composition.md) — Groups, overlays, Card, Tabs, Avatar, Alert, Empty, Toast, Separator, Skeleton, Badge, Button loading
-- [rules/icons.md](./rules/icons.md) — data-icon, icon sizing, passing icons as objects
-- [rules/styling.md](./rules/styling.md) — Semantic colors, variants, className, spacing, size, truncate, dark mode, cn(), z-index
-- [rules/base-vs-radix.md](./rules/base-vs-radix.md) — asChild vs render, Select, ToggleGroup, Slider, Accordion
-- [cli.md](./cli.md) — Commands, flags, presets, templates
-- [customization.md](./customization.md) — Theming, CSS variables, extending components
+- [rules/forms.md](./rules/forms.md) — FieldGroup、Field、InputGroup、ToggleGroup、FieldSet、バリデーション状態
+- [rules/composition.md](./rules/composition.md) — Group、オーバーレイ、Card、Tabs、Avatar、Alert、Empty、Toast、Separator、Skeleton、Badge、Button のローディング
+- [rules/icons.md](./rules/icons.md) — data-icon、アイコンサイズ、アイコンをオブジェクトとして渡す方法
+- [rules/styling.md](./rules/styling.md) — セマンティックカラー、variant、className、スペーシング、size、truncate、ダークモード、cn()、z-index
+- [rules/base-vs-radix.md](./rules/base-vs-radix.md) — asChild と render、Select、ToggleGroup、Slider、Accordion
+- [cli.md](./cli.md) — コマンド、フラグ、preset、テンプレート
+- [customization.md](./customization.md) — テーマ、CSS 変数、コンポーネントの拡張

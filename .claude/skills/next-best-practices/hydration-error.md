@@ -1,25 +1,25 @@
-# Hydration Errors
+# hydration エラー
 
-Diagnose and fix React hydration mismatch errors.
+React の hydration mismatch エラーを診断し、修正する。
 
-## Error Signs
+## エラーの兆候
 
 - "Hydration failed because the initial UI does not match"
 - "Text content does not match server-rendered HTML"
 
-## Debugging
+## デバッグ
 
-In development, click the hydration error to see the server/client diff.
+開発環境では、hydration エラーをクリックするとサーバー / クライアントの差分が確認できる。
 
-## Common Causes and Fixes
+## よくある原因と対処
 
-### Browser-only APIs
+### ブラウザ専用の API
 
 ```tsx
-// Bad: Causes mismatch - window doesn't exist on server
+// Bad: mismatch を起こす - server に window は存在しない
 <div>{window.innerWidth}</div>
 
-// Good: Use client component with mounted check
+// Good: mounted 判定付きの client component を使う
 'use client'
 import { useState, useEffect } from 'react'
 
@@ -30,27 +30,27 @@ export function ClientOnly({ children }: { children: React.ReactNode }) {
 }
 ```
 
-### Date/Time Rendering
+### 日付 / 時刻の描画
 
-Server and client may be in different timezones:
+server と client でタイムゾーンが異なることがある:
 
 ```tsx
-// Bad: Causes mismatch
+// Bad: mismatch を起こす
 <span>{new Date().toLocaleString()}</span>
 
-// Good: Render on client only
+// Good: client 側でだけ描画する
 'use client'
 const [time, setTime] = useState<string>()
 useEffect(() => setTime(new Date().toLocaleString()), [])
 ```
 
-### Random Values or IDs
+### 乱数や ID
 
 ```tsx
-// Bad: Random values differ between server and client
+// Bad: 乱数は server と client で異なる
 <div id={Math.random().toString()}>
 
-// Good: Use useId hook
+// Good: useId フックを使う
 import { useId } from 'react'
 
 function Input() {
@@ -59,25 +59,25 @@ function Input() {
 }
 ```
 
-### Invalid HTML Nesting
+### 不正な HTML のネスト
 
 ```tsx
-// Bad: Invalid - div inside p
+// Bad: 無効 - p の中に div
 <p><div>Content</div></p>
 
-// Bad: Invalid - p inside p
+// Bad: 無効 - p の中に p
 <p><p>Nested</p></p>
 
-// Good: Valid nesting
+// Good: 正しいネスト
 <div><p>Content</p></div>
 ```
 
-### Third-party Scripts
+### サードパーティスクリプト
 
-Scripts that modify DOM during hydration.
+hydration 中に DOM を書き換えるスクリプト。
 
 ```tsx
-// Good: Use next/script with afterInteractive
+// Good: next/script を afterInteractive で使う
 import Script from 'next/script'
 
 export default function Page() {

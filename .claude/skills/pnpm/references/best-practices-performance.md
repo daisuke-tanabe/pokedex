@@ -1,59 +1,59 @@
 ---
 name: pnpm-performance-optimization
-description: Tips and tricks for faster installs and better performance
+description: より高速にインストールしパフォーマンスを高めるためのコツとテクニック
 ---
 
-# pnpm Performance Optimization
+# pnpm のパフォーマンス最適化
 
-pnpm is fast by default, but these optimizations can make it even faster.
+pnpm はデフォルトでも高速だが、以下の最適化でさらに速くできる。
 
-## Install Optimizations
+## インストールの最適化
 
-### Use Frozen Lockfile
+### Frozen lockfile を使う
 
-Skip resolution when lockfile exists:
+lockfile が存在する場合は解決処理をスキップする。
 
 ```bash
 pnpm install --frozen-lockfile
 ```
 
-This is faster because pnpm skips the resolution phase entirely.
+解決フェーズを丸ごと省略できるため高速になる。
 
-### Prefer Offline Mode
+### オフラインを優先
 
-Use cached packages when available:
+利用可能ならキャッシュ済みパッケージを使う。
 
 ```bash
 pnpm install --prefer-offline
 ```
 
-Or configure globally:
+グローバル設定にもできる。
 ```ini
 # .npmrc
 prefer-offline=true
 ```
 
-### Skip Optional Dependencies
+### Optional 依存をスキップ
 
-If you don't need optional deps:
+optional 依存が不要なら、
 
 ```bash
 pnpm install --no-optional
 ```
 
-### Skip Scripts
+### スクリプトをスキップ
 
-For CI or when scripts aren't needed:
+CI やスクリプトが不要な場面で、
 
 ```bash
 pnpm install --ignore-scripts
 ```
 
-**Caution:** Some packages require postinstall scripts to work correctly.
+**注意:** 一部のパッケージは postinstall スクリプトに依存する。
 
-### Only Build Specific Dependencies
+### 特定依存だけビルド
 
-Only run build scripts for specific packages:
+特定パッケージのみビルドスクリプトを実行する。
 
 ```ini
 # .npmrc
@@ -62,7 +62,7 @@ onlyBuiltDependencies[]=sharp
 onlyBuiltDependencies[]=@swc/core
 ```
 
-Or skip builds entirely for deps that don't need them:
+不要な依存についてはビルドを完全に無効化することもできる。
 
 ```json
 {
@@ -72,106 +72,106 @@ Or skip builds entirely for deps that don't need them:
 }
 ```
 
-## Store Optimizations
+## Store の最適化
 
-### Side Effects Cache
+### 副作用キャッシュ
 
-Cache native module build results:
+ネイティブモジュールのビルド結果をキャッシュする。
 
 ```ini
 # .npmrc
 side-effects-cache=true
 ```
 
-This caches the results of postinstall scripts, speeding up subsequent installs.
+postinstall スクリプトの結果がキャッシュされ、次回以降のインストールが高速化する。
 
-### Shared Store
+### Store を共有
 
-Use a single store for all projects (default behavior):
+すべてのプロジェクトで単一の store を使う (デフォルトの挙動)。
 
 ```ini
 # .npmrc
 store-dir=~/.pnpm-store
 ```
 
-Benefits:
-- Packages downloaded once for all projects
-- Hard links save disk space
-- Faster installs from cache
+メリット:
+- パッケージは全プロジェクトで 1 度だけダウンロード
+- ハードリンクでディスク容量を節約
+- キャッシュからのインストールが速い
 
-### Store Maintenance
+### Store のメンテナンス
 
-Periodically clean unused packages:
+未使用パッケージは定期的に整理する。
 
 ```bash
-# Remove unreferenced packages
+# 参照されていないパッケージを削除
 pnpm store prune
 
-# Check store integrity
+# store の整合性をチェック
 pnpm store status
 ```
 
-## Workspace Optimizations
+## Workspace の最適化
 
-### Parallel Execution
+### 並列実行
 
-Run workspace scripts in parallel:
+workspace のスクリプトを並列実行する。
 
 ```bash
 pnpm -r --parallel run build
 ```
 
-Control concurrency:
+並列度を制御する。
 ```ini
 # .npmrc
 workspace-concurrency=8
 ```
 
-### Stream Output
+### 出力をストリーム
 
-See output in real-time:
+リアルタイムに出力を確認する。
 
 ```bash
 pnpm -r --stream run build
 ```
 
-### Filter to Changed Packages
+### 変更パッケージに絞る
 
-Only build what changed:
+変更があったパッケージだけビルドする。
 
 ```bash
-# Build packages changed since main branch
+# main ブランチ以降に変更されたパッケージをビルド
 pnpm --filter "...[origin/main]" run build
 ```
 
-### Topological Order
+### トポロジカル順
 
-Build dependencies before dependents:
+依存される側を先にビルドする。
 
 ```bash
 pnpm -r run build
-# Automatically runs in topological order
+# 自動的にトポロジカル順で実行される
 ```
 
-For explicit sequential builds:
+明示的に順次ビルドする場合は、
 ```bash
 pnpm -r --workspace-concurrency=1 run build
 ```
 
-## Network Optimizations
+## ネットワークの最適化
 
-### Configure Registry
+### レジストリの設定
 
-Use closest/fastest registry:
+近く・速いレジストリを使う。
 
 ```ini
 # .npmrc
 registry=https://registry.npmmirror.com/
 ```
 
-### HTTP Settings
+### HTTP 設定
 
-Tune network settings:
+ネットワーク設定をチューニングする。
 
 ```ini
 # .npmrc
@@ -181,7 +181,7 @@ fetch-retry-maxtimeout=60000
 network-concurrency=16
 ```
 
-### Proxy Configuration
+### プロキシ設定
 
 ```ini
 # .npmrc
@@ -189,75 +189,75 @@ proxy=http://proxy.company.com:8080
 https-proxy=http://proxy.company.com:8080
 ```
 
-## Lockfile Optimization
+## Lockfile の最適化
 
-### Single Lockfile (Monorepos)
+### 単一の lockfile (Monorepo)
 
-Use shared lockfile for all packages (default):
+全パッケージで lockfile を共有する (デフォルト)。
 
 ```ini
 # .npmrc
 shared-workspace-lockfile=true
 ```
 
-Benefits:
-- Single source of truth
-- Faster resolution
-- Consistent versions across workspace
+メリット:
+- 単一の信頼できる情報源
+- 解決処理が速くなる
+- workspace 全体でバージョンが一貫する
 
-### Lockfile-only Mode
+### Lockfile のみ更新するモード
 
-Only update lockfile without installing:
+インストールはせずに lockfile だけ更新する。
 
 ```bash
 pnpm install --lockfile-only
 ```
 
-## Benchmarking
+## ベンチマーク
 
-### Compare Install Times
+### インストール時間の比較
 
 ```bash
-# Clean install
+# クリーンインストール
 rm -rf node_modules pnpm-lock.yaml
 time pnpm install
 
-# Cached install (with lockfile)
+# キャッシュ済み (lockfile あり)
 rm -rf node_modules
 time pnpm install --frozen-lockfile
 
-# With store cache
+# store キャッシュ併用
 time pnpm install --frozen-lockfile --prefer-offline
 ```
 
-### Profile Resolution
+### 解決処理のプロファイリング
 
-Debug slow installs:
+インストールが遅い場合のデバッグ。
 
 ```bash
-# Verbose logging
+# 詳細ログ
 pnpm install --reporter=append-only
 
-# Debug mode
+# デバッグモード
 DEBUG=pnpm:* pnpm install
 ```
 
-## Configuration Summary
+## 設定まとめ
 
-Optimized `.npmrc` for performance:
+パフォーマンス最適化向けの `.npmrc`:
 
 ```ini
-# Install behavior
+# インストール挙動
 prefer-offline=true
 auto-install-peers=true
 
-# Build optimization  
+# ビルド最適化
 side-effects-cache=true
-# Only build what's necessary
+# 必要なものだけビルド
 onlyBuiltDependencies[]=esbuild
 onlyBuiltDependencies[]=@swc/core
 
-# Network
+# ネットワーク
 fetch-retries=3
 network-concurrency=16
 
@@ -265,18 +265,18 @@ network-concurrency=16
 workspace-concurrency=4
 ```
 
-## Quick Reference
+## クイックリファレンス
 
-| Scenario | Command/Setting |
+| シナリオ | コマンド/設定 |
 |----------|-----------------|
-| CI installs | `pnpm install --frozen-lockfile` |
-| Offline development | `--prefer-offline` |
-| Skip native builds | `neverBuiltDependencies` |
-| Parallel workspace | `pnpm -r --parallel run build` |
-| Build changed only | `pnpm --filter "...[origin/main]" build` |
-| Clean store | `pnpm store prune` |
+| CI でのインストール | `pnpm install --frozen-lockfile` |
+| オフライン開発 | `--prefer-offline` |
+| ネイティブビルドのスキップ | `neverBuiltDependencies` |
+| workspace の並列実行 | `pnpm -r --parallel run build` |
+| 変更分のみビルド | `pnpm --filter "...[origin/main]" build` |
+| store の整理 | `pnpm store prune` |
 
-<!-- 
+<!--
 Source references:
 - https://pnpm.io/npmrc
 - https://pnpm.io/cli/install

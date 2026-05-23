@@ -1,25 +1,25 @@
 ---
 name: vitest-cli
-description: Command line interface commands and options
+description: コマンドラインインターフェースのコマンドとオプション
 ---
 
-# Command Line Interface
+# コマンドラインインターフェース
 
-## Commands
+## コマンド
 
 ### `vitest`
 
-Start Vitest in watch mode (dev) or run mode (CI):
+Vitest を watch モード (dev) または run モード (CI) で起動する:
 
 ```bash
-vitest                    # Watch mode in dev, run mode in CI
-vitest foobar             # Run tests containing "foobar" in path
-vitest basic/foo.test.ts:10  # Run specific test by file and line number
+vitest                    # dev では watch モード、CI では run モード
+vitest foobar             # パスに "foobar" を含むテストを実行
+vitest basic/foo.test.ts:10  # ファイルと行番号で特定のテストを実行
 ```
 
 ### `vitest run`
 
-Run tests once without watch mode:
+watch モードを使わず一度だけテストを実行する:
 
 ```bash
 vitest run
@@ -28,7 +28,7 @@ vitest run --coverage
 
 ### `vitest watch`
 
-Explicitly start watch mode:
+明示的に watch モードを起動する:
 
 ```bash
 vitest watch
@@ -36,7 +36,7 @@ vitest watch
 
 ### `vitest related`
 
-Run tests that import specific files (useful with lint-staged):
+特定のファイルを import しているテストを実行する (lint-staged と組み合わせると便利):
 
 ```bash
 vitest related src/index.ts src/utils.ts --run
@@ -44,7 +44,7 @@ vitest related src/index.ts src/utils.ts --run
 
 ### `vitest bench`
 
-Run only benchmark tests:
+ベンチマークテストのみを実行する:
 
 ```bash
 vitest bench
@@ -52,67 +52,67 @@ vitest bench
 
 ### `vitest list`
 
-List all matching tests without running them:
+マッチする全テストを実行せずに一覧表示する:
 
 ```bash
-vitest list                    # List test names
-vitest list --json             # Output as JSON
-vitest list --filesOnly        # List only test files
+vitest list                    # テスト名を一覧
+vitest list --json             # JSON 形式で出力
+vitest list --filesOnly        # テストファイルのみ一覧
 ```
 
 ### `vitest init`
 
-Initialize project setup:
+プロジェクトのセットアップを初期化する:
 
 ```bash
-vitest init browser            # Set up browser testing
+vitest init browser            # ブラウザテストのセットアップ
 ```
 
-## Common Options
+## よく使うオプション
 
 ```bash
-# Configuration
---config <path>           # Path to config file
---project <name>          # Run specific project
+# 設定
+--config <path>           # 設定ファイルのパス
+--project <name>          # 特定の project を実行
 
-# Filtering
---testNamePattern, -t     # Run tests matching pattern
---changed                 # Run tests for changed files
---changed HEAD~1          # Tests for last commit changes
+# フィルタリング
+--testNamePattern, -t     # パターンに一致するテストを実行
+--changed                 # 変更されたファイルに対するテストを実行
+--changed HEAD~1          # 直近コミットの変更に対するテスト
 
-# Reporters
+# レポーター
 --reporter <name>         # default, verbose, dot, json, html
 --reporter=html --outputFile=report.html
 
-# Coverage
---coverage                # Enable coverage
---coverage.provider v8    # Use v8 provider
+# カバレッジ
+--coverage                # カバレッジを有効化
+--coverage.provider v8    # v8 プロバイダーを利用
 --coverage.reporter text,html
 
-# Execution
---shard <index>/<count>   # Split tests across machines
---bail <n>                # Stop after n failures
---retry <n>               # Retry failed tests n times
---sequence.shuffle        # Randomize test order
+# 実行
+--shard <index>/<count>   # 複数マシンへテストを分割
+--bail <n>                # n 件失敗で停止
+--retry <n>               # 失敗したテストを n 回リトライ
+--sequence.shuffle        # テスト順序をランダム化
 
-# Watch mode
---no-watch                # Disable watch mode
---standalone              # Start without running tests
+# watch モード
+--no-watch                # watch モードを無効化
+--standalone              # テストを実行せずに起動
 
-# Environment
+# 環境
 --environment <env>       # jsdom, happy-dom, node
---globals                 # Enable global APIs
+--globals                 # グローバル API を有効化
 
-# Debugging
---inspect                 # Enable Node inspector
---inspect-brk             # Break on start
+# デバッグ
+--inspect                 # Node inspector を有効化
+--inspect-brk             # 起動時にブレーク
 
-# Output
---silent                  # Suppress console output
---no-color                # Disable colors
+# 出力
+--silent                  # コンソール出力を抑制
+--no-color                # カラー出力を無効化
 ```
 
-## Package.json Scripts
+## Package.json のスクリプト
 
 ```json
 {
@@ -125,9 +125,9 @@ vitest init browser            # Set up browser testing
 }
 ```
 
-## Sharding for CI
+## CI 向けのシャーディング
 
-Split tests across multiple machines:
+複数マシンにテストを分割する:
 
 ```bash
 # Machine 1
@@ -139,26 +139,26 @@ vitest run --shard=2/3 --reporter=blob
 # Machine 3
 vitest run --shard=3/3 --reporter=blob
 
-# Merge reports
+# レポートをマージ
 vitest --merge-reports --reporter=junit
 ```
 
-## Watch Mode Keyboard Shortcuts
+## watch モードのキーボードショートカット
 
-In watch mode, press:
-- `a` - Run all tests
-- `f` - Run only failed tests
-- `u` - Update snapshots
-- `p` - Filter by filename pattern
-- `t` - Filter by test name pattern
-- `q` - Quit
+watch モード中にキー入力する:
+- `a` - 全テストを実行
+- `f` - 失敗したテストだけを実行
+- `u` - スナップショットを更新
+- `p` - ファイル名パターンで絞り込み
+- `t` - テスト名パターンで絞り込み
+- `q` - 終了
 
-## Key Points
+## 要点
 
-- Watch mode is default in dev, run mode in CI (when `process.env.CI` is set)
-- Use `--run` flag to ensure single run (important for lint-staged)
-- Both camelCase (`--testTimeout`) and kebab-case (`--test-timeout`) work
-- Boolean options can be negated with `--no-` prefix
+- dev では watch モード、CI では run モードがデフォルト (`process.env.CI` が設定されている場合)
+- 1 回実行を保証するには `--run` フラグを使う (lint-staged で重要)
+- camelCase (`--testTimeout`) と kebab-case (`--test-timeout`) のどちらでも動作する
+- 真偽値オプションは `--no-` プレフィックスで否定できる
 
 <!-- 
 Source references:

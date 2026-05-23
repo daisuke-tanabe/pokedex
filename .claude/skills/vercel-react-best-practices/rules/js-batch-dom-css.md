@@ -7,12 +7,12 @@ tags: javascript, dom, css, performance, reflow, layout-thrashing
 
 ## Avoid Layout Thrashing
 
-Avoid interleaving style writes with layout reads. When you read a layout property (like `offsetWidth`, `getBoundingClientRect()`, or `getComputedStyle()`) between style changes, the browser is forced to trigger a synchronous reflow.
+スタイル書き込みとレイアウト読み取りを交互に行うのは避ける。スタイル変更の合間に `offsetWidth`、`getBoundingClientRect()`、`getComputedStyle()` のようなレイアウトプロパティを読むと、ブラウザは同期的な reflow を強制的に発生させる。
 
-**This is OK (browser batches style changes):**
+**これは問題ない (ブラウザがスタイル変更をまとめる):**
 ```typescript
 function updateElementStyles(element: HTMLElement) {
-  // Each line invalidates style, but browser batches the recalculation
+  // 各行でスタイルは無効化されるが、ブラウザが再計算をバッチ化する
   element.style.width = '100px'
   element.style.height = '200px'
   element.style.backgroundColor = 'blue'
@@ -20,45 +20,45 @@ function updateElementStyles(element: HTMLElement) {
 }
 ```
 
-**Incorrect (interleaved reads and writes force reflows):**
+**Incorrect (読み書きが交互に入り、reflow が強制される):**
 ```typescript
 function layoutThrashing(element: HTMLElement) {
   element.style.width = '100px'
-  const width = element.offsetWidth  // Forces reflow
+  const width = element.offsetWidth  // reflow を強制
   element.style.height = '200px'
-  const height = element.offsetHeight  // Forces another reflow
+  const height = element.offsetHeight  // さらに reflow を強制
 }
 ```
 
-**Correct (batch writes, then read once):**
+**Correct (書き込みをまとめてから、1 回だけ読み取る):**
 ```typescript
 function updateElementStyles(element: HTMLElement) {
-  // Batch all writes together
+  // 書き込みをまとめて行う
   element.style.width = '100px'
   element.style.height = '200px'
   element.style.backgroundColor = 'blue'
   element.style.border = '1px solid black'
   
-  // Read after all writes are done (single reflow)
+  // 書き込みが終わってから読み取る (reflow は 1 回)
   const { width, height } = element.getBoundingClientRect()
 }
 ```
 
-**Correct (batch reads, then writes):**
+**Correct (読み取りをまとめてから、書き込みをまとめる):**
 ```typescript
 function avoidThrashing(element: HTMLElement) {
-  // Read phase - all layout queries first
+  // 読み取りフェーズ - レイアウト系のクエリを先にすべて行う
   const rect1 = element.getBoundingClientRect()
   const offsetWidth = element.offsetWidth
   const offsetHeight = element.offsetHeight
   
-  // Write phase - all style changes after
+  // 書き込みフェーズ - スタイル変更は読み取りの後でまとめる
   element.style.width = '100px'
   element.style.height = '200px'
 }
 ```
 
-**Better: use CSS classes**
+**さらに良い: CSS クラスを使う**
 ```css
 .highlighted-box {
   width: 100px;
@@ -75,16 +75,16 @@ function updateElementStyles(element: HTMLElement) {
 }
 ```
 
-**React example:**
+**React の例:**
 ```tsx
-// Incorrect: interleaving style changes with layout queries
+// Incorrect: スタイル変更とレイアウトクエリが交互
 function Box({ isHighlighted }: { isHighlighted: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   
   useEffect(() => {
     if (ref.current && isHighlighted) {
       ref.current.style.width = '100px'
-      const width = ref.current.offsetWidth // Forces layout
+      const width = ref.current.offsetWidth // レイアウトを強制
       ref.current.style.height = '200px'
     }
   }, [isHighlighted])
@@ -92,7 +92,7 @@ function Box({ isHighlighted }: { isHighlighted: boolean }) {
   return <div ref={ref}>Content</div>
 }
 
-// Correct: toggle class
+// Correct: クラスを切り替える
 function Box({ isHighlighted }: { isHighlighted: boolean }) {
   return (
     <div className={isHighlighted ? 'highlighted-box' : ''}>
@@ -102,6 +102,6 @@ function Box({ isHighlighted }: { isHighlighted: boolean }) {
 }
 ```
 
-Prefer CSS classes over inline styles when possible. CSS files are cached by the browser, and classes provide better separation of concerns and are easier to maintain.
+可能ならインラインスタイルではなく CSS クラスを使う。CSS ファイルはブラウザにキャッシュされ、関心の分離が明確で、保守もしやすい。
 
-See [this gist](https://gist.github.com/paulirish/5d52fb081b3570c81e3a) and [CSS Triggers](https://csstriggers.com/) for more information on layout-forcing operations.
+レイアウトを強制する操作の詳細は [this gist](https://gist.github.com/paulirish/5d52fb081b3570c81e3a) や [CSS Triggers](https://csstriggers.com/) を参照。

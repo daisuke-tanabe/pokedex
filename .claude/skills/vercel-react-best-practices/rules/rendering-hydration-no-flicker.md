@@ -7,13 +7,13 @@ tags: rendering, ssr, hydration, localStorage, flicker
 
 ## Prevent Hydration Mismatch Without Flickering
 
-When rendering content that depends on client-side storage (localStorage, cookies), avoid both SSR breakage and post-hydration flickering by injecting a synchronous script that updates the DOM before React hydrates.
+クライアント側ストレージ（localStorage、cookie）に依存するコンテンツを描画するとき、SSR の破綻と hydration 後のチラつきの両方を避けるには、React の hydration 前に DOM を更新する同期スクリプトを差し込む。
 
-**Incorrect (breaks SSR):**
+**Incorrect (SSR が壊れる):**
 
 ```tsx
 function ThemeWrapper({ children }: { children: ReactNode }) {
-  // localStorage is not available on server - throws error
+  // localStorage はサーバーでは利用できない - エラーになる
   const theme = localStorage.getItem('theme') || 'light'
   
   return (
@@ -24,16 +24,16 @@ function ThemeWrapper({ children }: { children: ReactNode }) {
 }
 ```
 
-Server-side rendering will fail because `localStorage` is undefined.
+`localStorage` が undefined のため、サーバーサイドレンダリングが失敗する。
 
-**Incorrect (visual flickering):**
+**Incorrect (見た目のチラつき):**
 
 ```tsx
 function ThemeWrapper({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState('light')
   
   useEffect(() => {
-    // Runs after hydration - causes visible flash
+    // hydration 後に走るため、誤ったコンテンツが一瞬見える
     const stored = localStorage.getItem('theme')
     if (stored) {
       setTheme(stored)
@@ -48,9 +48,9 @@ function ThemeWrapper({ children }: { children: ReactNode }) {
 }
 ```
 
-Component first renders with default value (`light`), then updates after hydration, causing a visible flash of incorrect content.
+最初はデフォルト値 (`light`) で描画され、その後 hydration を経て更新されるため、誤った状態のコンテンツが一瞬表示される。
 
-**Correct (no flicker, no hydration mismatch):**
+**Correct (チラつきも hydration mismatch もない):**
 
 ```tsx
 function ThemeWrapper({ children }: { children: ReactNode }) {
@@ -77,6 +77,6 @@ function ThemeWrapper({ children }: { children: ReactNode }) {
 }
 ```
 
-The inline script executes synchronously before showing the element, ensuring the DOM already has the correct value. No flickering, no hydration mismatch.
+インラインスクリプトが要素表示前に同期実行され、DOM が既に正しい値で描画される。チラつきも hydration mismatch もない。
 
-This pattern is especially useful for theme toggles, user preferences, authentication states, and any client-only data that should render immediately without flashing default values.
+このパターンは、テーマ切り替え、ユーザー設定、認証状態など、デフォルト値を見せずに即座に描画したいクライアント固有データに特に有用。

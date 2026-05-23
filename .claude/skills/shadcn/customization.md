@@ -1,55 +1,55 @@
-# Customization & Theming
+# Customization と Theming
 
-Components reference semantic CSS variable tokens. Change the variables to change every component.
+コンポーネントはセマンティックな CSS 変数トークンを参照する。変数を変更すれば、それを参照するすべてのコンポーネントが変わる。
 
-## Contents
+## 目次
 
-- How it works (CSS variables → Tailwind utilities → components)
-- Color variables and OKLCH format
-- Dark mode setup
-- Changing the theme (presets, CSS variables)
-- Adding custom colors (Tailwind v3 and v4)
-- Border radius
-- Customizing components (variants, className, wrappers)
-- Checking for updates
-
----
-
-## How It Works
-
-1. CSS variables defined in `:root` (light) and `.dark` (dark mode).
-2. Tailwind maps them to utilities: `bg-primary`, `text-muted-foreground`, etc.
-3. Components use these utilities — changing a variable changes all components that reference it.
+- 仕組み (CSS 変数 → Tailwind ユーティリティ → コンポーネント)
+- カラー変数と OKLCH フォーマット
+- ダークモードのセットアップ
+- テーマの変更 (preset、CSS 変数)
+- カスタムカラーの追加 (Tailwind v3 / v4)
+- ボーダー半径
+- コンポーネントのカスタマイズ (variant、className、ラッパー)
+- 更新の確認
 
 ---
 
-## Color Variables
+## 仕組み
 
-Every color follows the `name` / `name-foreground` convention. The base variable is for backgrounds, `-foreground` is for text/icons on that background.
-
-| Variable                                     | Purpose                          |
-| -------------------------------------------- | -------------------------------- |
-| `--background` / `--foreground`              | Page background and default text |
-| `--card` / `--card-foreground`               | Card surfaces                    |
-| `--primary` / `--primary-foreground`         | Primary buttons and actions      |
-| `--secondary` / `--secondary-foreground`     | Secondary actions                |
-| `--muted` / `--muted-foreground`             | Muted/disabled states            |
-| `--accent` / `--accent-foreground`           | Hover and accent states          |
-| `--destructive` / `--destructive-foreground` | Error and destructive actions    |
-| `--border`                                   | Default border color             |
-| `--input`                                    | Form input borders               |
-| `--ring`                                     | Focus ring color                 |
-| `--chart-1` through `--chart-5`              | Chart/data visualization         |
-| `--sidebar-*`                                | Sidebar-specific colors          |
-| `--surface` / `--surface-foreground`         | Secondary surface                |
-
-Colors use OKLCH: `--primary: oklch(0.205 0 0)` where values are lightness (0–1), chroma (0 = gray), and hue (0–360).
+1. `:root` (ライト) と `.dark` (ダークモード) で CSS 変数を定義する。
+2. Tailwind がそれを `bg-primary`、`text-muted-foreground` などのユーティリティへマッピングする。
+3. コンポーネントはそれらのユーティリティを使う — 変数を変更すると、それを参照するすべてのコンポーネントが変わる。
 
 ---
 
-## Dark Mode
+## カラー変数
 
-Class-based toggle via `.dark` on the root element. In Next.js, use `next-themes`:
+すべてのカラーは `name` / `name-foreground` という命名規則に従う。ベースの変数は背景用、`-foreground` はその背景上のテキスト/アイコン用。
+
+| 変数                                         | 用途                              |
+| -------------------------------------------- | --------------------------------- |
+| `--background` / `--foreground`              | ページの背景とデフォルトテキスト  |
+| `--card` / `--card-foreground`               | Card のサーフェス                 |
+| `--primary` / `--primary-foreground`         | プライマリのボタンやアクション    |
+| `--secondary` / `--secondary-foreground`     | セカンダリのアクション            |
+| `--muted` / `--muted-foreground`             | 弱め/無効状態                     |
+| `--accent` / `--accent-foreground`           | ホバーやアクセント状態            |
+| `--destructive` / `--destructive-foreground` | エラーや破壊的アクション          |
+| `--border`                                   | デフォルトのボーダーカラー        |
+| `--input`                                    | フォーム入力のボーダー            |
+| `--ring`                                     | フォーカスリングのカラー          |
+| `--chart-1` から `--chart-5`                 | チャート/データ可視化             |
+| `--sidebar-*`                                | Sidebar 専用のカラー              |
+| `--surface` / `--surface-foreground`         | セカンダリサーフェス              |
+
+カラーは OKLCH を使う: `--primary: oklch(0.205 0 0)` の値は明度 (0〜1)、彩度 (0 = グレー)、色相 (0〜360)。
+
+---
+
+## ダークモード
+
+ルート要素の `.dark` クラスによるトグル方式。Next.js では `next-themes` を使う。
 
 ```tsx
 import { ThemeProvider } from "next-themes"
@@ -61,35 +61,35 @@ import { ThemeProvider } from "next-themes"
 
 ---
 
-## Changing the Theme
+## テーマの変更
 
 ```bash
-# Apply a preset code from ui.shadcn.com.
+# ui.shadcn.com から preset コードを適用する。
 npx shadcn@latest apply --preset a2r6bw
 
-# Positional shorthand also works.
+# 位置引数の省略形も使える。
 npx shadcn@latest apply a2r6bw
 
-# Switch to a named preset and overwrite existing components.
+# named preset に切り替えて既存コンポーネントを上書きする。
 npx shadcn@latest apply --preset nova
 
-# Preserve existing components instead.
+# 既存コンポーネントを保つ場合。
 npx shadcn@latest init --preset nova --force --no-reinstall
 
-# Use a custom theme URL.
+# カスタムテーマ URL を使う。
 npx shadcn@latest apply --preset "https://ui.shadcn.com/init?base=radix&style=nova&theme=blue&..."
 ```
 
-Or edit CSS variables directly in `globals.css`.
+または `globals.css` の CSS 変数を直接編集する。
 
 ---
 
-## Adding Custom Colors
+## カスタムカラーの追加
 
-Add variables to the file at `tailwindCssFile` from `npx shadcn@latest info` (typically `globals.css`). Never create a new CSS file for this.
+`npx shadcn@latest info` で得られる `tailwindCssFile` のファイル (通常 `globals.css`) に変数を追加する。これ用に新しい CSS ファイルを作らない。
 
 ```css
-/* 1. Define in the global CSS file. */
+/* 1. グローバル CSS ファイルで定義する。 */
 :root {
   --warning: oklch(0.84 0.16 84);
   --warning-foreground: oklch(0.28 0.07 46);
@@ -101,17 +101,17 @@ Add variables to the file at `tailwindCssFile` from `npx shadcn@latest info` (ty
 ```
 
 ```css
-/* 2a. Register with Tailwind v4 (@theme inline). */
+/* 2a. Tailwind v4 に登録する (@theme inline)。 */
 @theme inline {
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
 }
 ```
 
-When `tailwindVersion` is `"v3"` (check via `npx shadcn@latest info`), register in `tailwind.config.js` instead:
+`tailwindVersion` が `"v3"` のとき (`npx shadcn@latest info` で確認) は、代わりに `tailwind.config.js` に登録する。
 
 ```js
-// 2b. Register with Tailwind v3 (tailwind.config.js).
+// 2b. Tailwind v3 に登録する (tailwind.config.js)。
 module.exports = {
   theme: {
     extend: {
@@ -126,25 +126,25 @@ module.exports = {
 ```
 
 ```tsx
-// 3. Use in components.
+// 3. コンポーネントで使う。
 <div className="bg-warning text-warning-foreground">Warning</div>
 ```
 
 ---
 
-## Border Radius
+## ボーダー半径
 
-`--radius` controls border radius globally. Components derive values from it (`rounded-lg` = `var(--radius)`, `rounded-md` = `calc(var(--radius) - 2px)`).
+`--radius` はボーダー半径をグローバルに制御する。コンポーネントはこれを基に値を導出する (`rounded-lg` = `var(--radius)`、`rounded-md` = `calc(var(--radius) - 2px)`)。
 
 ---
 
-## Customizing Components
+## コンポーネントのカスタマイズ
 
-See also: [rules/styling.md](./rules/styling.md) for Incorrect/Correct examples.
+参考: [rules/styling.md](./rules/styling.md) に Incorrect/Correct の例がある。
 
-Prefer these approaches in order:
+以下の順で優先する。
 
-### 1. Built-in variants
+### 1. 組み込み variant
 
 ```tsx
 <Button variant="outline" size="sm">
@@ -152,24 +152,24 @@ Prefer these approaches in order:
 </Button>
 ```
 
-### 2. Tailwind classes via `className`
+### 2. `className` 経由の Tailwind クラス
 
 ```tsx
 <Card className="mx-auto max-w-md">...</Card>
 ```
 
-### 3. Add a new variant
+### 3. 新しい variant を追加する
 
-Edit the component source to add a variant via `cva`:
+コンポーネントのソースを編集し、`cva` で variant を追加する。
 
 ```tsx
 // components/ui/button.tsx
 warning: "bg-warning text-warning-foreground hover:bg-warning/90",
 ```
 
-### 4. Wrapper components
+### 4. ラッパーコンポーネント
 
-Compose shadcn/ui primitives into higher-level components:
+shadcn/ui のプリミティブを組み合わせて、より高レベルのコンポーネントを作る。
 
 ```tsx
 export function ConfirmDialog({ title, description, onConfirm, children }) {
@@ -193,17 +193,17 @@ export function ConfirmDialog({ title, description, onConfirm, children }) {
 
 ---
 
-## Checking for Updates
+## 更新の確認
 
 ```bash
 npx shadcn@latest add button --diff
 ```
 
-To preview exactly what would change before updating, use `--dry-run` and `--diff`:
+更新前に何が変わるかを正確にプレビューしたい場合は、`--dry-run` と `--diff` を使う。
 
 ```bash
-npx shadcn@latest add button --dry-run        # see all affected files
-npx shadcn@latest add button --diff button.tsx # see the diff for a specific file
+npx shadcn@latest add button --dry-run        # 影響するファイルをすべて確認
+npx shadcn@latest add button --diff button.tsx # 特定ファイルの diff を確認
 ```
 
-See [Updating Components in SKILL.md](./SKILL.md#updating-components) for the full smart merge workflow.
+完全な smart merge ワークフローは [SKILL.md のコンポーネント更新](./SKILL.md#コンポーネントの更新) を参照。

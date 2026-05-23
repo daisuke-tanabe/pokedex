@@ -7,22 +7,22 @@ tags: react, hooks, useState, performance, initialization
 
 ## Use Lazy State Initialization
 
-Pass a function to `useState` for expensive initial values. Without the function form, the initializer runs on every render even though the value is only used once.
+高コストな初期値には `useState` に関数を渡す。関数形式を使わないと、その値が一度しか使われなくても、毎レンダーで初期化処理が走ってしまう。
 
-**Incorrect (runs on every render):**
+**Incorrect (毎レンダーで実行される):**
 
 ```tsx
 function FilteredList({ items }: { items: Item[] }) {
-  // buildSearchIndex() runs on EVERY render, even after initialization
+  // 初期化後でも、毎レンダーで buildSearchIndex() が走る
   const [searchIndex, setSearchIndex] = useState(buildSearchIndex(items))
   const [query, setQuery] = useState('')
   
-  // When query changes, buildSearchIndex runs again unnecessarily
+  // query が変わるたび、buildSearchIndex が不必要に再実行される
   return <SearchResults index={searchIndex} query={query} />
 }
 
 function UserProfile() {
-  // JSON.parse runs on every render
+  // 毎レンダーで JSON.parse が走る
   const [settings, setSettings] = useState(
     JSON.parse(localStorage.getItem('settings') || '{}')
   )
@@ -31,11 +31,11 @@ function UserProfile() {
 }
 ```
 
-**Correct (runs only once):**
+**Correct (一度だけ実行される):**
 
 ```tsx
 function FilteredList({ items }: { items: Item[] }) {
-  // buildSearchIndex() runs ONLY on initial render
+  // buildSearchIndex() は初回レンダリングでのみ実行される
   const [searchIndex, setSearchIndex] = useState(() => buildSearchIndex(items))
   const [query, setQuery] = useState('')
   
@@ -43,7 +43,7 @@ function FilteredList({ items }: { items: Item[] }) {
 }
 
 function UserProfile() {
-  // JSON.parse runs only on initial render
+  // JSON.parse も初回レンダリングでのみ実行される
   const [settings, setSettings] = useState(() => {
     const stored = localStorage.getItem('settings')
     return stored ? JSON.parse(stored) : {}
@@ -53,6 +53,6 @@ function UserProfile() {
 }
 ```
 
-Use lazy initialization when computing initial values from localStorage/sessionStorage, building data structures (indexes, maps), reading from the DOM, or performing heavy transformations.
+localStorage/sessionStorage から初期値を計算するとき、データ構造（インデックスや Map）を作るとき、DOM から読み出すとき、重い変換を行うときに lazy initialization を使う。
 
-For simple primitives (`useState(0)`), direct references (`useState(props.value)`), or cheap literals (`useState({})`), the function form is unnecessary.
+単純なプリミティブ (`useState(0)`)、直接参照 (`useState(props.value)`)、安価なリテラル (`useState({})`) であれば、関数形式は不要。

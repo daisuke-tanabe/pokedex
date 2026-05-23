@@ -1,34 +1,34 @@
 ---
-title: Clear, Action-Oriented Title (e.g., "Use Partial Indexes for Filtered Queries")
+title: 明確で動作指向のタイトル (例: "Use Partial Indexes for Filtered Queries")
 impact: MEDIUM
-impactDescription: 5-20x query speedup for filtered queries
+impactDescription: フィルタ付きクエリで 5〜20 倍の高速化
 tags: indexes, query-optimization, performance
 ---
 
-## [Rule Title]
+## [ルールのタイトル]
 
-[1-2 sentence explanation of the problem and why it matters. Focus on performance impact.]
+[問題と、それがなぜ重要なのかを 1〜2 文で説明する。パフォーマンスへの影響に焦点を当てる。]
 
-**Incorrect (describe the problem):**
+**誤り (問題点を説明する):**
 
 ```sql
--- Comment explaining what makes this slow/problematic
+-- このクエリが遅い/問題となる理由をコメントで説明する
 CREATE INDEX users_email_idx ON users(email);
 
 SELECT * FROM users WHERE email = 'user@example.com' AND deleted_at IS NULL;
--- This scans deleted records unnecessarily
+-- 削除済みレコードまで不要にスキャンしてしまう
 ```
 
-**Correct (describe the solution):**
+**正しい例 (解決策を説明する):**
 
 ```sql
--- Comment explaining why this is better
+-- なぜこちらが良いのかをコメントで説明する
 CREATE INDEX users_active_email_idx ON users(email) WHERE deleted_at IS NULL;
 
 SELECT * FROM users WHERE email = 'user@example.com' AND deleted_at IS NULL;
--- Only indexes active users, 10x smaller index, faster queries
+-- アクティブユーザーのみインデックス化することで、インデックスサイズは 10 分の 1、クエリも高速
 ```
 
-[Optional: Additional context, edge cases, or trade-offs]
+[任意: 補足コンテキスト、エッジケース、トレードオフを記載する]
 
 Reference: [Postgres Docs](https://www.postgresql.org/docs/current/)
