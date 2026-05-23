@@ -1,6 +1,15 @@
 ---
 name: testing-style
 description: フレームワーク非依存のテスト構造（AAA パターン）とテスト命名規範。Vitest / Jest / Playwright など使用ライブラリを問わず、すべてのテストファイルに共通で適用される。`.test.ts` / `.test.tsx` / `.spec.ts` / `.spec.tsx` / `.test.js` / `.test.jsx` / `.spec.js` / `.spec.jsx` のテストコードを作成・修正・レビューする際は必ず本スキルを参照する。テストを書き始める前、テスト名を決める段階、既存テストをリファクタリングする時にも適用する。
+paths:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+  - "**/*.spec.tsx"
+  - "**/*.test.js"
+  - "**/*.test.jsx"
+  - "**/*.spec.js"
+  - "**/*.spec.jsx"
 ---
 
 # テストスタイル
