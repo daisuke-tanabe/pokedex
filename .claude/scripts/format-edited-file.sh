@@ -49,6 +49,14 @@ esac
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$REPO_ROOT" || exit 0
 
+# REPO_ROOT 配下のファイルのみを対象にする。
+# 外部ファイルが渡された場合、prefix 削除が効かず絶対パスのまま
+# oxfmt / oxlint に渡ってしまうため、明示的にスキップする。
+case "$file_path" in
+  "$REPO_ROOT"/*) ;;
+  *) exit 0 ;;
+esac
+
 rel_path="${file_path#$REPO_ROOT/}"
 
 # pnpm exec のオーバーヘッドを避けるため node_modules/.bin を直叩き
