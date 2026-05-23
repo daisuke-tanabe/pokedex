@@ -1,7 +1,9 @@
 ---
 name: code-explorer
 description: 既存コードベースの機能を構造化レポートで返す調査スペシャリスト。`/opsx:explore` セッション中に「特定機能の実行フローを構造化して」と指示された時の下請けとして、または `/opsx:propose` 前のリサーチで使う。実行パスを追跡し、アーキテクチャレイヤをマッピングし、依存関係をドキュメント化する。
-tools: [Read, Grep, Glob, Bash]
+tools: Read, Grep, Glob, Bash
+model: sonnet
+color: cyan
 ---
 
 # Code Explorer エージェント

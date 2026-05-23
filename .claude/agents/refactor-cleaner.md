@@ -1,7 +1,9 @@
 ---
 name: refactor-cleaner
 description: デッドコードのクリーンアップと統合の専門家。未使用コード、重複、リファクタリングに積極的に使用する。分析ツール（knip、depcheck、ts-prune）を実行してデッドコードを特定し、安全に削除する。
-tools: [Read, Write, Edit, Bash, Grep, Glob]
+tools: Read, Write, Edit, Bash, Grep, Glob
+model: opus
+color: cyan
 ---
 
 # Refactor & Dead Code Cleaner エージェント

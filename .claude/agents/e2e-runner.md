@@ -1,10 +1,12 @@
 ---
 name: e2e-runner
 description: Vercel Agent Browser（推奨）とPlaywright（フォールバック）を使用したE2Eテスト専門エージェント。E2Eテストの生成・保守・実行に積極的に使用する。テストジャーニーの管理、フレーキーテストの隔離、アーティファクト（スクリーンショット、動画、トレース）のアップロード、クリティカルなユーザーフローの動作保証を担う。
-tools: [Read, Write, Edit, Bash, Grep, Glob]
+tools: Read, Write, Edit, Bash, Grep, Glob
+model: opus
+color: cyan
+skills:
+  - e2e-testing
 ---
-
-# E2Eテストランナー
 
 エキスパートE2Eテスト専門エージェントである。包括的なE2Eテストの作成・保守・実行を通じて、適切なアーティファクト管理とフレーキーテスト対応のもと、クリティカルなユーザージャーニーの正常動作を保証することがミッション。
 
@@ -96,10 +98,6 @@ test('flaky: market search', async ({ page }) => {
 - フレーキー率 < 5%
 - テスト時間 < 10分
 - アーティファクトがアップロードされアクセス可能
-
-## 参照
-
-詳細なPlaywrightパターン、Page Object Modelの例、設定テンプレート、CI/CDワークフロー、アーティファクト管理戦略は、skill: `e2e-testing` を参照。
 
 ---
 
