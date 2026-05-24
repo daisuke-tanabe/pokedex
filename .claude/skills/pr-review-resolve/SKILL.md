@@ -53,6 +53,8 @@ gh api graphql \
 
 戻り値の `reviewThreads.nodes[].id` がステップ 7 の resolve mutation の `threadId` に対応する。
 
+100 スレッド / 50 コメントを超える大規模 PR では `pageInfo { endCursor hasNextPage }` を取得し `after:$cursor` でページネーションする。
+
 bot / 人手 / 複数レビュアが混在する場合もすべて対象とする。Review Comment の path/line はステップ 2 の「対象箇所」根拠としてそのまま使う。
 
 ### 2. 指摘の抽出 + 妥当性検証
@@ -231,7 +233,7 @@ commit `<sha>` での対応内容を整理する。
 ### [スルー]
 - **<スルー対象>**: <理由>
 
-## 追加テスト
+## 追加テスト (なければ省略)
 - <概要>
 
 ## 検証
