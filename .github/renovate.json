@@ -12,6 +12,7 @@
   "platformAutomerge": false,
   "minimumReleaseAge": "3 days",
   "internalChecksFilter": "strict",
+  "prCreation": "not-pending",
   "ignorePaths": [".claude/skills/**"],
   "lockFileMaintenance": {
     "enabled": true,
