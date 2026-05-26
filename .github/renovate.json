@@ -13,7 +13,7 @@
   "minimumReleaseAge": "3 days",
   "internalChecksFilter": "strict",
   "prCreation": "not-pending",
-  "ignorePaths": [".claude/skills/**"],
+  "ignorePaths": [".claude/**"],
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": ["before 9am on monday"]
