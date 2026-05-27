@@ -9,12 +9,12 @@ pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages
 
 `pnpm-workspace.yaml` は `apps/*` に加え `packages/*` を workspace の対象として宣言しなければならない（MUST）。これにより `packages/contracts` 等の共有パッケージが workspace dependency として解決可能でなければならない（MUST）。
 
-#### Scenario: pnpm-workspace.yaml に packages/* が含まれる
+#### Scenario [unit]: pnpm-workspace.yaml に packages/* が含まれる
 
 - **WHEN** リポジトリルートの `pnpm-workspace.yaml` を読む
 - **THEN** `packages` 配列に `'apps/*'` と `'packages/*'` の両方が含まれる
 
-#### Scenario: workspace dependency が解決できる
+#### Scenario [integration]: workspace dependency が解決できる
 
 - **WHEN** `apps/api` の `package.json` に `"@pokedex/contracts": "workspace:*"` を追加して `pnpm install` を実行する
 - **THEN** インストールが成功し、`apps/api/node_modules/@pokedex/contracts` がシンボリックリンクとして作成される
@@ -23,17 +23,17 @@ pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages
 
 `turbo.json` は monorepo 全体で実行可能な共通タスクを定義しなければならない（MUST）。最低限 `dev`、`build`、`test`、`typecheck`、`lint`、`format`、`format:check` の 7 つを含まなければならない（MUST）。
 
-#### Scenario: turbo.json に必要なタスクが揃っている
+#### Scenario [unit]: turbo.json に必要なタスクが揃っている
 
 - **WHEN** リポジトリルートの `turbo.json` を読む
 - **THEN** `tasks` 配下に `dev`、`build`、`test`、`typecheck`、`lint`、`format`、`format:check` の 7 タスクが定義されている
 
-#### Scenario: dev タスクは永続プロセスとしてキャッシュされない
+#### Scenario [unit]: dev タスクは永続プロセスとしてキャッシュされない
 
 - **WHEN** `turbo.json` の `tasks.dev` の定義を読む
 - **THEN** `cache: false` かつ `persistent: true` が設定されている
 
-#### Scenario: build タスクが依存パッケージのビルドを先行する
+#### Scenario [unit]: build タスクが依存パッケージのビルドを先行する
 
 - **WHEN** `turbo.json` の `tasks.build` の定義を読む
 - **THEN** `dependsOn` に `^build` が含まれる
@@ -42,12 +42,12 @@ pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages
 
 `apps/*` と `packages/*` の package.json は `lint`、`format`、`format:check`、`typecheck` の 4 スクリプトを定義しなければならない（MUST）。`apps/api` と各 package には追加で `test` スクリプトを定義しなければならない（MUST）。`apps/api` には追加で `dev` と `build` スクリプトを定義しなければならない（MUST）。
 
-#### Scenario: apps/api に必要なスクリプトが揃っている
+#### Scenario [unit]: apps/api に必要なスクリプトが揃っている
 
 - **WHEN** `apps/api/package.json` の `scripts` を読む
 - **THEN** `dev`、`build`、`test`、`typecheck`、`lint`、`format`、`format:check` の 7 スクリプトすべてがキーとして存在する
 
-#### Scenario: packages/contracts に必要なスクリプトが揃っている
+#### Scenario [unit]: packages/contracts に必要なスクリプトが揃っている
 
 - **WHEN** `packages/contracts/package.json` の `scripts` を読む
 - **THEN** `test`、`typecheck`、`lint`、`format`、`format:check` の 5 スクリプトがキーとして存在する
@@ -56,17 +56,17 @@ pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages
 
 リポジトリは Supabase CLI で初期化された `supabase/` ディレクトリを含まなければならない（MUST）。開発者は `supabase start` のみでローカル PostgreSQL を含む Supabase スタックを起動できなければならない（MUST）。Supabase ローカルが提供する PostgreSQL の接続文字列は `.env.example` の `DATABASE_URL` と整合しなければならない（MUST）。
 
-#### Scenario: supabase ディレクトリが repository に含まれる
+#### Scenario [unit]: supabase ディレクトリが repository に含まれる
 
 - **WHEN** リポジトリルートを確認する
 - **THEN** `supabase/config.toml` がコミット対象として存在する
 
-#### Scenario: supabase start でローカル PostgreSQL が起動する
+#### Scenario [integration]: supabase start でローカル PostgreSQL が起動する
 
 - **WHEN** `supabase start` を実行する
 - **THEN** ローカル PostgreSQL が `54322` 番ポートで到達可能になり、`supabase status` の出力に DB URL が表示される
 
-#### Scenario: .env.example の DATABASE_URL が Supabase ローカルと整合する
+#### Scenario [unit]: .env.example の DATABASE_URL が Supabase ローカルと整合する
 
 - **WHEN** `.env.example` の `DATABASE_URL` を読む
 - **THEN** ホストは `127.0.0.1` または `localhost`、ポートは `54322`、データベース名は `postgres`、ユーザは `postgres` で構築された Supabase ローカル既定の接続文字列になっている
@@ -75,12 +75,12 @@ pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages
 
 `.tool-versions` には Node、pnpm に加え `supabase` のバージョンを明記しなければならない（MUST）。これにより `asdf install` を実行すれば必要な CLI 一式が再現可能なバージョンで揃わなければならない（MUST）。
 
-#### Scenario: .tool-versions に supabase の行がある
+#### Scenario [unit]: .tool-versions に supabase の行がある
 
 - **WHEN** リポジトリルートの `.tool-versions` を読む
 - **THEN** `supabase ` で始まる行が 1 行以上存在し、特定のバージョンが指定されている
 
-#### Scenario: asdf install で全ツールが揃う
+#### Scenario [integration]: asdf install で全ツールが揃う
 
 - **WHEN** `asdf-supabase` plugin を追加した状態で `asdf install` を実行する
 - **THEN** Node、pnpm、supabase の 3 ツールが `.tool-versions` で指定されたバージョンで shim 経由で利用可能になる
@@ -89,12 +89,12 @@ pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages
 
 `apps/api` は vitest 設定を持たなければならず（MUST）、`pnpm --filter @pokedex/api test` でユニットテストが実行できなければならない（MUST）。`packages/contracts` も同様にテスト実行が可能でなければならない（MUST）。
 
-#### Scenario: apps/api でテストコマンドが動作する
+#### Scenario [integration]: apps/api でテストコマンドが動作する
 
 - **WHEN** `apps/api` で `pnpm test` を実行する
 - **THEN** vitest が起動し、`__tests__/**/*.test.ts` パターンのテストファイルを収集して実行する
 
-#### Scenario: packages/contracts でテストコマンドが動作する
+#### Scenario [integration]: packages/contracts でテストコマンドが動作する
 
 - **WHEN** `packages/contracts` で `pnpm test` を実行する
 - **THEN** vitest が起動し、テストファイルを収集して実行する
@@ -103,17 +103,17 @@ pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages
 
 リポジトリルートの `.env.development` には、開発環境で動作させるために必要な環境変数の **既定値** を記載しなければならない（MUST）。本 change では最低 `DATABASE_URL` を含まなければならず（MUST）、各変数には用途のコメントを付けなければならない（MUST）。`DATABASE_URL` の値は Supabase ローカル既定値でなければならない（MUST）。`.env.development` は **機密情報を含んではならない**（MUST NOT）。
 
-#### Scenario: .env.development に DATABASE_URL が記載されている
+#### Scenario [unit]: .env.development に DATABASE_URL が記載されている
 
 - **WHEN** リポジトリルートの `.env.development` を読む
 - **THEN** `DATABASE_URL=` で始まる行が 1 行以上存在する
 
-#### Scenario: .env.development の DATABASE_URL は Supabase ローカル既定値
+#### Scenario [unit]: .env.development の DATABASE_URL は Supabase ローカル既定値
 
 - **WHEN** リポジトリルートの `.env.development` を読む
 - **THEN** `DATABASE_URL` の値が `postgres://postgres:postgres@127.0.0.1:54322/postgres` または同等の Supabase ローカル既定接続文字列になっている
 
-#### Scenario: .env.development はコミット対象である
+#### Scenario [integration]: .env.development はコミット対象である
 
 - **WHEN** `git ls-files .env.development` を実行する
 - **THEN** `.env.development` がパスとして出力される（追跡対象として登録されている）
@@ -122,17 +122,17 @@ pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages
 
 リポジトリには個人ごとの機密値を上書きするための `.env.local` ファイルを許容するが、これは **必ず** `.gitignore` 対象としなければならない（MUST）。本番値を表現する `.env` および `.env.production` も同様にコミット禁止としなければならない（MUST）。
 
-#### Scenario: .env.local が gitignore に含まれる
+#### Scenario [unit]: .env.local が gitignore に含まれる
 
 - **WHEN** `.gitignore` を確認する
 - **THEN** `.env.local` がパターンに含まれる
 
-#### Scenario: .env が gitignore に含まれる
+#### Scenario [unit]: .env が gitignore に含まれる
 
 - **WHEN** `.gitignore` を確認する
 - **THEN** `.env` がパターンに含まれる
 
-#### Scenario: .env.production が gitignore に含まれる
+#### Scenario [unit]: .env.production が gitignore に含まれる
 
 - **WHEN** `.gitignore` を確認する
 - **THEN** `.env.production` がパターンに含まれる
@@ -141,7 +141,7 @@ pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages
 
 本番環境で使用する機密値（実 Supabase の接続文字列、サービスロールキー、外部 API キー等）はリポジトリ内のいかなるファイルにも保存してはならない（MUST NOT）。本番値はホスティングサービス（GitHub Secrets、Vercel 環境変数、Supabase Dashboard 等）で注入する方針を README に明記しなければならない（MUST）。
 
-#### Scenario: README に本番値の管理方針が記載されている
+#### Scenario [unit]: README に本番値の管理方針が記載されている
 
 - **WHEN** リポジトリの `README.md` を読む
 - **THEN** 「本番値は GitHub Secrets / 各ホスティングサービスで管理し、リポジトリには置かない」旨の記述が含まれる
@@ -150,12 +150,12 @@ pnpm workspace と turbo で `apps/api` / `apps/web` / `apps/mobile` / `packages
 
 既存の oxlint / oxfmt は `packages/*` も対象として扱えなければならない（MUST）。各 package は独自に `oxlint --type-aware .` / `oxfmt .` を呼び出すスクリプトを持たなければならず（MUST）、turbo 経由で全 package 一括実行できなければならない（MUST）。
 
-#### Scenario: packages/contracts の lint がエラーなく完走する
+#### Scenario [integration]: packages/contracts の lint がエラーなく完走する
 
 - **WHEN** `pnpm --filter @pokedex/contracts lint` を実行する
 - **THEN** oxlint が exit code 0 で終了する
 
-#### Scenario: ルートからの一括 lint が全 package を対象にする
+#### Scenario [integration]: ルートからの一括 lint が全 package を対象にする
 
 - **WHEN** リポジトリルートで `pnpm lint` を実行する
 - **THEN** turbo が `apps/api`、`apps/web`、`apps/mobile`、`packages/contracts` の 4 パッケージで `lint` タスクを実行する
