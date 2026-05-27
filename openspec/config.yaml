@@ -8,6 +8,8 @@ rules:
   specs:
     - 'Scenario は 1 件 = 1 テストケースに対応する粒度で書く。'
     - 'WHEN/THEN は実行可能な振る舞いとして表現し、テスト名にそのままマッピングできる形にする。'
+    - 'Scenario 見出しには [unit] または [integration] タグを付与する (例: `#### Scenario [unit]: ...`)。'
+    - 'fetch / 外部 I/O / プロセス起動 / RSC レンダリング / DB アクセスを伴うものは [integration], それ以外は [unit] とする。'
   tasks:
     - '各 Scenario を「テスト → 実装 → リファクタ」の 3 段階タスクに分割し、テストを先頭に置く。'
     - 'TDD は `tdd-workflow` skill に従う。'
