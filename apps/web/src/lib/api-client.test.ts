@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createApiClient, serverApiClient } from './api-client';
 
@@ -14,5 +14,24 @@ describe('api-client', () => {
   it('createApiClient(baseUrl) で hc<AppType> クライアントを生成して返す', () => {
     const client = createApiClient('http://example.test');
     expect(client).toBeDefined();
+  });
+});
+
+describe('serverApiClient initialization', () => {
+  const originalApiUrl = process.env.API_URL;
+
+  afterEach(() => {
+    if (originalApiUrl === undefined) {
+      delete process.env.API_URL;
+    } else {
+      process.env.API_URL = originalApiUrl;
+    }
+    vi.resetModules();
+  });
+
+  it('API_URL 未設定でモジュール評価時に Error を throw する', async () => {
+    delete process.env.API_URL;
+    vi.resetModules();
+    await expect(import('./api-client')).rejects.toThrow(/API_URL is required/);
   });
 });
