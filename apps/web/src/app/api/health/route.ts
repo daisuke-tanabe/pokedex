@@ -9,16 +9,18 @@ export async function GET(): Promise<Response> {
     // ランタイムでは必ず存在するが、型上の防御として ?. と存在チェックで扱う。
     const upstream = await serverApiClient.health?.$get({});
     if (!upstream) {
-      return Response.json(errorEnvelope('INTERNAL_ERROR', 'health route is not available on the upstream'), {
-        status: 503,
-      });
+      console.error('[health] upstream client missing health route');
+      return Response.json(errorEnvelope('INTERNAL_ERROR', 'upstream health check failed'), { status: 503 });
     }
     if (!upstream.ok) {
-      return Response.json(errorEnvelope('INTERNAL_ERROR', `upstream returned ${upstream.status}`), { status: 503 });
+      console.error('[health] upstream returned non-ok status', upstream.status);
+      return Response.json(errorEnvelope('INTERNAL_ERROR', 'upstream health check failed'), { status: 503 });
     }
     return Response.json(successEnvelope({ status: 'ok' as const }), { status: 200 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return Response.json(errorEnvelope('INTERNAL_ERROR', message), { status: 503 });
+    // 内部 IP / ホスト / URL が `error.message` に乗ることがあるため、レスポンスには汎用 message のみ返し、
+    // 詳細はサーバ側ログに残す。
+    console.error('[health] upstream request failed', error);
+    return Response.json(errorEnvelope('INTERNAL_ERROR', 'upstream health check failed'), { status: 503 });
   }
 }
