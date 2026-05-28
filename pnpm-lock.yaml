@@ -89,9 +89,6 @@ importers:
 
   apps/web:
     dependencies:
-      '@pokedex/api':
-        specifier: workspace:*
-        version: link:../api
       '@pokedex/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -126,6 +123,9 @@ importers:
         specifier: 1.4.0
         version: 1.4.0(typescript@6.0.3)
     devDependencies:
+      '@pokedex/api':
+        specifier: workspace:*
+        version: link:../api
       '@testing-library/jest-dom':
         specifier: 6.9.1
         version: 6.9.1
