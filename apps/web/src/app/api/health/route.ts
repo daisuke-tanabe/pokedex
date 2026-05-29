@@ -12,6 +12,10 @@ export async function GET(): Promise<Response> {
       console.error('[health] upstream client missing health route');
       return Response.json(errorEnvelope('INTERNAL_ERROR', 'upstream health check failed'), { status: 503 });
     }
+    // body 未消費だと Node.js (undici) のコネクションプールが GC のファイナライザ経由で遅延クリーンアップ
+    // されるため、高頻度コール (監視ツール等) を想定して明示的に消費する。`.text()` は jsdom + MSW v2 でも
+    // 安定動作 (`body.cancel()` は jsdom の ReadableStream 実装で hang する)。
+    await upstream.text();
     if (!upstream.ok) {
       console.error('[health] upstream returned non-ok status', upstream.status);
       return Response.json(errorEnvelope('INTERNAL_ERROR', 'upstream health check failed'), { status: 503 });
