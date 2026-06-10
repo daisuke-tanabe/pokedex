@@ -45,7 +45,7 @@
 
 ### Requirement: UI 基盤 (Tailwind + shadcn/ui)
 
-`apps/web` は Tailwind CSS v4 によるユーティリティクラスベースのスタイリングと、shadcn/ui の own code モデルによる UI コンポーネントを提供しなければならない（MUST）。`apps/web/components.json`（shadcn 設定）、`apps/web/src/lib/utils.ts`（`cn()` ヘルパ）、`apps/web/postcss.config.mjs`（PostCSS 設定）が存在しなければならない（MUST）。shadcn が出力する UI コンポーネントは `apps/web/src/components/ui/` 配下に配置されなければならない（MUST）。本 capability の時点で最低 1 つの shadcn コンポーネント（例: `button.tsx`）が `src/components/ui/` 配下に存在しなければならない（MUST）。`components.json` は `cssVariables: true` と `baseColor: "neutral"` を採用しなければならない（MUST）。色トークンは shadcn 現行公式の OKLCH ベース変数を `src/app/globals.css` の `:root` と `.dark` で定義し、`@theme inline` ブロックで Tailwind 側の `--color-*` 名前空間にマッピングしなければならない（MUST）。dark variant は CSS の `@custom-variant dark (&:is(.dark *));` で定義しなければならない（MUST）。アニメーション基盤として `tw-animate-css` パッケージを `dependencies` に含め、`globals.css` で `@import "tw-animate-css";` しなければならない（MUST）。PostCSS パイプラインは `@tailwindcss/postcss` プラグイン単体で構成しなければならず（MUST）、`autoprefixer` および `tailwindcss-animate` は `apps/web/package.json` の `dependencies` / `devDependencies` から削除されなければならない（MUST NOT 含む）。`apps/web/tailwind.config.ts` は存在してはならない（MUST NOT、v4 の config-less + CSS-based config 方針に従う）。
+`apps/web` は Tailwind CSS v4 によるユーティリティクラスベースのスタイリングと、shadcn/ui の own code モデルによる UI コンポーネントを提供しなければならない（MUST）。`apps/web/components.json`（shadcn 設定）、`apps/web/src/lib/utils.ts`（`cn()` ヘルパ）、`apps/web/postcss.config.mjs`（PostCSS 設定）が存在しなければならない（MUST）。shadcn が出力する UI コンポーネントは `apps/web/src/components/ui/` 配下に配置されなければならない（MUST）。本 capability の時点で最低 1 つの shadcn コンポーネント（例: `button.tsx`）が `src/components/ui/` 配下に存在しなければならない（MUST）。`components.json` は `cssVariables: true` と `baseColor: "neutral"` を採用しなければならない（MUST）。色トークンは shadcn 現行公式の OKLCH ベース変数を `src/app/globals.css` の `:root` と `.dark` で定義し、`@theme inline` ブロックで Tailwind 側の `--color-*` 名前空間にマッピングしなければならない（MUST）。dark variant は CSS の `@custom-variant dark (&:is(.dark *));` で定義しなければならない（MUST）。アニメーション基盤として `tw-animate-css` パッケージを `dependencies` に含め、`globals.css` で `@import "tw-animate-css";` しなければならない（MUST）。PostCSS パイプラインは `@tailwindcss/postcss` プラグイン単体で構成しなければならず（MUST）、`autoprefixer` および `tailwindcss-animate` は `apps/web/package.json` の `dependencies` / `devDependencies` から削除されなければならない（MUST NOT 含む）。`apps/web/tailwind.config.ts` は存在してはならない（MUST NOT、v4 の config-less + CSS-based config 方針に従う）。`src/components/ui/` 配下に存在する shadcn コンポーネントは shadcn 現行公式 v4 (`new-york-v4` registry) で生成されたものでなければならず（MUST）、`asChild` prop を介した polymorphic な要素差し替えと `data-slot` 属性ベースの styling フックを提供しなければならない（MUST）。これらの polymorphic / Slot 機能を実現するため、`apps/web/package.json` の `dependencies` に `radix-ui` (monorepo パッケージ) が含まれなければならない（MUST）。
 
 #### Scenario [unit]: components.json が存在する
 
@@ -116,6 +116,21 @@
 
 - **WHEN** `apps/web/package.json` の `dependencies` および `devDependencies` を読む
 - **THEN** いずれにも `autoprefixer` が含まれない
+
+#### Scenario [unit]: button.tsx に data-slot="button" 属性が含まれる
+
+- **WHEN** `apps/web/src/components/ui/button.tsx` を読む
+- **THEN** レンダリングされる要素に `data-slot="button"` 相当の属性付与が含まれている（shadcn v4 `new-york-v4` registry の規約）
+
+#### Scenario [unit]: button.tsx が asChild prop を提供する
+
+- **WHEN** `apps/web/src/components/ui/button.tsx` を読む
+- **THEN** Button コンポーネントの props 型に `asChild?: boolean` 相当が含まれ、`asChild` が真のときに `radix-ui` の `Slot` を介して子要素に props と styling を委譲する実装が存在する
+
+#### Scenario [unit]: radix-ui が依存に含まれる
+
+- **WHEN** `apps/web/package.json` の `dependencies` を読む
+- **THEN** `radix-ui` が含まれている（個別 `@radix-ui/*` パッケージではなく monorepo 統合パッケージ、shadcn v4 公式 import 文 `import { Slot } from "radix-ui"` への整合）
 
 ### Requirement: API クライアント (Hono RPC hc<AppType> ラッパ)
 
