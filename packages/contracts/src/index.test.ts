@@ -7,8 +7,10 @@ import {
   Locale,
   MAX_TYPES,
   PAGE_SIZE,
+  PokedexSlug,
   SpriteGender,
   SpriteKind,
+  TypeSlug,
   envelopeSchema,
   pokemonDetailSchema,
   pokemonListItemSchema,
@@ -38,6 +40,8 @@ describe('@pokedex/contracts entry point', () => {
     expect(Locale.JA).toBe('ja');
     expect(SpriteGender.MALE).toBe('male');
     expect(SpriteKind.DEFAULT).toBe('default');
+    expect(PokedexSlug.NATIONAL).toBe('national');
+    expect(TypeSlug.FIRE).toBe('fire');
   });
 
   it('public API の型を保つ', () => {

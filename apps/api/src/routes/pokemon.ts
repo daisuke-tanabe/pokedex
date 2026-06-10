@@ -43,9 +43,13 @@ export const createPokemonRoutes = (repo: PokemonRepository) =>
           return c.json(errorEnvelope(ErrorCode.INVALID_QUERY, 'invalid cursor'), 400);
         }
 
+        // Valibot picklist (`POKEDEX_SLUG_VALUES`) で early reject 済のため、
+        // DB と contracts の enum が同期している限り null は起こり得ない。
+        // 万一 null が返った場合は invariants 違反 (DB と enum の乖離) として
+        // fail-fast し、onError で 500 INTERNAL_ERROR に整形させる。
         const pokedexId = await repo.findPokedexIdBySlug(pokedex);
         if (pokedexId === null) {
-          return c.json(errorEnvelope(ErrorCode.INVALID_QUERY, `unknown pokedex: ${pokedex}`), 400);
+          throw new Error(`[pokemon] invariants violation: pokedex slug '${pokedex}' not found in DB`);
         }
 
         const typeIds = await repo.findTypeIdsBySlugs(types);

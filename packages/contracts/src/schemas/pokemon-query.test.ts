@@ -61,4 +61,12 @@ describe('pokemonListQuerySchema', () => {
     // Assert
     expect(result.pokedex).toBe('paldea');
   });
+
+  it('未定義の pokedex slug は parse に失敗する', () => {
+    expect(() => v.parse(pokemonListQuerySchema, { pokedex: 'kalos' })).toThrow();
+  });
+
+  it('未定義の type slug は parse に失敗する', () => {
+    expect(() => v.parse(pokemonListQuerySchema, { types: 'fire,cosmic' })).toThrow();
+  });
 });
