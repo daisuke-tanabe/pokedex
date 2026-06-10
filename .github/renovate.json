@@ -12,7 +12,6 @@
   "platformAutomerge": false,
   "minimumReleaseAge": "3 days",
   "internalChecksFilter": "strict",
-  "prCreation": "not-pending",
   "ignorePaths": [".claude/**"],
   "lockFileMaintenance": {
     "enabled": true,
