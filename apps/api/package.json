@@ -15,11 +15,11 @@
     "db:reset": "supabase db reset && pnpm seed"
   },
   "dependencies": {
-    "@hono/node-server": "2.0.3",
+    "@hono/node-server": "2.0.4",
     "@hono/valibot-validator": "0.6.1",
     "@pokedex/contracts": "workspace:*",
     "drizzle-orm": "0.45.2",
-    "hono": "4.12.21",
+    "hono": "4.12.23",
     "postgres": "3.4.9",
     "valibot": "1.4.1"
   },
