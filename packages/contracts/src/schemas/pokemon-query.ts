@@ -5,14 +5,11 @@
 import * as v from 'valibot';
 
 import { DEFAULT_POKEDEX_SLUG, MAX_TYPES, PAGE_SIZE } from '../constants.js';
+import { POKEDEX_SLUG_VALUES } from '../enums/pokedex.js';
+import { TYPE_SLUG_VALUES } from '../enums/type.js';
 
 const LIMIT_MIN = 1;
 const LIMIT_MAX = 100;
-
-/**
- * slug 形式の小さなバリデーション (空文字列除外)。
- */
-const slugSchema = v.pipe(v.string(), v.minLength(1));
 
 /**
  * base64url 文字集合 (`A-Za-z0-9_-`) のみで構成された文字列。
@@ -33,15 +30,15 @@ const limitSchema = v.pipe(
 );
 
 /**
- * カンマ区切りタイプ slug 文字列を `string[]` に変換するスキーマ。
+ * カンマ区切りタイプ slug 文字列を `TypeSlug[]` に変換するスキーマ。
  *
- * 空文字列は `[]` を返す。配列要素は空文字列を許容しないため
- * `pokemon=fire,` のような末尾カンマは弾かれる。
+ * 空文字列は `[]` を返す。配列要素は `TYPE_SLUG_VALUES` の picklist 制約を
+ * 満たさない値 (未定義タイプ / 空文字列など) を弾く。
  */
 const typesSchema = v.pipe(
   v.string(),
   v.transform((input) => (input.length === 0 ? [] : input.split(','))),
-  v.array(slugSchema),
+  v.array(v.picklist(TYPE_SLUG_VALUES)),
   v.maxLength(MAX_TYPES),
 );
 
@@ -51,7 +48,7 @@ const typesSchema = v.pipe(
  * すべて optional。省略時は spec で定義された既定値に解決される。
  */
 export const pokemonListQuerySchema = v.object({
-  pokedex: v.optional(slugSchema, DEFAULT_POKEDEX_SLUG),
+  pokedex: v.optional(v.picklist(POKEDEX_SLUG_VALUES), DEFAULT_POKEDEX_SLUG),
   types: v.optional(typesSchema, ''),
   cursor: v.optional(base64UrlSchema),
   limit: v.optional(limitSchema, String(PAGE_SIZE)),

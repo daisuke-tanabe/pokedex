@@ -43,11 +43,18 @@ export const createPokemonRoutes = (repo: PokemonRepository) =>
           return c.json(errorEnvelope(ErrorCode.INVALID_QUERY, 'invalid cursor'), 400);
         }
 
+        // Valibot picklist (`POKEDEX_SLUG_VALUES`) で early reject 済のため、
+        // DB と contracts の enum が同期している限り null は起こり得ない。
+        // 万一 null が返った場合は invariants 違反 (DB と enum の乖離) として
+        // fail-fast し、onError で 500 INTERNAL_ERROR に整形させる。
         const pokedexId = await repo.findPokedexIdBySlug(pokedex);
         if (pokedexId === null) {
-          return c.json(errorEnvelope(ErrorCode.INVALID_QUERY, `unknown pokedex: ${pokedex}`), 400);
+          throw new Error(`[pokemon] invariants violation: pokedex slug '${pokedex}' not found in DB`);
         }
 
+        // types は Valibot picklist で early reject 済だが、findTypeIdsBySlugs の
+        // 戻り値型を non-nullable に揃えるリファクタは別 change の宿題候補 (design.md Decision 6)。
+        // それまでの暫定として 400 INVALID_QUERY を返す既存挙動を維持する。
         const typeIds = await repo.findTypeIdsBySlugs(types);
         if (typeIds === null) {
           return c.json(errorEnvelope(ErrorCode.INVALID_QUERY, 'unknown type slug'), 400);
