@@ -52,6 +52,9 @@ export const createPokemonRoutes = (repo: PokemonRepository) =>
           throw new Error(`[pokemon] invariants violation: pokedex slug '${pokedex}' not found in DB`);
         }
 
+        // types は Valibot picklist で early reject 済だが、findTypeIdsBySlugs の
+        // 戻り値型を non-nullable に揃えるリファクタは別 change の宿題候補 (design.md Decision 6)。
+        // それまでの暫定として 400 INVALID_QUERY を返す既存挙動を維持する。
         const typeIds = await repo.findTypeIdsBySlugs(types);
         if (typeIds === null) {
           return c.json(errorEnvelope(ErrorCode.INVALID_QUERY, 'unknown type slug'), 400);
