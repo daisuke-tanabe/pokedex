@@ -31,7 +31,8 @@
         "**/*.test.tsx",
         "**/*.spec.ts",
         "**/*.spec.tsx",
-        "**/test-setup.ts"
+        "**/test-setup.ts",
+        "**/vitest.setup.ts"
       ],
       "rules": {
         "typescript/no-non-null-assertion": "off",

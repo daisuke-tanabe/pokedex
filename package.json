@@ -8,6 +8,7 @@
   },
   "scripts": {
     "postinstall": "lefthook install",
+    "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "turbo run format",
     "format:check": "turbo run format:check",

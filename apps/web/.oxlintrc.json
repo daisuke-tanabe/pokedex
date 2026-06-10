@@ -13,5 +13,6 @@
   "rules": {
     "react/react-in-jsx-scope": "off",
     "import/no-unassigned-import": ["warn", { "allow": ["**/*.css"] }]
-  }
+  },
+  "ignorePatterns": ["next-env.d.ts", ".next/**"]
 }

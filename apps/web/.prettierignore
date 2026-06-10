@@ -1,0 +1,3 @@
+# Next.js が自動生成・更新するファイル。oxfmt のチェック対象から除外する。
+next-env.d.ts
+.next/
