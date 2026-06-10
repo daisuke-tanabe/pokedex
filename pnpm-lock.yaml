@@ -55,7 +55,7 @@ importers:
         version: 2.0.3(hono@4.12.21)
       '@hono/valibot-validator':
         specifier: 0.6.1
-        version: 0.6.1(hono@4.12.21)(valibot@1.4.0(typescript@6.0.3))
+        version: 0.6.1(hono@4.12.21)(valibot@1.4.1(typescript@6.0.3))
       '@pokedex/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -69,8 +69,8 @@ importers:
         specifier: 3.4.9
         version: 3.4.9
       valibot:
-        specifier: 1.4.0
-        version: 1.4.0(typescript@6.0.3)
+        specifier: 1.4.1
+        version: 1.4.1(typescript@6.0.3)
     devDependencies:
       '@types/node':
         specifier: 24.12.4
@@ -92,8 +92,8 @@ importers:
   packages/contracts:
     dependencies:
       valibot:
-        specifier: 1.4.0
-        version: 1.4.0(typescript@6.0.3)
+        specifier: 1.4.1
+        version: 1.4.1(typescript@6.0.3)
     devDependencies:
       vitest:
         specifier: 'catalog:'
@@ -1459,8 +1459,8 @@ packages:
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
-  valibot@1.4.0:
-    resolution: {integrity: sha512-iC/x7fVcSyOwlm/VSt7RlHnzNGLGvR9GnxdifUeWoCJo0q4ZZvrVkIHC6faTlkxG47I2Y4UrFquPuVHCrOnrLg==}
+  valibot@1.4.1:
+    resolution: {integrity: sha512-klCmFTz2jeDluy9RwX+F884TCiogtdBJ/YaxSx1EOBYXa3NXNWj8kR1jjN8rzluwojJVWWaHJ4r1U5LfICnM3g==}
     peerDependencies:
       typescript: '>=5'
     peerDependenciesMeta:
@@ -1817,10 +1817,10 @@ snapshots:
     dependencies:
       hono: 4.12.21
 
-  '@hono/valibot-validator@0.6.1(hono@4.12.21)(valibot@1.4.0(typescript@6.0.3))':
+  '@hono/valibot-validator@0.6.1(hono@4.12.21)(valibot@1.4.1(typescript@6.0.3))':
     dependencies:
       hono: 4.12.21
-      valibot: 1.4.0(typescript@6.0.3)
+      valibot: 1.4.1(typescript@6.0.3)
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
@@ -2475,7 +2475,7 @@ snapshots:
 
   undici-types@7.16.0: {}
 
-  valibot@1.4.0(typescript@6.0.3):
+  valibot@1.4.1(typescript@6.0.3):
     optionalDependencies:
       typescript: 6.0.3
 
