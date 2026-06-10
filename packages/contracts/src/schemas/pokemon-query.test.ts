@@ -2,6 +2,7 @@ import * as v from 'valibot';
 import { describe, expect, it } from 'vitest';
 
 import { DEFAULT_POKEDEX_SLUG, MAX_TYPES, PAGE_SIZE } from '../constants.js';
+import { TYPE_SLUG_VALUES } from '../enums/type.js';
 import { pokemonListQuerySchema } from './pokemon-query.js';
 
 describe('pokemonListQuerySchema', () => {
@@ -27,8 +28,9 @@ describe('pokemonListQuerySchema', () => {
   });
 
   it('types が MAX_TYPES を超えると例外を投げる', () => {
-    // Arrange
-    const overflow = Array.from({ length: MAX_TYPES + 1 }, (_, index) => `t${index}`).join(',');
+    // Arrange: picklist 制約ではなく maxLength 制約で reject されることを確認するため、
+    // TYPE_SLUG_VALUES から MAX_TYPES + 1 件を有効 slug で構成する
+    const overflow = TYPE_SLUG_VALUES.slice(0, MAX_TYPES + 1).join(',');
 
     // Act / Assert
     expect(() => v.parse(pokemonListQuerySchema, { types: overflow })).toThrow();
