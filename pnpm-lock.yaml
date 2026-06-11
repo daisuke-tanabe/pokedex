@@ -52,10 +52,10 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: 2.0.4
-        version: 2.0.4(hono@4.12.23)
+        version: 2.0.4(hono@4.12.24)
       '@hono/valibot-validator':
         specifier: 0.6.1
-        version: 0.6.1(hono@4.12.23)(valibot@1.4.1(typescript@6.0.3))
+        version: 0.6.1(hono@4.12.24)(valibot@1.4.1(typescript@6.0.3))
       '@pokedex/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -63,8 +63,8 @@ importers:
         specifier: 0.45.2
         version: 0.45.2(postgres@3.4.9)
       hono:
-        specifier: 4.12.23
-        version: 4.12.23
+        specifier: 4.12.24
+        version: 4.12.24
       postgres:
         specifier: 3.4.9
         version: 3.4.9
@@ -99,8 +99,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       hono:
-        specifier: 4.12.23
-        version: 4.12.23
+        specifier: 4.12.24
+        version: 4.12.24
       lucide-react:
         specifier: 1.17.0
         version: 1.17.0(react@19.2.7)
@@ -2646,8 +2646,8 @@ packages:
   headers-polyfill@5.0.1:
     resolution: {integrity: sha512-1TJ6Fih/b8h5TIcv+1+Hw0PDQWJTKDKzFZzcKOiW1wJza3XoAQlkCuXLbymPYB8+ZQyw8mHvdw560e8zVFIWyA==}
 
-  hono@4.12.23:
-    resolution: {integrity: sha512-eIaZ9qDgu7XV0pxOCrg7/WhnQ6Ivm22UcxhXx/A3dcbqbbYgBEkc6e/J/s7j2tS96zoB0S9VBdLwQNCWwUo4LA==}
+  hono@4.12.24:
+    resolution: {integrity: sha512-I36D1s+HgQc55KbhEr4iybfxv/9o1zdpw+XEM6dJa91LqQD0HCoSGdxpRJCZE+aavs87j4V3Ls2OJzq8C/U4iw==}
     engines: {node: '>=16.9.0'}
 
   html-encoding-sniffer@6.0.0:
@@ -3733,13 +3733,13 @@ snapshots:
 
   '@floating-ui/utils@0.2.11': {}
 
-  '@hono/node-server@2.0.4(hono@4.12.23)':
+  '@hono/node-server@2.0.4(hono@4.12.24)':
     dependencies:
-      hono: 4.12.23
+      hono: 4.12.24
 
-  '@hono/valibot-validator@0.6.1(hono@4.12.23)(valibot@1.4.1(typescript@6.0.3))':
+  '@hono/valibot-validator@0.6.1(hono@4.12.24)(valibot@1.4.1(typescript@6.0.3))':
     dependencies:
-      hono: 4.12.23
+      hono: 4.12.24
       valibot: 1.4.1(typescript@6.0.3)
 
   '@img/colour@1.1.0':
@@ -5330,7 +5330,7 @@ snapshots:
       '@types/set-cookie-parser': 2.4.10
       set-cookie-parser: 3.1.0
 
-  hono@4.12.23: {}
+  hono@4.12.24: {}
 
   html-encoding-sniffer@6.0.0:
     dependencies:
