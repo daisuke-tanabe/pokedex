@@ -29,6 +29,12 @@ describe('<PokemonCard>', () => {
     expect(container.querySelectorAll('a')).toHaveLength(0);
   });
 
+  it('role="article" を持ち aria-label でポケモン名が SR に伝わる (Card の <div> に role を補強)', () => {
+    render(<PokemonCard item={PIKACHU} />);
+
+    expect(screen.getByRole('article', { name: 'ピカチュウ' })).toBeInTheDocument();
+  });
+
   it('pokedexNumber は 4 桁ゼロ埋めで表示される (#0025)', () => {
     render(<PokemonCard item={PIKACHU} />);
 

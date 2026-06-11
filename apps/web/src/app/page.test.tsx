@@ -92,14 +92,18 @@ describe('HomePage (RSC)', () => {
     expect(received).toBe('national');
   });
 
-  it('upstream が 5xx を返したら HomePage は throw して error.tsx 経路に飛ばす', async () => {
+  it('upstream が 5xx を返したら HomePage は UpstreamServerError を throw して error.tsx 経路に飛ばす', async () => {
     server.use(
       http.get(`${apiUrl}/api/pokemon`, () =>
         HttpResponse.json({ success: false, error: { code: 'INTERNAL_ERROR', message: 'down' } }, { status: 500 }),
       ),
     );
 
-    await expect(HomePage({ searchParams: Promise.resolve({}) })).rejects.toThrow(/upstream returned 5/u);
+    // error.name で UpstreamServerError class の throw を担保 (文字列マッチではなく contract で検証)
+    await expect(HomePage({ searchParams: Promise.resolve({}) })).rejects.toMatchObject({
+      name: 'UpstreamServerError',
+      message: expect.stringMatching(/upstream returned 5/u),
+    });
   });
 
   it('upstream が 4xx を返したら initialPage 不在で Client 側 fetch にフォールバックする (throw しない)', async () => {

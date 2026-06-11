@@ -61,23 +61,25 @@ function Sprite({ url, alt }: { url: string; alt: string }) {
  */
 export function PokemonCard({ item }: { item: PokemonListItem }) {
   return (
-    <Card aria-label={item.nameJa} className="overflow-hidden">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-baseline justify-between gap-2">
-          <span className="text-base font-semibold">{item.nameJa}</span>
-          <span className="font-mono text-xs text-muted-foreground">{formatPokedexNumber(item.pokedexNumber)}</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col items-center gap-3">
-        <Sprite url={item.defaultSpriteUrl} alt={item.nameJa} />
-        <div className="flex flex-wrap justify-center gap-1">
-          {item.types.map((slug) => (
-            <Badge key={slug} variant="secondary">
-              {renderTypeLabel(slug)}
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <article aria-label={item.nameJa}>
+      <Card className="overflow-hidden">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-baseline justify-between gap-2">
+            <span className="text-base font-semibold">{item.nameJa}</span>
+            <span className="font-mono text-xs text-muted-foreground">{formatPokedexNumber(item.pokedexNumber)}</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center gap-3">
+          <Sprite url={item.defaultSpriteUrl} alt={item.nameJa} />
+          <div className="flex flex-wrap justify-center gap-1">
+            {item.types.map((slug) => (
+              <Badge key={slug} variant="secondary">
+                {renderTypeLabel(slug)}
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </article>
   );
 }

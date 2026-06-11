@@ -69,6 +69,20 @@ describe('<PokemonListView>', () => {
     render(<PokemonListView initialPage={SAMPLE_PAGE} />, { wrapper: buildWrapper() });
 
     expect(screen.getByText('ミュウ')).toBeInTheDocument();
+    expect(screen.queryByLabelText('ポケモン一覧を読み込み中')).not.toBeInTheDocument();
+  });
+
+  it('initialPage 不在で Client 初回 fetch が pending の間は ListSkeleton を描画する (空白回避)', async () => {
+    // MSW 既定の handler でも fetch は走るが、初回 render 時点では query.isPending=true で items=0
+    server.use(pokemonListSuccessHandler);
+
+    render(<PokemonListView />, { wrapper: buildWrapper() });
+
+    // 初回 render 直後は pending → ListSkeleton (aria-label="ポケモン一覧を読み込み中") が描画される
+    expect(screen.getByLabelText('ポケモン一覧を読み込み中')).toBeInTheDocument();
+    // fetch 完了後は ListSkeleton が消え、データが表示される
+    await waitFor(() => expect(screen.getByText('フシギダネ')).toBeInTheDocument());
+    expect(screen.queryByLabelText('ポケモン一覧を読み込み中')).not.toBeInTheDocument();
   });
 
   it('initialPage のアイテムが placeholder/ URL や 空 URL を持つときは "no image" fallback を render する (dev seed 互換)', () => {
