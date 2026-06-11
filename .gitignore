@@ -38,3 +38,6 @@ out/
 # Test / coverage
 coverage/
 .nyc_output/
+
+# Playwright MCP (Claude Code) artifacts
+.playwright-mcp/
