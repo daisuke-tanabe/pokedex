@@ -7,9 +7,17 @@
     "lib": ["ES2024"],
     "rootDir": "./src",
     "outDir": "./dist",
+    // base tsconfig は `noEmit: true` だが、本パッケージは consumer (apps/web の Turbopack 等)
+    // のために `dist/` へ `.js` + `.d.ts` を emit する必要があるため override する。
+    // typecheck 用には `pnpm typecheck` が `tsc --noEmit` 経由で実行する。
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["**/*.test.ts", "dist"]
 }
