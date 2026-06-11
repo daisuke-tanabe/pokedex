@@ -1,4 +1,4 @@
-import { serverApiClient } from '@/lib/api-client';
+import { serverApiClient } from '@/lib/api-client.server';
 import { errorEnvelope, successEnvelope } from '@/lib/envelope';
 
 export const dynamic = 'force-dynamic';
