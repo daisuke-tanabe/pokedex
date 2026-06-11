@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
+import { NuqsProvider } from './nuqs-provider';
+import { QueryProvider } from './query-provider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -10,8 +12,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body suppressHydrationWarning>{children}</body>
+    <html lang="ja">
+      <body suppressHydrationWarning>
+        <QueryProvider>
+          <NuqsProvider>{children}</NuqsProvider>
+        </QueryProvider>
+      </body>
     </html>
   );
 }
