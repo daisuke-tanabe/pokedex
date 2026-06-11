@@ -17,6 +17,18 @@ type RawSearchParams = {
 };
 
 /**
+ * upstream が 5xx で応答した、もしくは Hono RPC で必須のはずのルートが取得できなかった
+ * 「持続的なサーバ障害」を表す Error。Next.js の `error.tsx` 経路に飛ばす目印として使う。
+ * catch ブロックで message 文字列マッチに頼らず instanceof で判別する。
+ */
+class UpstreamServerError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UpstreamServerError';
+  }
+}
+
+/**
  * RSC で 1 ページ目を fetch する。
  *
  * 本 RSC 段は SSR 最適化 (初回 skeleton 回避) のための先取り fetch。失敗種別ごとに方針を分ける:
@@ -40,11 +52,11 @@ async function fetchInitialPage(params: RawSearchParams): Promise<PokemonSearchP
     if (upstream === undefined) {
       // Hono RPC 型推論で optional になっているが、ランタイムでは必ず存在する
       // (健全性を欠く構成変更を早期検出するため error.tsx へ)
-      throw new Error('[page] upstream client missing api.pokemon route');
+      throw new UpstreamServerError('[page] upstream client missing api.pokemon route');
     }
     if (upstream.status >= 500) {
       // 持続的なサーバエラーは Client retry でも復旧しないため error.tsx に委ねる
-      throw new Error(`[page] upstream returned ${upstream.status}`);
+      throw new UpstreamServerError(`[page] upstream returned ${upstream.status}`);
     }
     if (!upstream.ok) {
       // 4xx (typically INVALID_QUERY): URL の query が壊れている可能性。Client 側の再試行で
@@ -63,12 +75,9 @@ async function fetchInitialPage(params: RawSearchParams): Promise<PokemonSearchP
       meta: { nextCursor: body.meta?.nextCursor ?? null },
     };
   } catch (error) {
-    // 5xx の Error は再 throw して error.tsx へ。
+    // UpstreamServerError (5xx / missing route) は再 throw して error.tsx へ。
     // network error (ECONNREFUSED 等) / JSON decode error はここで吸収して Client retry に倒す。
-    if (error instanceof Error && error.message.startsWith('[page] upstream returned 5')) {
-      throw error;
-    }
-    if (error instanceof Error && error.message.startsWith('[page] upstream client missing')) {
+    if (error instanceof UpstreamServerError) {
       throw error;
     }
     console.error('[page] RSC initial fetch failed (network / decode), falling back to client fetch:', error);

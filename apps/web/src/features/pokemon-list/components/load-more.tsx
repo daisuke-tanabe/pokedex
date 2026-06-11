@@ -61,6 +61,9 @@ export function LoadMore({ onLoadMore, isLoading }: LoadMoreProps) {
           aria-hidden
           className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
         >
+          {/* xl breakpoint の最大列数 (5) に合わせ skeleton も 5 件並べる */}
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-32 w-full" />
