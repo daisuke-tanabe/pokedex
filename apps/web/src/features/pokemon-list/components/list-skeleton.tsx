@@ -1,5 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { POKEMON_CARD_SKELETON_CLASS } from '../lib/card-layout';
+
 const SKELETON_PLACEHOLDERS = Array.from({ length: 10 }, (_, i) => i);
 
 /**
@@ -19,7 +21,7 @@ export function ListSkeleton() {
       className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
     >
       {SKELETON_PLACEHOLDERS.map((i) => (
-        <Skeleton key={i} className="h-48 w-full rounded-xl" />
+        <Skeleton key={i} className={POKEMON_CARD_SKELETON_CLASS} />
       ))}
     </div>
   );
