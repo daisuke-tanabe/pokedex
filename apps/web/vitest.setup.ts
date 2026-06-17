@@ -14,8 +14,26 @@ beforeAll(() => {
   if (!Element.prototype.releasePointerCapture) {
     Element.prototype.releasePointerCapture = vi.fn() as Element['releasePointerCapture'];
   }
+  // vaul (Drawer) は drag 判定のため content 内の pointerdown で setPointerCapture を呼ぶ。
+  if (!Element.prototype.setPointerCapture) {
+    Element.prototype.setPointerCapture = vi.fn() as Element['setPointerCapture'];
+  }
   if (!Element.prototype.scrollIntoView) {
     Element.prototype.scrollIntoView = vi.fn() as Element['scrollIntoView'];
+  }
+  // vaul (Drawer) は mount 時に matchMedia を参照するが jsdom は未実装。
+  // reduced-motion 等の判定に使うだけなので「常に非マッチ」で十分。
+  if (typeof window.matchMedia !== 'function') {
+    window.matchMedia = vi.fn((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(() => false),
+    })) as unknown as typeof window.matchMedia;
   }
   server.listen({ onUnhandledRequest: 'error' });
 });

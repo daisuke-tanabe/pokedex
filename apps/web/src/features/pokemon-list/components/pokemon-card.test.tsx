@@ -75,4 +75,19 @@ describe('<PokemonCard>', () => {
     expect(screen.getByText('no image')).toBeInTheDocument();
     expect(container.querySelectorAll('img')).toHaveLength(0);
   });
+
+  it('既知の TypeSlug の badge は対応する色クラスが適用され日本語ラベルが併記される', () => {
+    render(<PokemonCard item={PIKACHU} />);
+
+    const badge = screen.getByText('でんき');
+    // 色クラス (背景トークン参照) が当たり、かつラベル文字でタイプを識別できる (色非依存)
+    expect(badge.className).toContain('bg-[var(--color-type-electric)]');
+  });
+
+  it('未知の slug は色クラスを当てず raw 文字列を neutral badge で表示する', () => {
+    render(<PokemonCard item={{ ...PIKACHU, types: ['mystery'] }} />);
+
+    const badge = screen.getByText('mystery');
+    expect(badge.className).not.toContain('--color-type');
+  });
 });

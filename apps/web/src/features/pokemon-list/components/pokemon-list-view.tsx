@@ -7,7 +7,7 @@ import { EmptyState } from './empty-state';
 import { ListSkeleton } from './list-skeleton';
 import { LoadMore } from './load-more';
 import { PokemonGrid } from './pokemon-grid';
-import { SearchForm } from './search-form';
+import { SearchDrawer } from './search-drawer';
 
 type PokemonListViewProps = {
   initialPage?: PokemonSearchPage;
@@ -34,7 +34,7 @@ export function PokemonListView({ initialPage }: PokemonListViewProps) {
 
   return (
     <div className="space-y-6">
-      <SearchForm />
+      <SearchDrawer />
       {showLoading ? (
         <ListSkeleton />
       ) : showEmpty ? (

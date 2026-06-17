@@ -2,9 +2,10 @@ import { TYPE_SLUG_VALUES, type PokemonListItem, type TypeSlug } from '@pokedex/
 import Image from 'next/image';
 
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
-import { typeLabel } from '../lib/labels-type';
+import { typeColorClass, typeLabel } from '../lib/labels-type';
 
 const POKEDEX_NUMBER_DIGITS = 4;
 const SPRITE_SIZE = 96;
@@ -62,18 +63,24 @@ function Sprite({ url, alt }: { url: string; alt: string }) {
 export function PokemonCard({ item }: { item: PokemonListItem }) {
   return (
     <article aria-label={item.nameJa}>
-      <Card className="overflow-hidden">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-baseline justify-between gap-2">
-            <span className="text-base font-semibold">{item.nameJa}</span>
-            <span className="font-mono text-xs text-muted-foreground">{formatPokedexNumber(item.pokedexNumber)}</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center gap-3">
+      <Card className="gap-0 overflow-hidden py-0 shadow-sm">
+        <CardContent className="flex flex-col items-center gap-2 px-4 py-4">
           <Sprite url={item.defaultSpriteUrl} alt={item.nameJa} />
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="font-mono text-xs font-normal text-muted-foreground">
+              {formatPokedexNumber(item.pokedexNumber)}
+            </span>
+            <span className="text-base font-medium">{item.nameJa}</span>
+          </div>
           <div className="flex flex-wrap justify-center gap-1">
             {item.types.map((slug) => (
-              <Badge key={slug} variant="secondary">
+              <Badge
+                key={slug}
+                variant="secondary"
+                className={
+                  isTypeSlug(slug) ? cn('border-transparent text-foreground', typeColorClass(slug)) : undefined
+                }
+              >
                 {renderTypeLabel(slug)}
               </Badge>
             ))}

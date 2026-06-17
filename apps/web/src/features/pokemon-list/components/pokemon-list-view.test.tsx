@@ -145,6 +145,8 @@ describe('<PokemonListView>', () => {
     await waitFor(() => expect(screen.getByText('フシギダネ')).toBeInTheDocument());
 
     const user = userEvent.setup();
+    // SearchForm は検索モーダル内に移動したため、まずトリガーを開いてから select を操作する
+    await user.click(screen.getByRole('button', { name: /絞り込み/ }));
     await user.click(screen.getByLabelText('図鑑を選択'));
     const listbox = await screen.findByRole('listbox');
     await user.click(within(listbox).getByRole('option', { name: 'パルデア図鑑' }));

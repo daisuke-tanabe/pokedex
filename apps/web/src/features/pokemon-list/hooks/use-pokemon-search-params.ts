@@ -44,11 +44,11 @@ export function usePokemonSearchParams(): PokemonSearchParams {
 
   const setTypes = useCallback<SetTypes>(
     (next) => {
-      if (next.length > MAX_TYPES) {
-        // MAX_TYPES 超過時は既存維持 (Requirement: "新しい選択を受け付けず既存選択を維持する")
-        return Promise.resolve(new URLSearchParams());
-      }
-      return setTypesRaw([...next]);
+      // MAX_TYPES を超える選択は、最も古い選択を退避して末尾 (新しい順) の MAX_TYPES 件に絞る
+      // (Requirement: "最古の選択を退避する")。ToggleGroup は新しく押した値を末尾に append するため、
+      // 末尾 MAX_TYPES 件を残せば最古が落ちる。例: ほのお→くさ→でんき で くさ,でんき になる。
+      const limited = next.length > MAX_TYPES ? next.slice(next.length - MAX_TYPES) : next;
+      return setTypesRaw([...limited]);
     },
     [setTypesRaw],
   );

@@ -1,3 +1,4 @@
+import type { TypeSlug } from '@pokedex/contracts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
@@ -96,5 +97,41 @@ describe('useInfinitePokemonSearch', () => {
 
     expect(result.current.data?.pages[0]).toEqual(initialPage);
     expect(result.current.hasNextPage).toBe(false);
+  });
+
+  it('initialPage は初期 input にのみ適用され、検索条件変更後の queryKey には引き継がれない (切替時に古い一覧を残さない)', async () => {
+    server.use(pokemonListSuccessHandler);
+    const initialPage = {
+      data: [
+        {
+          speciesSlug: 'mew',
+          formSlug: 'mew',
+          pokedexNumber: 151,
+          nameJa: 'ミュウ',
+          types: ['psychic'],
+          defaultSpriteUrl: 'https://example.test/sprites/mew.png',
+        },
+      ],
+      meta: { nextCursor: null },
+    };
+
+    const { result, rerender } = renderHook(
+      ({ types }: { types: readonly TypeSlug[] }) =>
+        useInfinitePokemonSearch({ pokedex: 'national', types }, initialPage),
+      { wrapper: buildWrapper(), initialProps: { types: [] as readonly TypeSlug[] } },
+    );
+
+    // 初期 input (= RSC が取得した条件) では initialPage で即 hydrate される
+    expect(result.current.data?.pages[0]).toEqual(initialPage);
+
+    // types を変更すると別 queryKey になり、initialData が引き継がれないため pending に倒れる
+    // (= 切替時に古い一覧が success 状態で残らず、呼び出し側が skeleton を出せる)
+    rerender({ types: ['fire'] });
+    expect(result.current.isPending).toBe(true);
+    expect(result.current.data).toBeUndefined();
+
+    // fetch 完了後に新しい queryKey のデータが入る
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data?.pages[0]?.data).toHaveLength(3);
   });
 });

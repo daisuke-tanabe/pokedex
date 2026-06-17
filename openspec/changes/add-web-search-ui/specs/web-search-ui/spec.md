@@ -47,10 +47,10 @@
 - **WHEN** `<SearchForm>` で `fire` を選び、続けて `flying` を選び、300ms 待つ
 - **THEN** URL クエリが `?types=fire,flying` に更新される
 
-#### Scenario [unit]: MAX_TYPES を超える選択は受け付けない
+#### Scenario [unit]: MAX_TYPES を超える選択は最古を退避する (FIFO)
 
-- **WHEN** `<SearchForm>` で既に `fire` と `flying` を選んだ状態でさらに `water` を選ぼうとする
-- **THEN** `water` は active 状態にならず、選択は `fire,flying` のまま維持される
+- **WHEN** `<SearchForm>` で既に `fire` と `flying` を選んだ状態でさらに `water` を選ぶ
+- **THEN** 最古の `fire` が外れ、選択は `flying,water` になる (末尾 MAX_TYPES 件を残す)
 
 ### Requirement: nuqs による URL state 双方向同期
 

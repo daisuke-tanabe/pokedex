@@ -81,7 +81,7 @@ describe('<SearchForm>', () => {
     expect(lastCall?.searchParams.get('types')).toBe('fire,flying');
   });
 
-  it('既に 2 件選択された状態でさらに 1 件選ぼうとしても active 化しない (MAX_TYPES guard)', async () => {
+  it('既に 2 件選択された状態でさらに 1 件選ぶと最古が外れ新しい 2 件が active になる (FIFO)', async () => {
     const user = userEvent.setup();
     render(<SearchForm />, { wrapper: buildWrapper('?types=fire,flying') });
 
@@ -96,9 +96,29 @@ describe('<SearchForm>', () => {
 
     await user.click(water);
 
-    // water は active 化されず off のままで、fire/flying はそのまま on
-    expect(water).toHaveAttribute('data-state', 'off');
-    expect(fire).toHaveAttribute('data-state', 'on');
+    // 最古の fire が外れ、flying / water が active になる
+    expect(fire).toHaveAttribute('data-state', 'off');
     expect(flying).toHaveAttribute('data-state', 'on');
+    expect(water).toHaveAttribute('data-state', 'on');
+  });
+
+  it('ほのお→くさ→でんき の順に選ぶと最古が落ちて くさ,でんき が URL に残る (FIFO 例)', async () => {
+    const onUrlUpdate = vi.fn();
+    const user = userEvent.setup();
+    render(<SearchForm />, {
+      wrapper: ({ children }) => (
+        <NuqsTestingAdapter searchParams="" hasMemory onUrlUpdate={onUrlUpdate}>
+          {children}
+        </NuqsTestingAdapter>
+      ),
+    });
+
+    const group = screen.getByRole('group', { name: 'タイプ絞り込み' });
+    await user.click(within(group).getByRole('button', { name: 'ほのお' }));
+    await user.click(within(group).getByRole('button', { name: 'くさ' }));
+    await user.click(within(group).getByRole('button', { name: 'でんき' }));
+
+    const lastCall = onUrlUpdate.mock.calls.at(-1)?.[0];
+    expect(lastCall?.searchParams.get('types')).toBe('grass,electric');
   });
 });

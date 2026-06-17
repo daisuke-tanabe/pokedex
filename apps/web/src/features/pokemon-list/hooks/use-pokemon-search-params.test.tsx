@@ -44,18 +44,19 @@ describe('usePokemonSearchParams', () => {
     expect(result.current.types).toEqual(['fire', 'flying']);
   });
 
-  it('MAX_TYPES (= 2) を超える選択 (3 件) は受け付けず既存値を維持する', async () => {
+  it('MAX_TYPES (= 2) を超える選択 (3 件) は最古を退避し末尾 2 件を残す (FIFO)', async () => {
     const { result } = renderHook(() => usePokemonSearchParams(), {
       wrapper: buildWrapper('?types=fire,flying'),
     });
 
     expect(result.current.types).toEqual(['fire', 'flying']);
 
+    // fire,flying 選択中に water を追加 → 最古の fire が落ちて flying,water になる
     await act(async () => {
       await result.current.setTypes(['fire', 'flying', 'water']);
     });
 
-    expect(result.current.types).toEqual(['fire', 'flying']);
+    expect(result.current.types).toEqual(['flying', 'water']);
   });
 
   it('setPokedex で pokedex を変更すると state に反映される (即時)', async () => {
