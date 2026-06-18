@@ -2,18 +2,34 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
-import type { ReactNode } from 'react';
+import { Component, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PAGE_2_CURSOR_TOKEN, pokemonListSuccessHandler } from '@/test/msw/handlers';
+import { PAGE_2_CURSOR_TOKEN, pokemonListErrorHandler, pokemonListSuccessHandler } from '@/test/msw/handlers';
 import { server } from '@/test/msw/server';
 
 import type { PokemonSearchPage } from '../api/search-pokemon';
 import { PokemonListView } from './pokemon-list-view';
 
+/**
+ * throwOnError で投げられた error が境界に伝播することを検証するためのテスト用 error boundary。
+ * エラーの内容自体は検証しない (伝播の有無だけ見る) ため getDerivedStateFromError の引数は省略する。
+ */
+class CatchBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  override state = { hasError: false };
+  static getDerivedStateFromError(): { hasError: boolean } {
+    return { hasError: true };
+  }
+  override render(): ReactNode {
+    return this.state.hasError ? <p>error-fallback</p> : this.props.children;
+  }
+}
+
 const buildWrapper =
   (searchParams = ''): ((props: { children: ReactNode }) => ReactNode) =>
   ({ children }) => {
+    // retry: false は全テスト共通のデフォルト。特に error handler を使うケースで
+    // 無限 retry を防ぎ、isError へ即座に遷移させるために必要。
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     return (
       <QueryClientProvider client={queryClient}>
@@ -187,5 +203,27 @@ describe('<PokemonListView>', () => {
 
     // page 1 の最終 cursor が PAGE_2_CURSOR_TOKEN だった証拠 (sanity check)
     expect(PAGE_2_CURSOR_TOKEN).toBe('msw-cursor-page-2');
+  });
+
+  it('initialPage 不在で Client fetch が失敗 (data 無し) すると error が boundary に伝播する (throwOnError → error.tsx)', async () => {
+    // throwOnError を持たないと isError でも throw されず、SearchDrawer だけの無音ブランクになる。
+    // throwOnError: (_e, q) => q.state.data === undefined により data 未取得の失敗のみ境界へ飛ばす。
+    server.use(pokemonListErrorHandler);
+    // React は error boundary への伝播時に内部スタックトレースを console.error へ複数回出力する。
+    // ここでは意図的に発生させるエラーなので、本テストのスコープ内だけ抑制して CI ログを汚さない。
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    try {
+      render(
+        <CatchBoundary>
+          <PokemonListView />
+        </CatchBoundary>,
+        { wrapper: buildWrapper() },
+      );
+
+      await waitFor(() => expect(screen.getByText('error-fallback')).toBeInTheDocument());
+    } finally {
+      consoleSpy.mockRestore();
+    }
   });
 });

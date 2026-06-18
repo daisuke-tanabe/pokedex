@@ -70,6 +70,11 @@ export function useInfinitePokemonSearch(input: PokemonSearchInput, initialPage?
     initialPageParam: undefined,
     getNextPageParam: (last) => last.meta.nextCursor ?? undefined,
     staleTime: LIST_STALE_TIME_MS,
+    // 表示できるデータが 1 件も無いまま fetch が失敗した (= 初回ロード失敗) ときのみ error を
+    // throw し、App Router の error.tsx (再試行 UI) に委ねる。data が既にある状態での背景
+    // re-fetch / fetchNextPage の失敗では throw せず、表示中の一覧を維持する。
+    // (throwOnError 未設定だと isError でも throw されず、一覧が空白のまま無音ブランクになる)
+    throwOnError: (_error, query) => query.state.data === undefined,
     // initialData プロパティは undefined を直接受け付けない型のため、ある時だけキーを展開する。
     ...(initialData === undefined ? {} : { initialData }),
   });
