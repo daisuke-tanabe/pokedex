@@ -99,6 +99,48 @@ describe('useInfinitePokemonSearch', () => {
     expect(result.current.hasNextPage).toBe(false);
   });
 
+  it('initialPage 提供時は mount 直後に背景 re-fetch を走らせない (staleTime で RSC 先取りの帯域を温存)', async () => {
+    server.use(pokemonListSuccessHandler);
+    const initialPage = {
+      data: [
+        {
+          speciesSlug: 'mew',
+          formSlug: 'mew',
+          pokedexNumber: 151,
+          nameJa: 'ミュウ',
+          types: ['psychic'],
+          defaultSpriteUrl: 'https://example.test/sprites/mew.png',
+        },
+      ],
+      meta: { nextCursor: null },
+    };
+
+    let pokemonRequests = 0;
+    const onRequest = ({ request }: { request: Request }): void => {
+      if (new URL(request.url).pathname.endsWith('/api/pokemon')) {
+        pokemonRequests += 1;
+      }
+    };
+    server.events.on('request:start', onRequest);
+
+    try {
+      renderHook(() => useInfinitePokemonSearch({ pokedex: 'national', types: [] }, initialPage), {
+        wrapper: buildWrapper(),
+      });
+
+      // mount 時の effect / react-query のフェッチ dispatch を一通りフラッシュしてから件数を確認する。
+      // staleTime 未設定だと initialData が即 stale 扱いになり mount 直後に背景 re-fetch (request:start)
+      // が走る。フラッシュ後も 0 件であることで、staleTime による re-fetch 抑止を担保する
+      // (「0 になるのを待つ」waitFor ではなく、非同期を流し切った後に 1 度だけアサートする)。
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+      expect(pokemonRequests).toBe(0);
+    } finally {
+      server.events.removeListener('request:start', onRequest);
+    }
+  });
+
   it('initialPage は初期 input にのみ適用され、検索条件変更後の queryKey には引き継がれない (切替時に古い一覧を残さない)', async () => {
     server.use(pokemonListSuccessHandler);
     const initialPage = {

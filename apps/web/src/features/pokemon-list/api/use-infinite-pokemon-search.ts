@@ -13,6 +13,14 @@ export type PokemonSearchInput = {
 
 type CursorPageParam = string | undefined;
 
+// RSC が先取りした 1 ページ目 (initialData) を mount 直後に Client が再 fetch しないための
+// stale 猶予。staleTime 未指定 (既定 0) だと initialData が即 stale 扱いになり背景 re-fetch が
+// 走り、RSC 先取りの帯域節約効果を打ち消す。
+// なお staleTime は queryKey 単位の新鮮度制御なので initialData の有無に関わらず作用し、
+// 通常 fetch (検索条件変更後など) の完了後も 30 秒間は fresh 扱いで重複 re-fetch を抑止する。
+// 図鑑データは静的寄りで頻繁な更新が無いため 30 秒で十分。
+const LIST_STALE_TIME_MS = 30_000;
+
 // types は選択順を含めた一致を判定する。URL query の types は ToggleGroup の選択順を
 // そのまま反映するため、順序が変われば別の検索条件 (別 queryKey) とみなす。
 const isSameInput = (a: PokemonSearchInput, b: PokemonSearchInput): boolean =>
@@ -61,6 +69,7 @@ export function useInfinitePokemonSearch(input: PokemonSearchInput, initialPage?
       }),
     initialPageParam: undefined,
     getNextPageParam: (last) => last.meta.nextCursor ?? undefined,
+    staleTime: LIST_STALE_TIME_MS,
     // initialData プロパティは undefined を直接受け付けない型のため、ある時だけキーを展開する。
     ...(initialData === undefined ? {} : { initialData }),
   });
