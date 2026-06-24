@@ -77,21 +77,28 @@ export const createRealPokemonRepository = (db: DB): PokemonRepository => ({
     // `forms` テーブルに対する 2 alias で表現する (drizzle の alias()).
     const specifiedForm = alias(forms, 'specified_form');
     const defaultForm = alias(forms, 'default_form');
-    const effectiveFormId = sql<number>`COALESCE(${specifiedForm.id}, ${defaultForm.id})`.as('form_id');
-    const effectiveFormSlug = sql<string>`COALESCE(${specifiedForm.slug}, ${defaultForm.slug})`.as('form_slug');
+    // PostgreSQL は SELECT の column alias (= `.as('form_id')`) を WHERE 句で参照できないため、
+    // 「WHERE / cursor 用の raw expression」と「SELECT / ORDER BY 用の alias 版」を分けて扱う。
+    const effectiveFormIdExpr = sql<number>`COALESCE(${specifiedForm.id}, ${defaultForm.id})`;
+    const effectiveFormSlugExpr = sql<string>`COALESCE(${specifiedForm.slug}, ${defaultForm.slug})`;
+    const effectiveFormId = effectiveFormIdExpr.as('form_id');
+    const effectiveFormSlug = effectiveFormSlugExpr.as('form_slug');
 
     const conditions = [eq(pokedexEntries.pokedexId, pokedexId)];
 
     if (cursor !== null) {
-      conditions.push(sql`(${pokedexEntries.pokedexNumber}, ${effectiveFormId}) > (${cursor.pn}, ${cursor.fid})`);
+      conditions.push(sql`(${pokedexEntries.pokedexNumber}, ${effectiveFormIdExpr}) > (${cursor.pn}, ${cursor.fid})`);
     }
 
     if (typeCount > 0) {
       // AND 検索: 指定タイプを全部 (DISTINCT 件数で N) 持つ form を抽出する。
+      // drizzle の sql template に裸の配列を `IN ${arr}` で渡すと PostgreSQL 側で
+      // `IN $1` (= 単一 array 値) として scalar 比較になり常に空集合になるため、
+      // `inArray()` 演算子を埋め込んで `IN (...)` に正しく展開させる。
       conditions.push(
-        sql`${effectiveFormId} IN (
+        sql`${effectiveFormIdExpr} IN (
           SELECT ${formTypes.formId} FROM ${formTypes}
-          WHERE ${formTypes.typeId} IN ${typeIds}
+          WHERE ${inArray(formTypes.typeId, typeIds)}
           GROUP BY ${formTypes.formId}
           HAVING COUNT(DISTINCT ${formTypes.typeId}) = ${typeCount}
         )`,
