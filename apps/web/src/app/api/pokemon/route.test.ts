@@ -4,6 +4,7 @@ import {
   PAGE_2_CURSOR_TOKEN,
   pokemonListEmptyHandler,
   pokemonListErrorHandler,
+  pokemonListNetworkErrorHandler,
   pokemonListSuccessHandler,
 } from '@/test/msw/handlers';
 import { server } from '@/test/msw/server';
@@ -71,5 +72,16 @@ describe('GET /api/pokemon (Route Handler proxy)', () => {
     const response = await GET(buildRequest(''));
 
     expect(response.headers.get('content-type')).toContain('application/json');
+  });
+
+  it('upstream fetch が失敗 (ネットワーク断 / タイムアウト abort 相当) したら 503 を返す', async () => {
+    // AbortSignal.timeout の abort や upstream 断は fetch が reject し、catch 経路で 503 になる。
+    server.use(pokemonListNetworkErrorHandler);
+
+    const response = await GET(buildRequest(''));
+
+    expect(response.status).toBe(503);
+    const body = (await response.json()) as { success: false; error: { code: string } };
+    expect(body.success).toBe(false);
   });
 });

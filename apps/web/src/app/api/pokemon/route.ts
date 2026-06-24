@@ -17,10 +17,17 @@ if (apiUrl === undefined) {
 
 export const dynamic = 'force-dynamic';
 
+// upstream がハングした際に Route Handler が無制限に吊られないための明示タイムアウト。
+// 超過時は fetch が abort され (TimeoutError 相当の例外) で reject し、下の catch-all 経路で
+// 503 に倒れる。catch は例外種別で分岐しないため、種別の差異は現状の挙動に影響しない。
+const UPSTREAM_TIMEOUT_MS = 10_000;
+
 export async function GET(request: Request): Promise<Response> {
   try {
     const incomingUrl = new URL(request.url);
-    const upstream = await fetch(`${apiUrl}/api/pokemon${incomingUrl.search}`);
+    const upstream = await fetch(`${apiUrl}/api/pokemon${incomingUrl.search}`, {
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
     // body を消費しないと undici のコネクションプールが GC まで遅延クリーンアップされる
     // (api/health/route.ts と同方針)。
     const body = await upstream.text();

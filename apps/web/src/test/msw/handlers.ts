@@ -90,4 +90,8 @@ export const pokemonListErrorHandler = http.get(`${apiUrl}/api/pokemon`, () =>
   HttpResponse.json(errorEnvelope('INTERNAL_ERROR', 'upstream failure'), { status: 500 }),
 );
 
+// upstream fetch 自体が失敗するケース (ネットワーク断 / タイムアウト abort 相当)。
+// Route Handler proxy の catch 経路 (→ 503) を検証するために使う。
+export const pokemonListNetworkErrorHandler = http.get(`${apiUrl}/api/pokemon`, () => HttpResponse.error());
+
 export const handlers = [healthSuccessHandler, pokemonListSuccessHandler];
