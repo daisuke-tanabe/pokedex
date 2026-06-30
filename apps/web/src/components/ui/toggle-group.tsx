@@ -28,6 +28,10 @@ function ToggleGroup({
   VariantProps<typeof toggleVariants> & {
     spacing?: number;
   }) {
+  // 毎レンダで新しいオブジェクトを作ると Provider 配下が不要に再レンダされるため memo 化する
+  // (react/jsx-no-constructed-context-values)。
+  const contextValue = React.useMemo(() => ({ variant, size, spacing }), [variant, size, spacing]);
+
   return (
     <ToggleGroupPrimitive.Root
       data-slot="toggle-group"
@@ -41,7 +45,7 @@ function ToggleGroup({
       )}
       {...props}
     >
-      <ToggleGroupContext.Provider value={{ variant, size, spacing }}>{children}</ToggleGroupContext.Provider>
+      <ToggleGroupContext.Provider value={contextValue}>{children}</ToggleGroupContext.Provider>
     </ToggleGroupPrimitive.Root>
   );
 }
