@@ -77,6 +77,31 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /*
+   * タイプ badge 背景色 (light)。定番タイプカラーの色相を土台に、彩度を落とした
+   * 低〜中彩度の淡色トーン (L≈0.90)。badge の文字色 `text-foreground` (≈oklch(0.145)) と
+   * 4.5:1 以上のコントラストを確保する。`@theme inline` には map せず、`labels-type.ts` の
+   * className マップから `var()` 参照する (utility 化しない / Decision 2)。
+   */
+  --color-type-normal: oklch(0.9 0.012 110);
+  --color-type-fire: oklch(0.9 0.07 35);
+  --color-type-water: oklch(0.9 0.06 250);
+  --color-type-electric: oklch(0.92 0.08 95);
+  --color-type-grass: oklch(0.91 0.07 145);
+  --color-type-ice: oklch(0.92 0.05 210);
+  --color-type-fighting: oklch(0.89 0.07 30);
+  --color-type-poison: oklch(0.9 0.07 320);
+  --color-type-ground: oklch(0.9 0.06 70);
+  --color-type-flying: oklch(0.91 0.05 255);
+  --color-type-psychic: oklch(0.9 0.07 0);
+  --color-type-bug: oklch(0.91 0.07 125);
+  --color-type-rock: oklch(0.9 0.04 95);
+  --color-type-ghost: oklch(0.89 0.06 325);
+  --color-type-dragon: oklch(0.89 0.07 275);
+  --color-type-dark: oklch(0.89 0.02 60);
+  --color-type-steel: oklch(0.91 0.04 225);
+  --color-type-fairy: oklch(0.91 0.07 340);
 }
 
 .dark {
@@ -111,6 +136,29 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /*
+   * タイプ badge 背景色 (dark)。light と同色相のまま明度を落とした暗色トーン (L≈0.36)。
+   * badge の文字色 `text-foreground` (dark: ≈oklch(0.985)) と 4.5:1 以上を確保する。
+   */
+  --color-type-normal: oklch(0.35 0.012 110);
+  --color-type-fire: oklch(0.36 0.07 35);
+  --color-type-water: oklch(0.36 0.06 250);
+  --color-type-electric: oklch(0.38 0.07 95);
+  --color-type-grass: oklch(0.37 0.06 145);
+  --color-type-ice: oklch(0.38 0.05 210);
+  --color-type-fighting: oklch(0.35 0.07 30);
+  --color-type-poison: oklch(0.36 0.07 320);
+  --color-type-ground: oklch(0.36 0.05 70);
+  --color-type-flying: oklch(0.37 0.05 255);
+  --color-type-psychic: oklch(0.36 0.07 0);
+  --color-type-bug: oklch(0.37 0.06 125);
+  --color-type-rock: oklch(0.36 0.03 95);
+  --color-type-ghost: oklch(0.35 0.06 325);
+  --color-type-dragon: oklch(0.36 0.07 275);
+  --color-type-dark: oklch(0.34 0.02 60);
+  --color-type-steel: oklch(0.37 0.03 225);
+  --color-type-fairy: oklch(0.37 0.07 340);
 }
 
 @layer base {
