@@ -55,7 +55,7 @@ importers:
         version: 2.0.6(hono@4.12.27)
       '@hono/valibot-validator':
         specifier: 0.6.1
-        version: 0.6.1(hono@4.12.27)(valibot@1.4.1(typescript@6.0.3))
+        version: 0.6.1(hono@4.12.27)(valibot@1.4.2(typescript@6.0.3))
       '@pokedex/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -69,8 +69,8 @@ importers:
         specifier: 3.4.9
         version: 3.4.9
       valibot:
-        specifier: 1.4.1
-        version: 1.4.1(typescript@6.0.3)
+        specifier: 1.4.2
+        version: 1.4.2(typescript@6.0.3)
     devDependencies:
       '@types/node':
         specifier: 24.13.2
@@ -123,8 +123,8 @@ importers:
         specifier: 1.4.0
         version: 1.4.0
       valibot:
-        specifier: 1.4.1
-        version: 1.4.1(typescript@6.0.3)
+        specifier: 1.4.2
+        version: 1.4.2(typescript@6.0.3)
     devDependencies:
       '@pokedex/api':
         specifier: workspace:*
@@ -172,8 +172,8 @@ importers:
   packages/contracts:
     dependencies:
       valibot:
-        specifier: 1.4.1
-        version: 1.4.1(typescript@6.0.3)
+        specifier: 1.4.2
+        version: 1.4.2(typescript@6.0.3)
     devDependencies:
       vitest:
         specifier: 'catalog:'
@@ -3236,8 +3236,8 @@ packages:
       '@types/react':
         optional: true
 
-  valibot@1.4.1:
-    resolution: {integrity: sha512-klCmFTz2jeDluy9RwX+F884TCiogtdBJ/YaxSx1EOBYXa3NXNWj8kR1jjN8rzluwojJVWWaHJ4r1U5LfICnM3g==}
+  valibot@1.4.2:
+    resolution: {integrity: sha512-gjdCvJ6d3RyHAneqxMYMW9QMCwYMb3jpOO0IyHZV1bnRHFBHrX3VkIILt5XYR0WhwHiH7Mty8ovuPZ/O3gamrg==}
     peerDependencies:
       typescript: '>=5'
     peerDependenciesMeta:
@@ -3727,10 +3727,10 @@ snapshots:
     dependencies:
       hono: 4.12.27
 
-  '@hono/valibot-validator@0.6.1(hono@4.12.27)(valibot@1.4.1(typescript@6.0.3))':
+  '@hono/valibot-validator@0.6.1(hono@4.12.27)(valibot@1.4.2(typescript@6.0.3))':
     dependencies:
       hono: 4.12.27
-      valibot: 1.4.1(typescript@6.0.3)
+      valibot: 1.4.2(typescript@6.0.3)
 
   '@img/colour@1.1.0':
     optional: true
@@ -5951,7 +5951,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.17
 
-  valibot@1.4.1(typescript@6.0.3):
+  valibot@1.4.2(typescript@6.0.3):
     optionalDependencies:
       typescript: 6.0.3
 
