@@ -26,7 +26,7 @@
     "drizzle-orm": "0.45.2",
     "hono": "4.12.27",
     "postgres": "3.4.9",
-    "valibot": "1.4.1"
+    "valibot": "1.4.2"
   },
   "devDependencies": {
     "@types/node": "24.13.2",
