@@ -23,7 +23,7 @@
     "format:check": "oxfmt --check ."
   },
   "dependencies": {
-    "valibot": "1.4.1"
+    "valibot": "1.4.2"
   },
   "devDependencies": {
     "vitest": "catalog:"

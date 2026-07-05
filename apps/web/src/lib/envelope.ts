@@ -14,7 +14,7 @@ export function successEnvelope<TData>(data: TData): SuccessEnvelope<TData>;
 export function successEnvelope<TData, TMeta>(data: TData, meta: TMeta): SuccessEnvelope<TData, TMeta>;
 export function successEnvelope<TData, TMeta>(data: TData, meta?: TMeta): SuccessEnvelope<TData, TMeta> {
   if (meta === undefined) {
-    return { success: true, data } as SuccessEnvelope<TData, TMeta>;
+    return { success: true, data };
   }
   return { success: true, data, meta };
 }

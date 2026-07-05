@@ -32,13 +32,17 @@ function ToggleGroup({
   // (react/jsx-no-constructed-context-values)。
   const contextValue = React.useMemo(() => ({ variant, size, spacing }), [variant, size, spacing]);
 
+  // CSS カスタムプロパティ --gap は React.CSSProperties に型定義が無いため交差型で明示する
+  // (as キャストを避けつつ style プロパティへ渡せるようにする)。
+  const rootStyle: React.CSSProperties & Record<'--gap', number> = { '--gap': spacing };
+
   return (
     <ToggleGroupPrimitive.Root
       data-slot="toggle-group"
       data-variant={variant}
       data-size={size}
       data-spacing={spacing}
-      style={{ '--gap': spacing } as React.CSSProperties}
+      style={rootStyle}
       className={cn(
         'group/toggle-group flex w-fit items-center gap-[--spacing(var(--gap))] rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs',
         className,

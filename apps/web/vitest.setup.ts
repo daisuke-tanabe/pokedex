@@ -9,7 +9,7 @@ beforeAll(() => {
   // jsdom はこれらを実装していない (no-op で十分。テストでは「クリックで開いて項目を選ぶ」
   // という振る舞いの検証ができればよい)。
   if (!Element.prototype.hasPointerCapture) {
-    Element.prototype.hasPointerCapture = vi.fn(() => false) as Element['hasPointerCapture'];
+    Element.prototype.hasPointerCapture = vi.fn(() => false);
   }
   if (!Element.prototype.releasePointerCapture) {
     Element.prototype.releasePointerCapture = vi.fn() as Element['releasePointerCapture'];
@@ -33,7 +33,7 @@ beforeAll(() => {
       addListener: vi.fn(),
       removeListener: vi.fn(),
       dispatchEvent: vi.fn(() => false),
-    })) as unknown as typeof window.matchMedia;
+    }));
   }
   server.listen({ onUnhandledRequest: 'error' });
 });
