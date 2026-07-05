@@ -30,7 +30,8 @@ describe('<SearchDrawer>', () => {
 
     const dialog = await screen.findByRole('dialog');
     expect(within(dialog).getByLabelText('図鑑を選択')).toBeInTheDocument();
-    expect(within(dialog).getByRole('group', { name: 'タイプ絞り込み' })).toBeInTheDocument();
+    // radix ToggleGroup (type=multiple, roving focus) は Root を role="toolbar" で描画する
+    expect(within(dialog).getByRole('toolbar', { name: 'タイプ絞り込み' })).toBeInTheDocument();
   });
 
   it('Escape で Drawer が閉じる', async () => {

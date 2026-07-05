@@ -53,7 +53,8 @@ describe('<SearchForm>', () => {
   it('type toggle-group が TYPE_SLUG_VALUES の 18 項目を描画する', () => {
     render(<SearchForm />, { wrapper: buildWrapper() });
 
-    const group = screen.getByRole('group', { name: 'タイプ絞り込み' });
+    // radix ToggleGroup (type=multiple, roving focus) は Root を role="toolbar" で描画する
+    const group = screen.getByRole('toolbar', { name: 'タイプ絞り込み' });
     // ToggleGroupItem は radio もしくは button として描画される (Radix の type=multiple は button[aria-pressed])
     const items = within(group).getAllByRole('button');
     expect(items).toHaveLength(TYPE_SLUG_VALUES.length);
@@ -73,7 +74,8 @@ describe('<SearchForm>', () => {
       ),
     });
 
-    const group = screen.getByRole('group', { name: 'タイプ絞り込み' });
+    // radix ToggleGroup (type=multiple, roving focus) は Root を role="toolbar" で描画する
+    const group = screen.getByRole('toolbar', { name: 'タイプ絞り込み' });
     await user.click(within(group).getByRole('button', { name: 'ほのお' }));
     await user.click(within(group).getByRole('button', { name: 'ひこう' }));
 
@@ -85,7 +87,8 @@ describe('<SearchForm>', () => {
     const user = userEvent.setup();
     render(<SearchForm />, { wrapper: buildWrapper('?types=fire,flying') });
 
-    const group = screen.getByRole('group', { name: 'タイプ絞り込み' });
+    // radix ToggleGroup (type=multiple, roving focus) は Root を role="toolbar" で描画する
+    const group = screen.getByRole('toolbar', { name: 'タイプ絞り込み' });
     const fire = within(group).getByRole('button', { name: 'ほのお' });
     const flying = within(group).getByRole('button', { name: 'ひこう' });
     const water = within(group).getByRole('button', { name: 'みず' });
@@ -113,7 +116,8 @@ describe('<SearchForm>', () => {
       ),
     });
 
-    const group = screen.getByRole('group', { name: 'タイプ絞り込み' });
+    // radix ToggleGroup (type=multiple, roving focus) は Root を role="toolbar" で描画する
+    const group = screen.getByRole('toolbar', { name: 'タイプ絞り込み' });
     await user.click(within(group).getByRole('button', { name: 'ほのお' }));
     await user.click(within(group).getByRole('button', { name: 'くさ' }));
     await user.click(within(group).getByRole('button', { name: 'でんき' }));
