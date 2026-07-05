@@ -153,25 +153,41 @@ describe('<PokemonListView>', () => {
     expect(screen.getByRole('button', { name: 'もっと見る' })).toBeInTheDocument();
   });
 
-  it('searchParams 変更で queryKey が変わりリストがリセットされ、新しい fetch が走る', async () => {
+  it('searchParams 変更 (タイプ選択) で queryKey が変わり新しい fetch が走る', async () => {
     server.use(pokemonListSuccessHandler);
 
-    render(<PokemonListView />, { wrapper: buildWrapper() });
+    // 検索条件変更で新しい fetch が走ることを、/api/pokemon へのリクエスト回数で担保する。
+    let pokemonRequests = 0;
+    const onRequest = ({ request }: { request: Request }): void => {
+      if (new URL(request.url).pathname.endsWith('/api/pokemon')) {
+        pokemonRequests += 1;
+      }
+    };
+    server.events.on('request:start', onRequest);
 
-    await waitFor(() => expect(screen.getByText('フシギダネ')).toBeInTheDocument());
+    try {
+      render(<PokemonListView />, { wrapper: buildWrapper() });
 
-    const user = userEvent.setup();
-    // SearchForm は検索モーダル内に移動したため、まずトリガーを開いてから select を操作する
-    await user.click(screen.getByRole('button', { name: /絞り込み/ }));
-    await user.click(screen.getByLabelText('図鑑を選択'));
-    const listbox = await screen.findByRole('listbox');
-    await user.click(within(listbox).getByRole('option', { name: 'パルデア図鑑' }));
+      await waitFor(() => expect(screen.getByText('フシギダネ')).toBeInTheDocument());
+      const requestsAfterInitialLoad = pokemonRequests;
 
-    // pokedex 変更後も同じ MSW handler が 1 ページ目を返すため、再度 1 ページ目のデータが取得される
-    await waitFor(() => {
-      const data = screen.getAllByText('フシギダネ');
-      expect(data.length).toBeGreaterThan(0);
-    });
+      const user = userEvent.setup();
+      // SearchForm は検索モーダル内に移動したため、まずトリガーを開く。
+      // 検索条件の変更は Drawer 内の ToggleGroup (タイプ) で行う。図鑑 Select は
+      // jsdom + vaul (Drawer) + Radix Select の portal 化により focus トラップが競合し、
+      // open 時に無限ループでハングするため UI からは駆動できない (実ブラウザでは正常)。
+      // 図鑑 Select を UI から操作する経路自体は search-form.test.tsx (Drawer 外) が担保する。
+      await user.click(screen.getByRole('button', { name: /絞り込み/ }));
+      const toolbar = await screen.findByRole('toolbar', { name: 'タイプ絞り込み' });
+      await user.click(within(toolbar).getByRole('button', { name: 'ほのお' }));
+
+      // types 変更で queryKey が変わり、別条件として新しい fetch が走る (fetch 回数が増える)。
+      await waitFor(() => expect(pokemonRequests).toBeGreaterThan(requestsAfterInitialLoad));
+      // MSW は同じ 1 ページ目を返すため、再取得後も一覧が表示される。
+      await waitFor(() => expect(screen.getAllByText('フシギダネ').length).toBeGreaterThan(0));
+    } finally {
+      server.events.removeListener('request:start', onRequest);
+    }
   });
 
   it('LoadMore の click で 2 ページ目が取得される', async () => {
