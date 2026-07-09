@@ -52,10 +52,10 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: 2.0.8
-        version: 2.0.8(hono@4.12.27)
+        version: 2.0.8(hono@4.12.28)
       '@hono/valibot-validator':
         specifier: 0.6.1
-        version: 0.6.1(hono@4.12.27)(valibot@1.4.2(typescript@6.0.3))
+        version: 0.6.1(hono@4.12.28)(valibot@1.4.2(typescript@6.0.3))
       '@pokedex/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -63,8 +63,8 @@ importers:
         specifier: 0.45.2
         version: 0.45.2(postgres@3.4.9)
       hono:
-        specifier: 4.12.27
-        version: 4.12.27
+        specifier: 4.12.28
+        version: 4.12.28
       postgres:
         specifier: 3.4.9
         version: 3.4.9
@@ -102,8 +102,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       hono:
-        specifier: 4.12.27
-        version: 4.12.27
+        specifier: 4.12.28
+        version: 4.12.28
       lucide-react:
         specifier: 1.23.0
         version: 1.23.0(react@19.2.7)
@@ -2692,8 +2692,8 @@ packages:
   headers-polyfill@5.0.1:
     resolution: {integrity: sha512-1TJ6Fih/b8h5TIcv+1+Hw0PDQWJTKDKzFZzcKOiW1wJza3XoAQlkCuXLbymPYB8+ZQyw8mHvdw560e8zVFIWyA==}
 
-  hono@4.12.27:
-    resolution: {integrity: sha512-1yrb/+w6HWQJrUCLkJ2IF5jNIPvvFkblV5RNOYl6bV+OA6p9GLcMpHFFGTosSvHvcAUibuUukRqhlYI4z32C7Q==}
+  hono@4.12.28:
+    resolution: {integrity: sha512-YwUvVpSF7m1yOblFPrU3Hbo8XhPheBoiyfGuII6z19LnOr6JpDnyyp7LFNrfV56wS8tpvtBFGRISHN02pDdLOA==}
     engines: {node: '>=16.9.0'}
 
   html-encoding-sniffer@6.0.0:
@@ -3284,10 +3284,6 @@ packages:
   tw-animate-css@1.4.0:
     resolution: {integrity: sha512-7bziOlRqH0hJx80h/3mbicLW7o8qLsH5+RaLR2t+OHM3D0JlWGODQKQ4cxbK7WlvmUxpcj6Kgu6EKqjrGFe3QQ==}
 
-  type-fest@5.7.0:
-    resolution: {integrity: sha512-1URUxUqfHFM1c+zfSPsa3gnkO7Aq21qyH75SIduNYz4SzY964rn1X2vCMQaHSHhktiw+0kPa2iyb6PUpXqB6Vg==}
-    engines: {node: '>=20'}
-
   type-fest@5.8.0:
     resolution: {integrity: sha512-YGYEVz3Fm5iy/AybuA0oyNFq7H4CgQNfRp/qfe8nurE1kuCeNm3/vfm9X4Mtl+qLyaKJUh5xrFZwogr41SMjYA==}
     engines: {node: '>=20'}
@@ -3830,13 +3826,13 @@ snapshots:
 
   '@floating-ui/utils@0.2.11': {}
 
-  '@hono/node-server@2.0.8(hono@4.12.27)':
+  '@hono/node-server@2.0.8(hono@4.12.28)':
     dependencies:
-      hono: 4.12.27
+      hono: 4.12.28
 
-  '@hono/valibot-validator@0.6.1(hono@4.12.27)(valibot@1.4.2(typescript@6.0.3))':
+  '@hono/valibot-validator@0.6.1(hono@4.12.28)(valibot@1.4.2(typescript@6.0.3))':
     dependencies:
-      hono: 4.12.27
+      hono: 4.12.28
       valibot: 1.4.2(typescript@6.0.3)
 
   '@img/colour@1.1.0':
@@ -5452,7 +5448,7 @@ snapshots:
       '@types/set-cookie-parser': 2.4.10
       set-cookie-parser: 3.1.1
 
-  hono@4.12.27: {}
+  hono@4.12.28: {}
 
   html-encoding-sniffer@6.0.0:
     dependencies:
@@ -5654,7 +5650,7 @@ snapshots:
       statuses: 2.0.2
       strict-event-emitter: 0.5.1
       tough-cookie: 6.0.1
-      type-fest: 5.7.0
+      type-fest: 5.8.0
       until-async: 3.0.2
       yargs: 17.7.3
     optionalDependencies:
@@ -6075,10 +6071,6 @@ snapshots:
       '@turbo/windows-arm64': 2.10.3
 
   tw-animate-css@1.4.0: {}
-
-  type-fest@5.7.0:
-    dependencies:
-      tagged-tag: 1.0.0
 
   type-fest@5.8.0:
     dependencies:
