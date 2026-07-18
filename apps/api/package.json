@@ -20,7 +20,7 @@
     "db:reset": "supabase db reset && pnpm seed"
   },
   "dependencies": {
-    "@hono/node-server": "2.0.8",
+    "@hono/node-server": "2.0.9",
     "@hono/valibot-validator": "0.6.1",
     "@pokedex/contracts": "workspace:*",
     "drizzle-orm": "0.45.2",
