@@ -15,7 +15,7 @@
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
-    "lefthook": "2.1.9",
+    "lefthook": "2.1.10",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
