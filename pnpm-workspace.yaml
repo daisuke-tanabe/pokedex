@@ -24,3 +24,6 @@ allowBuilds:
 # 意図を明示するため併記する。
 minimumReleaseAge: 4320
 minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude:
+  # Renovate security update: next@16.2.11
+  - next@16.2.11
