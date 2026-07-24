@@ -51,11 +51,11 @@ importers:
   apps/api:
     dependencies:
       '@hono/node-server':
-        specifier: 2.0.10
-        version: 2.0.10(hono@4.12.30)
+        specifier: 2.0.11
+        version: 2.0.11(hono@4.12.31)
       '@hono/valibot-validator':
         specifier: 0.6.1
-        version: 0.6.1(hono@4.12.30)(valibot@1.4.2(typescript@7.0.2))
+        version: 0.6.1(hono@4.12.31)(valibot@1.4.2(typescript@7.0.2))
       '@pokedex/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -63,8 +63,8 @@ importers:
         specifier: 0.45.2
         version: 0.45.2(postgres@3.4.9)
       hono:
-        specifier: 4.12.30
-        version: 4.12.30
+        specifier: 4.12.31
+        version: 4.12.31
       postgres:
         specifier: 3.4.9
         version: 3.4.9
@@ -102,8 +102,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       hono:
-        specifier: 4.12.30
-        version: 4.12.30
+        specifier: 4.12.31
+        version: 4.12.31
       lucide-react:
         specifier: 1.24.0
         version: 1.24.0(react@19.2.7)
@@ -778,8 +778,8 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@hono/node-server@2.0.10':
-    resolution: {integrity: sha512-ZcnNVhKTmyDJeg0UlnZjvM73JBsTAuhrH/J4fjwGOw59PwOW51r4J+p6CsKZWXdKSme4MFqU62CZMOsdDrU4CA==}
+  '@hono/node-server@2.0.11':
+    resolution: {integrity: sha512-bjD221KPLoJTWUwso1J6fGKiTXEUFedG/s0visavY4zakFPkeGURMRNly+FhBHs7T8Dz4qHaZIMX9ZoJHSJtKA==}
     engines: {node: '>=20'}
     peerDependencies:
       hono: ^4
@@ -2886,8 +2886,8 @@ packages:
   headers-polyfill@5.0.1:
     resolution: {integrity: sha512-1TJ6Fih/b8h5TIcv+1+Hw0PDQWJTKDKzFZzcKOiW1wJza3XoAQlkCuXLbymPYB8+ZQyw8mHvdw560e8zVFIWyA==}
 
-  hono@4.12.30:
-    resolution: {integrity: sha512-emn+JoJjrN9YTpRDS5it/UI2SO9BAE37T6I3d963RxcZ81G9A4pr2SZTEiiaiKbzx+NKRg5BZ89fCL7gCJCUog==}
+  hono@4.12.31:
+    resolution: {integrity: sha512-zJIHFrl6bq3RDd2YusFNCDlM8qUprxKswyi/OPzPyzKDdyBXDqWx8bZlZ7R+saTdSTatUmb3O7K4SspGPaEOQg==}
     engines: {node: '>=16.9.0'}
 
   html-encoding-sniffer@6.0.0:
@@ -4020,13 +4020,13 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@hono/node-server@2.0.10(hono@4.12.30)':
+  '@hono/node-server@2.0.11(hono@4.12.31)':
     dependencies:
-      hono: 4.12.30
+      hono: 4.12.31
 
-  '@hono/valibot-validator@0.6.1(hono@4.12.30)(valibot@1.4.2(typescript@7.0.2))':
+  '@hono/valibot-validator@0.6.1(hono@4.12.31)(valibot@1.4.2(typescript@7.0.2))':
     dependencies:
-      hono: 4.12.30
+      hono: 4.12.31
       valibot: 1.4.2(typescript@7.0.2)
 
   '@img/colour@1.1.0':
@@ -5778,7 +5778,7 @@ snapshots:
       '@types/set-cookie-parser': 2.4.10
       set-cookie-parser: 3.1.2
 
-  hono@4.12.30: {}
+  hono@4.12.31: {}
 
   html-encoding-sniffer@6.0.0:
     dependencies:
