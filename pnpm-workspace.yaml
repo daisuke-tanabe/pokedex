@@ -3,7 +3,7 @@ packages:
   - 'packages/*'
 catalog:
   oxfmt: 0.61.0
-  oxlint: 1.75.0
+  oxlint: 1.77.0
   oxlint-tsgolint: 7.0.2001
   vitest: 4.1.10
 allowBuilds:
