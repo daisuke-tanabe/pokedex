@@ -16,7 +16,7 @@
     "@tanstack/react-query": "5.101.4",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
-    "hono": "4.12.34",
+    "hono": "4.13.1",
     "lucide-react": "1.30.0",
     "next": "16.2.12",
     "nuqs": "2.9.4",
@@ -42,7 +42,7 @@
     "dotenv-cli": "11.0.0",
     "jsdom": "30.0.1",
     "msw": "2.15.0",
-    "postcss": "8.5.24",
+    "postcss": "8.5.25",
     "tailwindcss": "4.3.3",
     "vitest": "catalog:"
   }
