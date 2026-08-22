@@ -52,10 +52,10 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: 2.1.1
-        version: 2.1.1(hono@4.13.2)
+        version: 2.1.1(hono@4.13.3)
       '@hono/valibot-validator':
         specifier: 0.6.1
-        version: 0.6.1(hono@4.13.2)(valibot@1.4.2(typescript@7.0.2))
+        version: 0.6.1(hono@4.13.3)(valibot@1.4.2(typescript@7.0.2))
       '@pokedex/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -63,8 +63,8 @@ importers:
         specifier: 0.45.2
         version: 0.45.2(postgres@3.4.9)
       hono:
-        specifier: 4.13.2
-        version: 4.13.2
+        specifier: 4.13.3
+        version: 4.13.3
       postgres:
         specifier: 3.4.9
         version: 3.4.9
@@ -102,8 +102,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       hono:
-        specifier: 4.13.2
-        version: 4.13.2
+        specifier: 4.13.3
+        version: 4.13.3
       lucide-react:
         specifier: 1.31.0
         version: 1.31.0(react@19.2.8)
@@ -2794,8 +2794,8 @@ packages:
   headers-polyfill@5.0.1:
     resolution: {integrity: sha512-1TJ6Fih/b8h5TIcv+1+Hw0PDQWJTKDKzFZzcKOiW1wJza3XoAQlkCuXLbymPYB8+ZQyw8mHvdw560e8zVFIWyA==}
 
-  hono@4.13.2:
-    resolution: {integrity: sha512-JydRilDRkYBQMt9qR9U92mXxmbGqsqSn/IKOrh4e7/gEbn+0zSr8igTu0obwJoNGN4sez28DIql7FBHWydoJpA==}
+  hono@4.13.3:
+    resolution: {integrity: sha512-r8AO2mYHoLxSHkgafNeC/BXyb2vWRxD3jem4Ts+ptav8oTG5FIRifAjuJEmZI4bSvvc2ns0GxmIYiZnHqN3mMw==}
     engines: {node: '>=16.9.0'}
 
   html-encoding-sniffer@6.0.0:
@@ -3990,13 +3990,13 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@hono/node-server@2.1.1(hono@4.13.2)':
+  '@hono/node-server@2.1.1(hono@4.13.3)':
     dependencies:
-      hono: 4.13.2
+      hono: 4.13.3
 
-  '@hono/valibot-validator@0.6.1(hono@4.13.2)(valibot@1.4.2(typescript@7.0.2))':
+  '@hono/valibot-validator@0.6.1(hono@4.13.3)(valibot@1.4.2(typescript@7.0.2))':
     dependencies:
-      hono: 4.13.2
+      hono: 4.13.3
       valibot: 1.4.2(typescript@7.0.2)
 
   '@img/colour@1.1.0':
@@ -5667,7 +5667,7 @@ snapshots:
       '@types/set-cookie-parser': 2.4.10
       set-cookie-parser: 3.1.2
 
-  hono@4.13.2: {}
+  hono@4.13.3: {}
 
   html-encoding-sniffer@6.0.0:
     dependencies:
